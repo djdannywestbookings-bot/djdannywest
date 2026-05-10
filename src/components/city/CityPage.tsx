@@ -53,22 +53,22 @@ export function CityPage(props: CityPageProps) {
             </motion.div>
           </div>
           <div className="md:col-span-9">
-            <h1 className="font-display font-light leading-[0.84] tracking-[-0.045em] text-cream">
+            <h1 className="font-display font-light leading-[0.86] tracking-[-0.04em] text-cream">
               <motion.span
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: easeOut, delay: 0.1 }}
-                className="opsz-display block text-[16vw] italic md:text-[clamp(72px,9vw,160px)]"
+                className="opsz-section block text-[12vw] font-normal text-cream/55 md:text-[clamp(40px,5vw,80px)]"
               >
-                DJ in
+                Hire a DJ
               </motion.span>
               <motion.span
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: easeOut, delay: 0.22 }}
-                className="opsz-display block text-[16vw] text-ember md:text-[clamp(72px,9vw,160px)]"
+                className="opsz-display block text-[20vw] font-normal text-ember md:text-[clamp(96px,11vw,200px)]"
               >
-                {city}.
+                in {city}.
               </motion.span>
             </h1>
             <motion.p
@@ -211,8 +211,9 @@ export function CityPage(props: CityPageProps) {
           <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
             Ready when you are
           </div>
-          <h2 className="opsz-display mt-6 font-display text-[56px] font-light italic leading-[0.95] tracking-[-0.04em] text-cream md:text-[clamp(64px,8vw,128px)]">
-            Hire the {city.toLowerCase()} <br />
+          <h2 className="opsz-display mt-6 font-display text-[48px] font-normal leading-[0.95] tracking-[-0.035em] text-cream md:text-[clamp(56px,7vw,112px)]">
+            Book the {city.toLowerCase()}
+            <br />
             <span className="text-ember">DJ.</span>
           </h2>
           <p className="mx-auto mt-8 max-w-md font-sans text-[16px] leading-[1.65] text-cream/65">
