@@ -53,22 +53,23 @@ export function CityPage(props: CityPageProps) {
             </motion.div>
           </div>
           <div className="md:col-span-9">
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.05 }}
+              className="mb-6 inline-flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/55"
+            >
+              <span className="inline-block h-px w-10 bg-cream/30" />
+              The {city} DJ
+            </motion.div>
             <h1 className="font-display font-light leading-[0.86] tracking-[-0.04em] text-cream">
-              <motion.span
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: easeOut, delay: 0.1 }}
-                className="opsz-section block text-[12vw] font-normal text-cream/55 md:text-[clamp(40px,5vw,80px)]"
-              >
-                Hire a DJ
-              </motion.span>
               <motion.span
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: easeOut, delay: 0.22 }}
-                className="opsz-display block text-[20vw] font-normal text-ember md:text-[clamp(96px,11vw,200px)]"
+                transition={{ duration: 1, ease: easeOut, delay: 0.18 }}
+                className="opsz-display block text-[22vw] font-normal text-ember md:text-[clamp(120px,14vw,260px)]"
               >
-                in {city}.
+                {city}.
               </motion.span>
             </h1>
             <motion.p
@@ -211,10 +212,8 @@ export function CityPage(props: CityPageProps) {
           <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
             Ready when you are
           </div>
-          <h2 className="opsz-display mt-6 font-display text-[48px] font-normal leading-[0.95] tracking-[-0.035em] text-cream md:text-[clamp(56px,7vw,112px)]">
-            Book the {city.toLowerCase()}
-            <br />
-            <span className="text-ember">DJ.</span>
+          <h2 className="opsz-display mt-6 font-display text-[56px] font-normal leading-[0.92] tracking-[-0.035em] text-cream md:text-[clamp(72px,8vw,128px)]">
+            Book <span className="text-ember">{city}.</span>
           </h2>
           <p className="mx-auto mt-8 max-w-md font-sans text-[16px] leading-[1.65] text-cream/65">
             Bookings start at $1,500. I respond within 24 hours.
