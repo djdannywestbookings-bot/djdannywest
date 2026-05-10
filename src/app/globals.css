@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color system — warm, editorial, after-hours */
+  --color-night: #0A0907;
+  --color-night-soft: #14110D;
+  --color-cream: #F5F1EA;
+  --color-cream-soft: #B8B0A4;
+  --color-cream-muted: #6E665D;
+  --color-ember: #FF4D1F;
+  --color-ember-soft: #C13A14;
+  --color-line: rgba(245, 241, 234, 0.08);
+
+  /* Typography */
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+html, body {
+  background: var(--color-night);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-ember);
+  color: var(--color-night);
+}
+
+/* Film grain — SVG noise as data URL */
+.grain {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.94 0 0 0 0 0.92 0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+  background-size: 240px 240px;
+}
+
+/* Variable font axis helper for Fraunces */
+.opsz-display {
+  font-variation-settings: "opsz" 144;
+}
+.opsz-section {
+  font-variation-settings: "opsz" 96;
+}
+.opsz-text {
+  font-variation-settings: "opsz" 36;
+}
