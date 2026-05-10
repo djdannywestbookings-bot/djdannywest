@@ -31,8 +31,13 @@ export function MixCard({ mix, index }: Props) {
       }}
       className="group relative"
     >
-      {/* Cover */}
-      <div className="relative aspect-square w-full overflow-hidden bg-night-soft">
+      {/* Cover (entire card links to detail page) */}
+      <a
+        href={`/mixes/${mix.slug}`}
+        className="relative block aspect-square w-full overflow-hidden bg-night-soft"
+        aria-label={`${mix.title} ${mix.subtitle}`}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={mix.coverArt}
           alt={`${mix.title} ${mix.subtitle} cover art`}
@@ -40,18 +45,14 @@ export function MixCard({ mix, index }: Props) {
           loading="lazy"
         />
 
-        {/* Lock + subscribe overlay */}
+        {/* Subtle hover overlay — invites the click */}
         <div className="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-night/90 via-night/0 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <span className="font-sans text-[10px] uppercase tracking-[0.28em] text-cream/80">
             🔒 Subscribers only
           </span>
-          <a
-            href="#subscribe"
-            onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-2 bg-ember px-3 py-2 font-sans text-[10px] uppercase tracking-[0.22em] text-night transition-colors hover:bg-cream"
-          >
-            Listen — $20/mo →
-          </a>
+          <span className="inline-flex items-center gap-2 bg-ember px-3 py-2 font-sans text-[10px] uppercase tracking-[0.22em] text-night">
+            Open →
+          </span>
         </div>
 
         {/* Persistent lock pip top-right */}
@@ -61,7 +62,7 @@ export function MixCard({ mix, index }: Props) {
             Locked
           </span>
         </div>
-      </div>
+      </a>
 
       {/* Meta */}
       <div className="mt-4">
