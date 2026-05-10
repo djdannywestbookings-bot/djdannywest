@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   title: "DJ Danny West — Sets that move rooms",
   description:
     "A subscriber archive of the mixes I play in clubs, on rooftops, at weddings, after hours. Two new sets every month. Subscribers only.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/brand/icon-192.png",
+  },
 };
 
 export default function RootLayout({

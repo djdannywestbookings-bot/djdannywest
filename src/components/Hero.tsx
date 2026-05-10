@@ -40,9 +40,14 @@ export function Hero() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
           </span>
-          <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/80">
-            Danny West
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/wordmark-white.png"
+            alt="Danny West"
+            width={1053}
+            height={652}
+            className="h-9 w-auto md:h-10"
+          />
         </div>
         <nav className="hidden items-center gap-10 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/65 md:flex">
           <a href="/mixes" className="transition hover:text-cream">Mixes</a>
