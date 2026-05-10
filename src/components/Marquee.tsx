@@ -2,16 +2,26 @@
 
 import { motion } from "motion/react";
 
+// Real credentials — pulled from Danny's EPK. Acts as a scrolling social-proof bar
+// at the bottom of the hero. If you add a new credential, drop it in this list.
 const items = [
-  "Sunset 004",
-  "Late Night 011",
-  "Wedding · Cocktail Hour Vol. 3",
-  "Peak Time 008",
-  "After Hours · Brooklyn",
-  "R&B Slow Burn",
-  "Sensual 002",
-  "Lounge Sessions 09",
-  "Rooftop · Summer Edits",
+  "SiriusXM · Channel 13",
+  "Dallas Cowboys",
+  "Pitbull's Globalization",
+  "DJcity",
+  "50 Cent · Final Lap Tour",
+  "Pitbull · Can't Stop Us Now",
+  "Enrique Iglesias × Ricky Martin",
+  "Red Bull 3Style",
+  "ESPN · Super Bowl",
+  "HBO Boxing",
+  "House of Blues Vegas",
+  "American Airlines Center",
+  "Club LIV Manchester",
+  "WARP Tokyo",
+  "Resort World Bimini",
+  "W Hotel Dallas",
+  "SXSW",
 ];
 
 export function Marquee() {
@@ -19,8 +29,8 @@ export function Marquee() {
     <div className="flex w-full overflow-hidden">
       <motion.div
         animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 60, ease: "linear", repeat: Infinity }}
-        className="opsz-display flex shrink-0 items-center gap-12 whitespace-nowrap pr-12 font-display text-[44px] leading-none tracking-tight text-cream/30 md:text-[60px]"
+        transition={{ duration: 80, ease: "linear", repeat: Infinity }}
+        className="opsz-display flex shrink-0 items-center gap-12 whitespace-nowrap pr-12 font-display text-[40px] leading-none tracking-tight text-cream/35 md:text-[56px]"
       >
         {[...items, ...items].map((item, i) => (
           <span key={i} className="inline-flex items-center gap-12">

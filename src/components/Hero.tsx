@@ -153,7 +153,7 @@ export function Hero() {
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
               </span>
               <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/85">
-                Now Playing · Sunset 004
+                Now Playing · SiriusXM Vol 19
               </span>
             </div>
             <div className="opsz-text font-display text-[15px] italic leading-snug text-cream/70 md:text-[16px]">
