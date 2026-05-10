@@ -5,12 +5,6 @@ import { useRef } from "react";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
-const NOW = [
-  { role: "Official DJ", venue: "Dallas Cowboys · Stadium Club" },
-  { role: "Mix Show Coordinator", venue: "SiriusXM Channel 13 · Pitbull's Globalization" },
-  { role: "Talent Booker / DJ", venue: "Gaylord Texan" },
-];
-
 const TOURED = [
   { year: "2023", title: "50 Cent — Final Lap Tour" },
   { year: "2023", title: "Pitbull — Can't Stop Us Now Tour" },
@@ -75,41 +69,13 @@ export function Credits() {
           </motion.h2>
         </div>
 
-        {/* Three columns: NOW / TOURED / STAGES */}
-        <div className="grid grid-cols-1 gap-14 md:col-span-9 md:grid-cols-3 md:gap-10">
-          {/* NOW */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, ease: easeOut, delay: 0.15 }}
-          >
-            <div className="mb-5 flex items-baseline justify-between">
-              <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
-                Now
-              </span>
-              <span className="font-sans text-[9px] uppercase tracking-[0.28em] text-cream/35">
-                Residencies
-              </span>
-            </div>
-            <ul className="space-y-5">
-              {NOW.map((item) => (
-                <li key={item.role}>
-                  <div className="opsz-text font-display text-[20px] leading-snug tracking-[-0.005em] text-cream md:text-[22px]">
-                    {item.role}
-                  </div>
-                  <div className="mt-1 font-sans text-[12px] leading-snug text-cream/55">
-                    {item.venue}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
+        {/* Two columns: TOURED / STAGES */}
+        <div className="grid grid-cols-1 gap-14 md:col-span-9 md:grid-cols-2 md:gap-14">
           {/* TOURED */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, ease: easeOut, delay: 0.25 }}
+            transition={{ duration: 0.8, ease: easeOut, delay: 0.15 }}
           >
             <div className="mb-5 flex items-baseline justify-between">
               <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
@@ -137,7 +103,7 @@ export function Credits() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, ease: easeOut, delay: 0.35 }}
+            transition={{ duration: 0.8, ease: easeOut, delay: 0.25 }}
           >
             <div className="mb-5 flex items-baseline justify-between">
               <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
