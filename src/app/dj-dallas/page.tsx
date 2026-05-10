@@ -66,7 +66,7 @@ const faq = [
 ];
 
 export const metadata: Metadata = {
-  title: "Best DJ in Dallas — Wedding · Corporate · Club · Private | DJ Danny West",
+  title: { absolute: "Best DJ in Dallas — Wedding · Corporate · Club · Private | DJ Danny West" },
   description: `Hire DJ Danny West — official DJ for the Dallas Cowboys Stadium Club, SiriusXM Channel 13. ${intro}`,
   alternates: { canonical: "/dj-dallas" },
   openGraph: {

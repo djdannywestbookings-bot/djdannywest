@@ -64,7 +64,7 @@ const faq = [
 ];
 
 export const metadata: Metadata = {
-  title: "Best DJ in Fort Worth — Wedding · Corporate · Club · Private | DJ Danny West",
+  title: { absolute: "Best DJ in Fort Worth — Wedding · Corporate · Club · Private | DJ Danny West" },
   description: `Hire DJ Danny West for Fort Worth events. Dallas Cowboys' official Stadium Club DJ. SiriusXM Channel 13. Bookings from $1,500.`,
   alternates: { canonical: "/dj-fort-worth" },
   openGraph: {
