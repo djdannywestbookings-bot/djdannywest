@@ -63,14 +63,9 @@ export function CityPage(props: CityPageProps) {
               The {city} DJ
             </motion.div>
             <h1 className="font-display font-light leading-[0.86] tracking-[-0.04em] text-cream">
-              <motion.span
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: easeOut, delay: 0.18 }}
-                className="opsz-display block text-[22vw] font-normal text-ember md:text-[clamp(120px,14vw,260px)]"
-              >
+              <span className="opsz-display block text-[22vw] font-normal text-ember md:text-[clamp(120px,14vw,260px)]">
                 {city}.
-              </motion.span>
+              </span>
             </h1>
             <motion.p
               initial={{ opacity: 0, y: 14 }}
