@@ -3,6 +3,7 @@ import mixesJson from "@/data/mixes.json";
 import { PageHeader } from "@/components/mixes/PageHeader";
 import { MixesGrid } from "@/components/mixes/MixesGrid";
 import type { Mix } from "@/components/mixes/MixCard";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Mixes — DJ Danny West",
@@ -49,6 +50,8 @@ export default function MixesPage() {
       <section className="mx-auto max-w-[1600px] px-6 pb-32 pt-16 md:px-12 md:pb-40 md:pt-20">
         <MixesGrid mixes={mixes} />
       </section>
+
+      <Footer />
     </main>
   );
 }
