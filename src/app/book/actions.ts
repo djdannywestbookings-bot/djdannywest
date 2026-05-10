@@ -1,5 +1,7 @@
 "use server";
 
+import { Resend } from "resend";
+
 export type BookingInquiry = {
   eventType: string;
   eventDate: string;
@@ -16,32 +18,97 @@ export type BookingInquiry = {
 
 export type SubmitResult = { ok: true } | { ok: false; error: string };
 
+const BUDGET_LABELS: Record<string, string> = {
+  "1.5-3": "$1,500 – $3,000",
+  "3-5": "$3,000 – $5,000",
+  "5-8": "$5,000 – $8,000",
+  "8+": "$8,000+",
+  unsure: "Not sure yet",
+};
+
+function fmt(label: string, value: string): string {
+  return value ? `<tr><td style="padding:6px 14px 6px 0;color:#6E665D;font-size:12px;text-transform:uppercase;letter-spacing:0.18em;vertical-align:top;white-space:nowrap;">${label}</td><td style="padding:6px 0;color:#111;font-size:15px;">${escapeHtml(value)}</td></tr>` : "";
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderEmailHtml(d: BookingInquiry): string {
+  const budgetLabel = BUDGET_LABELS[d.budget] || d.budget || "—";
+  return `<!doctype html>
+<html>
+  <body style="margin:0;background:#F5F1EA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111;">
+    <table role="presentation" width="100%" style="background:#F5F1EA;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="600" style="max-width:600px;background:#FFF;border:1px solid #E5DDD0;">
+            <tr>
+              <td style="padding:32px 36px 8px;">
+                <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#FF4D1F;">New Booking Inquiry</div>
+                <div style="font-family:Georgia,serif;font-size:32px;font-style:italic;color:#0A0907;margin-top:6px;">${escapeHtml(d.name) || "Anonymous"}</div>
+                <div style="font-size:14px;color:#6E665D;margin-top:4px;">${escapeHtml(d.eventType)}${d.eventDate ? " · " + escapeHtml(d.eventDate) : ""}</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 36px 0;">
+                <hr style="border:0;border-top:1px solid #E5DDD0;margin:16px 0;" />
+                <table role="presentation" width="100%">
+                  ${fmt("Event type", d.eventType)}
+                  ${fmt("Event date", d.eventDate)}
+                  ${fmt("Location", d.location)}
+                  ${fmt("Guests", d.guests)}
+                  ${fmt("Budget", budgetLabel)}
+                  ${fmt("Heard via", d.howHeard)}
+                  ${fmt("Email", d.email)}
+                  ${fmt("Phone", d.phone)}
+                </table>
+                ${d.notes ? `<div style="margin-top:18px;"><div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#6E665D;margin-bottom:6px;">Notes</div><div style="background:#F8F4ED;border-left:2px solid #FF4D1F;padding:14px 16px;font-size:15px;line-height:1.55;color:#111;white-space:pre-wrap;">${escapeHtml(d.notes)}</div></div>` : ""}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px 36px 32px;">
+                <a href="mailto:${escapeHtml(d.email)}" style="display:inline-block;background:#FF4D1F;color:#FFF;text-decoration:none;padding:12px 22px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;">Reply →</a>
+                <div style="font-size:11px;color:#9E948A;margin-top:18px;">Received ${escapeHtml(d.submittedAt)}</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+
 /**
  * Booking inquiry submit handler.
- *
- * For now this just logs to the Vercel function logs so we can see real
- * inquiries come through. When the real backend lands, replace the body of
- * this function with: send via Resend, insert into Postgres (Supabase),
- * fire a Slack/email notification to Danny.
+ * - Validates required fields.
+ * - Sends an email to the address in BOOKING_NOTIFICATIONS_TO via Resend.
+ * - Falls back to console-logging if Resend isn't configured (e.g. local dev
+ *   without env vars set), so the form is still useful in development.
  */
 export async function submitBookingInquiry(
   formData: FormData,
 ): Promise<SubmitResult> {
   const data: BookingInquiry = {
-    eventType: String(formData.get("eventType") ?? ""),
-    eventDate: String(formData.get("eventDate") ?? ""),
-    location: String(formData.get("location") ?? ""),
-    guests: String(formData.get("guests") ?? ""),
-    budget: String(formData.get("budget") ?? ""),
-    howHeard: String(formData.get("howHeard") ?? ""),
-    name: String(formData.get("name") ?? ""),
-    email: String(formData.get("email") ?? ""),
-    phone: String(formData.get("phone") ?? ""),
-    notes: String(formData.get("notes") ?? ""),
+    eventType: String(formData.get("eventType") ?? "").trim(),
+    eventDate: String(formData.get("eventDate") ?? "").trim(),
+    location: String(formData.get("location") ?? "").trim(),
+    guests: String(formData.get("guests") ?? "").trim(),
+    budget: String(formData.get("budget") ?? "").trim(),
+    howHeard: String(formData.get("howHeard") ?? "").trim(),
+    name: String(formData.get("name") ?? "").trim(),
+    email: String(formData.get("email") ?? "").trim(),
+    phone: String(formData.get("phone") ?? "").trim(),
+    notes: String(formData.get("notes") ?? "").trim(),
     submittedAt: new Date().toISOString(),
   };
 
-  // Minimal validation — required fields.
   if (!data.name || !data.email || !data.eventType) {
     return { ok: false, error: "Please fill in name, email, and event type." };
   }
@@ -49,8 +116,42 @@ export async function submitBookingInquiry(
     return { ok: false, error: "That email looks off — please double-check." };
   }
 
-  // Surface in Vercel function logs until real backend lands.
-  console.log("[BOOKING INQUIRY]", JSON.stringify(data, null, 2));
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.BOOKING_NOTIFICATIONS_TO;
 
-  return { ok: true };
+  if (!apiKey || !to) {
+    // Local-dev fallback. In production both vars are set in Vercel.
+    console.log("[BOOKING INQUIRY — Resend not configured]", JSON.stringify(data, null, 2));
+    return { ok: true };
+  }
+
+  try {
+    const resend = new Resend(apiKey);
+    const subjectName = data.name || "Someone";
+    const subjectEvent = data.eventType || "an event";
+    const result = await resend.emails.send({
+      // Using Resend's default onboarding sender until we verify djdannywest.com.
+      // After domain verification, swap to: "Bookings <bookings@djdannywest.com>"
+      from: "DJ Danny West Bookings <onboarding@resend.dev>",
+      to: [to],
+      replyTo: data.email,
+      subject: `Booking inquiry — ${subjectName} · ${subjectEvent}`,
+      html: renderEmailHtml(data),
+    });
+
+    if (result.error) {
+      console.error("[RESEND ERROR]", result.error);
+      return {
+        ok: false,
+        error: "Couldn't send the inquiry — please email djdannywestbookings@gmail.com directly.",
+      };
+    }
+    return { ok: true };
+  } catch (err) {
+    console.error("[BOOKING SUBMIT FAILED]", err);
+    return {
+      ok: false,
+      error: "Something went wrong on our end. Please email djdannywestbookings@gmail.com directly.",
+    };
+  }
 }
