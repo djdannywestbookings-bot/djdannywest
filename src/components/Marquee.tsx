@@ -8,7 +8,6 @@ const items = [
   "SiriusXM · Channel 13",
   "Dallas Cowboys",
   "Pitbull's Globalization",
-  "DJcity",
   "50 Cent · Final Lap Tour",
   "Pitbull · Can't Stop Us Now",
   "Enrique Iglesias × Ricky Martin",

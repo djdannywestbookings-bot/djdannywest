@@ -8,7 +8,6 @@ const easeOut = [0.16, 1, 0.3, 1] as const;
 const NOW = [
   { role: "Official DJ", venue: "Dallas Cowboys · Stadium Club" },
   { role: "Mix Show Coordinator", venue: "SiriusXM Channel 13 · Pitbull's Globalization" },
-  { role: "Regional Manager", venue: "DJcity / Beatsource" },
   { role: "Talent Booker / DJ", venue: "Gaylord Texan" },
 ];
 
