@@ -6,7 +6,6 @@ import { Footer } from "@/components/Footer";
 import { MixesGrid } from "@/components/mixes/MixesGrid";
 import {
   adaptMix,
-  getAllSeries,
   getMixesForSeries,
   getSeriesBySlug,
 } from "@/lib/mixes/queries";
@@ -28,11 +27,6 @@ export async function generateMetadata({
     description: series.description ?? `${series.title} — DJ Danny West mix series.`,
     robots: { index: false, follow: false },
   };
-}
-
-export async function generateStaticParams() {
-  const all = await getAllSeries();
-  return all.map((s) => ({ slug: s.slug }));
 }
 
 export default async function SeriesPage({
