@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase/server";
-import { CancelButton } from "@/components/subscribe/CancelButton";
+import { ManageButton } from "@/components/subscribe/ManageButton";
 
 export const metadata: Metadata = {
   title: "Your subscription",
@@ -98,7 +98,7 @@ export default async function AccountSubscriptionPage() {
                 )}
               </dl>
               <div className="mt-8 border-t border-line/60 pt-6">
-                <CancelButton />
+                <ManageButton />
               </div>
             </div>
           )}
