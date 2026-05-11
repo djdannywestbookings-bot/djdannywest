@@ -44,8 +44,8 @@ export function SiteNav({ active, solid = true }: Props) {
         {link("merch", "Merch", "/merchandise")}
       </nav>
       <a
-        href="/mixes"
-        className="border border-cream/25 px-4 py-2 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/85 transition hover:border-cream hover:bg-cream hover:text-night"
+        href="/login"
+        className="bg-cream px-4 py-2 font-sans text-[10px] font-medium uppercase tracking-[0.32em] text-night transition hover:bg-ember"
       >
         Member Login →
       </a>

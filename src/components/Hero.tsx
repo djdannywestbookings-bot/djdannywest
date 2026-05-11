@@ -55,8 +55,8 @@ export function Hero() {
           <a href="/merchandise" className="transition hover:text-cream">Merch</a>
         </nav>
         <a
-          href="/mixes"
-          className="hidden border border-cream/25 px-4 py-2 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/85 transition hover:border-cream hover:bg-cream hover:text-night md:inline-block"
+          href="/login"
+          className="hidden bg-cream px-4 py-2 font-sans text-[10px] font-medium uppercase tracking-[0.32em] text-night transition hover:bg-ember md:inline-block"
         >
           Member Login →
         </a>
