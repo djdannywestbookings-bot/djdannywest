@@ -65,17 +65,23 @@ export function Manifesto() {
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-20 grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-12"
+            className="mt-20 grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-7"
           >
             {pillars.map((p) => (
-              <div key={p.num}>
-                <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
+              <div
+                key={p.num}
+                className="group relative flex flex-col overflow-hidden border-t-2 border-ember/70 bg-cream/[0.03] p-7 backdrop-blur-sm transition-colors duration-300 hover:bg-cream/[0.05] md:p-9"
+              >
+                {/* subtle inner glow on hover */}
+                <div className="pointer-events-none absolute -top-1/2 -right-1/4 h-[150%] w-[150%] rounded-full bg-ember/[0.04] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
+
+                <div className="relative font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
                   — {p.num}
                 </div>
-                <div className="opsz-text mt-4 font-display text-2xl leading-tight tracking-[-0.01em] text-cream md:text-[26px]">
+                <div className="opsz-text relative mt-5 font-display text-2xl leading-tight tracking-[-0.01em] text-cream md:text-[26px]">
                   {p.title}
                 </div>
-                <div className="mt-3 font-sans text-[14px] leading-[1.6] text-cream/55">
+                <div className="relative mt-3 font-sans text-[14px] leading-[1.6] text-cream/65">
                   {p.body}
                 </div>
               </div>

@@ -71,7 +71,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: easeOut, delay: 0.2 }}
-              className="opsz-display block text-[14vw] font-normal md:text-[clamp(64px,8vw,140px)]"
+              className="font-sans block text-[13vw] font-medium tracking-[-0.04em] md:text-[clamp(64px,8vw,140px)]"
             >
               A DJ
             </motion.span>
