@@ -129,8 +129,8 @@ def cover_svg(vol: int, duration: str) -> str:
       <stop offset="1" stop-color="#0A0907"/>
     </linearGradient>
     <radialGradient id="ember" cx="0.85" cy="0.15" r="0.65">
-      <stop offset="0" stop-color="#FF4D1F" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#FF4D1F" stop-opacity="0"/>
+      <stop offset="0" stop-color="#E5B97A" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#E5B97A" stop-opacity="0"/>
     </radialGradient>
     <filter id="grain" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
@@ -147,7 +147,7 @@ def cover_svg(vol: int, duration: str) -> str:
     <text x="80" y="105" font-size="20" letter-spacing="5" fill-opacity="0.78">SIRIUSXM</text>
     <text x="80" y="135" font-size="20" letter-spacing="5" fill-opacity="0.78">PITBULL GLOBALIZATION</text>
     <text x="80" y="165" font-size="20" letter-spacing="5" fill-opacity="0.78">CHANNEL 13</text>
-    <line x1="80" y1="190" x2="180" y2="190" stroke="#FF4D1F" stroke-opacity="0.85" stroke-width="2"/>
+    <line x1="80" y1="190" x2="180" y2="190" stroke="#E5B97A" stroke-opacity="0.85" stroke-width="2"/>
   </g>
 
   <!-- VOLUME LABEL -->
@@ -163,7 +163,7 @@ def cover_svg(vol: int, duration: str) -> str:
   </g>
 
   <!-- ember dot accent next to number -->
-  <circle cx="920" cy="430" r="6" fill="#FF4D1F"/>
+  <circle cx="920" cy="430" r="6" fill="#E5B97A"/>
 
   <!-- BOTTOM STRIP -->
   <g font-family="Inter, system-ui, sans-serif" fill="#F5F1EA" fill-opacity="0.55">

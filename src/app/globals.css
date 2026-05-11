@@ -7,8 +7,9 @@
   --color-cream: #F5F1EA;
   --color-cream-soft: #B8B0A4;
   --color-cream-muted: #6E665D;
-  --color-ember: #FF4D1F;
-  --color-ember-soft: #C13A14;
+  /* Honey-gold accent — replaces saturated red-orange. Higher legibility, premium feel. */
+  --color-ember: #E5B97A;
+  --color-ember-soft: #B0884E;
   --color-line: rgba(245, 241, 234, 0.08);
 
   /* Typography */
