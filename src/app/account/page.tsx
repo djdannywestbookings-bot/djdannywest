@@ -45,7 +45,7 @@ export default async function AccountPage() {
               subscriptions.
             </p>
 
-            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
               <div className="border-t-2 border-ember/70 bg-cream/[0.03] p-7">
                 <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">— 01</div>
                 <div className="opsz-text mt-4 font-display text-[22px] leading-tight text-cream">Browse the library</div>
@@ -65,6 +65,17 @@ export default async function AccountPage() {
                 </p>
                 <a href="/book" className="mt-5 inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition hover:text-ember">
                   Send inquiry →
+                </a>
+              </div>
+              <div className="border-t-2 border-ember/70 bg-cream/[0.03] p-7">
+                <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">— 03</div>
+                <div className="opsz-text mt-4 font-display text-[22px] leading-tight text-cream">Notifications</div>
+                <p className="mt-3 font-sans text-[14px] leading-[1.6] text-cream/60">
+                  Choose what hits your inbox — new mix drops, request updates,
+                  announcements.
+                </p>
+                <a href="/account/notifications" className="mt-5 inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition hover:text-ember">
+                  Manage preferences →
                 </a>
               </div>
             </div>
