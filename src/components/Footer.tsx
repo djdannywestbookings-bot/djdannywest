@@ -89,7 +89,7 @@ export function Footer() {
             Inquire →
           </a>
           <div className="mt-2 font-sans text-[12px] text-cream/45">
-            From $1,500
+            By inquiry
           </div>
         </div>
 

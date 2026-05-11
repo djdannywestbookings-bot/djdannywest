@@ -7,7 +7,7 @@ export const site = {
   shortName: "Danny West",
   url: "https://djdannywest.com",
   description:
-    "DJ Danny West — Dallas / Fort Worth DJ. Official DJ for the Dallas Cowboys and SiriusXM Channel 13 Pitbull's Globalization. Bookings start at $1,500 for weddings, corporate events, clubs, and private parties.",
+    "DJ Danny West — Dallas / Fort Worth DJ. Official DJ for the Dallas Cowboys Stadium Club and SiriusXM Channel 13 Pitbull's Globalization. Bookings by inquiry — weddings, corporate events, clubs, and private parties.",
   tagline: "Sets that move rooms.",
   city: "Arlington",
   region: "TX",
@@ -22,8 +22,8 @@ export const site = {
   ],
   email: "djdannywestbookings@gmail.com",
   phone: "+1-817-308-6615",
-  // Used as the priceRange marker on LocalBusiness schema.
-  priceRange: "$$$",
+  // Used as the priceRange marker on LocalBusiness schema (signal, not a number).
+  priceRange: "$$$$",
   // Known places Danny has played (used in schema + city pages).
   notableVenues: [
     "Dallas Cowboys Stadium Club",

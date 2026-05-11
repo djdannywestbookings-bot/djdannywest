@@ -85,7 +85,7 @@ export function CityPage(props: CityPageProps) {
                 href="/book"
                 className="group inline-flex items-center gap-3 bg-ember px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition-colors duration-300 hover:bg-cream"
               >
-                Book — from $1,500
+                Inquire about bookings
                 <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
               </a>
               <a
@@ -211,7 +211,7 @@ export function CityPage(props: CityPageProps) {
             Book <span className="text-ember">{city}.</span>
           </h2>
           <p className="mx-auto mt-8 max-w-md font-sans text-[16px] leading-[1.65] text-cream/65">
-            Bookings start at $1,500. I respond within 24 hours.
+            Bookings by inquiry. Send your details — make an offer if you have one — I respond within 24 hours.
           </p>
           <a
             href="/book"

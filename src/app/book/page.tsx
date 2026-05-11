@@ -5,9 +5,9 @@ import { BookHero } from "@/components/book/BookHero";
 import { BookForm } from "@/components/book/BookForm";
 
 export const metadata: Metadata = {
-  title: "Book Danny West — From $1,500",
+  title: "Book Danny West — Inquire",
   description:
-    "Book DJ Danny West for your wedding, corporate event, club, or private party. Bookings start at $1,500. Custom quotes — I respond within 24 hours.",
+    "Book DJ Danny West for your wedding, corporate event, club, or private party. Bookings by inquiry — make an offer or describe your event. I respond personally within 24 hours.",
 };
 
 export default function BookPage() {

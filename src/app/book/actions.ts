@@ -7,7 +7,7 @@ export type BookingInquiry = {
   eventDate: string;
   location: string;
   guests: string;
-  budget: string;
+  offer: string;
   howHeard: string;
   name: string;
   email: string;
@@ -17,14 +17,6 @@ export type BookingInquiry = {
 };
 
 export type SubmitResult = { ok: true } | { ok: false; error: string };
-
-const BUDGET_LABELS: Record<string, string> = {
-  "1.5-3": "$1,500 – $3,000",
-  "3-5": "$3,000 – $5,000",
-  "5-8": "$5,000 – $8,000",
-  "8+": "$8,000+",
-  unsure: "Not sure yet",
-};
 
 function fmt(label: string, value: string): string {
   return value ? `<tr><td style="padding:6px 14px 6px 0;color:#6E665D;font-size:12px;text-transform:uppercase;letter-spacing:0.18em;vertical-align:top;white-space:nowrap;">${label}</td><td style="padding:6px 0;color:#111;font-size:15px;">${escapeHtml(value)}</td></tr>` : "";
@@ -40,7 +32,7 @@ function escapeHtml(s: string): string {
 }
 
 function renderEmailHtml(d: BookingInquiry): string {
-  const budgetLabel = BUDGET_LABELS[d.budget] || d.budget || "—";
+  const offerLabel = d.offer || "— (no offer submitted)";
   return `<!doctype html>
 <html>
   <body style="margin:0;background:#F5F1EA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111;">
@@ -63,7 +55,7 @@ function renderEmailHtml(d: BookingInquiry): string {
                   ${fmt("Event date", d.eventDate)}
                   ${fmt("Location", d.location)}
                   ${fmt("Guests", d.guests)}
-                  ${fmt("Budget", budgetLabel)}
+                  ${fmt("Offer", offerLabel)}
                   ${fmt("Heard via", d.howHeard)}
                   ${fmt("Email", d.email)}
                   ${fmt("Phone", d.phone)}
@@ -100,7 +92,7 @@ export async function submitBookingInquiry(
     eventDate: String(formData.get("eventDate") ?? "").trim(),
     location: String(formData.get("location") ?? "").trim(),
     guests: String(formData.get("guests") ?? "").trim(),
-    budget: String(formData.get("budget") ?? "").trim(),
+    offer: String(formData.get("offer") ?? "").trim(),
     howHeard: String(formData.get("howHeard") ?? "").trim(),
     name: String(formData.get("name") ?? "").trim(),
     email: String(formData.get("email") ?? "").trim(),

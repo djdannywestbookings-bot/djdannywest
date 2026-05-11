@@ -83,17 +83,10 @@ export function localBusinessSchema() {
     makesOffer: {
       "@type": "Offer",
       name: "DJ Booking",
-      description: "Wedding, corporate, private, and club DJ bookings",
+      description: "Wedding, corporate, private, and club DJ bookings — quoted per event by inquiry",
       priceCurrency: "USD",
       eligibleQuantity: { "@type": "QuantitativeValue", minValue: 1 },
-      price: 1500,
-      priceSpecification: {
-        "@type": "PriceSpecification",
-        price: 1500,
-        priceCurrency: "USD",
-        valueAddedTaxIncluded: false,
-        description: "Bookings start at $1,500. Custom quotes per event.",
-      },
+      availability: "https://schema.org/InStock",
     },
   };
 }
@@ -118,11 +111,10 @@ export function cityServiceSchema(city: string, region = "TX") {
     serviceType: "DJ for hire",
     provider: { "@id": localBusinessId },
     areaServed: { "@type": "City", name: `${city}, ${region}` },
-    description: `Professional DJ services in ${city}, ${region}. Weddings, corporate events, private parties, clubs. Bookings start at $1,500.`,
+    description: `Professional DJ services in ${city}, ${region}. Weddings, corporate events, private parties, clubs. Bookings by inquiry.`,
     offers: {
       "@type": "Offer",
       priceCurrency: "USD",
-      price: 1500,
       availability: "https://schema.org/InStock",
     },
   };

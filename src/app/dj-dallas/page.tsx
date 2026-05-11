@@ -8,7 +8,7 @@ import { cityServiceSchema, faqSchema } from "@/lib/seo";
 const city = "Dallas";
 
 const intro =
-  'I\'m the official DJ for the Dallas Cowboys Stadium Club every home game, mix-show coordinator on SiriusXM Channel 13 (Pitbull\'s Globalization), and I\'ve held the booth for clients and venues across the Dallas metro since 2006. If your event is in Dallas, you don\'t need to fly anyone in — I\'m here.';
+  "I'm the official DJ for the Dallas Cowboys Stadium Club every home game, mix-show coordinator on SiriusXM Channel 13 (Pitbull's Globalization), and I've held the booth for clients and venues across the Dallas metro since 2006. If your event is in Dallas, you don't need to fly anyone in — I'm here.";
 
 const doing = [
   {
@@ -39,29 +39,24 @@ const rooms = [
 
 const faq = [
   {
-    question: "How much does it cost to hire DJ Danny West in Dallas?",
-    answer:
-      "Bookings start at $1,500. Final price depends on event length, location, production needs, and date. Send the details through the booking form and I'll respond personally within 24 hours.",
-  },
-  {
     question: "Do you DJ Dallas weddings?",
     answer:
-      "Yes — weddings are a big part of what I do. Cocktail hour through last call, MC support included, dance-floor reads dialed in.",
+      "Yes. Weddings are a big part of what I do — cocktail hour through last call, MC support included, dance-floor reads dialed in.",
   },
   {
     question: "Are you really the Dallas Cowboys' DJ?",
     answer:
-      "Yes — I've been the official DJ for the Dallas Cowboys Stadium Club every home game since 2016. I work with their entertainment team year-round.",
+      "Yes. I've been the official DJ for the Dallas Cowboys Stadium Club every home game since 2016. I work with their entertainment team year-round.",
   },
   {
     question: "Do you bring sound and lighting?",
     answer:
-      "I bring DJ gear (controllers, decks, headphones, monitors). Full PA and lighting can be quoted separately depending on venue. Many Dallas venues already have house systems I plug into.",
+      "I bring my DJ equipment — decks, mixer, headphones, microphone — whichever setup sounds best for the room. Full PA and lighting can be quoted separately depending on venue size and guest count. Inquire and we'll scope it.",
   },
   {
     question: "How far in advance should I book?",
     answer:
-      "Earlier is better — Saturdays in the Dallas wedding season (March–June, September–November) book out months in advance. For corporate events 4–8 weeks lead time is typical. Last-minute is sometimes possible — ask.",
+      "Earlier is better. Most Friday and Saturday clients book me a year out — I'm already booked into next March. If I'm free, I'm yours; but dates lock in fast. Send your inquiry and once we're aligned a deposit holds the date. There's no such thing as too early.",
   },
 ];
 
@@ -71,7 +66,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/dj-dallas" },
   openGraph: {
     title: "Best DJ in Dallas — DJ Danny West",
-    description: "Official Dallas Cowboys DJ. Bookings from $1,500. Weddings, corporate, club, private.",
+    description: "Official Dallas Cowboys DJ. Weddings, corporate, club, private. Bookings by inquiry.",
     url: "/dj-dallas",
     images: ["/og-image.jpg"],
   },
@@ -88,7 +83,7 @@ export default function DallasPage() {
         city={city}
         region="Dallas, TX · DFW Metroplex"
         eyebrow="No. 06 — Dallas"
-        tagline="Weddings, corporate floors, clubs, private events. Based in Arlington, working Dallas every weekend. Bookings start at $1,500 — you talk to me, you book me."
+        tagline="Weddings, corporate floors, clubs, private events. Based in Arlington, working Dallas every weekend. You talk to me, you book me."
         intro={intro}
         doing={doing}
         rooms={rooms}

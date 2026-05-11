@@ -57,11 +57,10 @@ export function BookHero() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="mt-10 max-w-xl font-sans text-[15px] leading-[1.65] text-cream/70 md:text-[17px]"
           >
-            Bookings start at{" "}
-            <span className="text-cream">$1,500</span>. Custom quotes for
-            weddings, corporate floors, private events, and clubs you don&apos;t
-            need to brief — the room recognizes me, the room recognizes the
-            records.
+            Bookings <span className="text-cream">by inquiry</span>. Custom
+            quotes for weddings, corporate floors, private events, and clubs you
+            don&apos;t need to brief — the room recognizes me, the room
+            recognizes the records.
           </motion.p>
           <motion.div
             initial={{ opacity: 0 }}

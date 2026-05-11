@@ -15,14 +15,6 @@ const EVENT_TYPES = [
   "Other",
 ];
 
-const BUDGETS = [
-  { value: "1.5-3", label: "$1,500 – $3,000" },
-  { value: "3-5", label: "$3,000 – $5,000" },
-  { value: "5-8", label: "$5,000 – $8,000" },
-  { value: "8+", label: "$8,000+" },
-  { value: "unsure", label: "Not sure yet" },
-];
-
 const labelCls = "font-sans text-[10px] uppercase tracking-[0.32em] text-cream/55";
 const fieldCls =
   "w-full bg-transparent border-0 border-b border-line py-3 font-sans text-[15px] text-cream placeholder:text-cream/30 focus:border-cream focus:outline-none focus:ring-0 transition";
@@ -135,27 +127,22 @@ export function BookForm() {
         />
       </div>
 
-      {/* Budget */}
+      {/* Offer — open ended, like a real artist booking */}
       <div className="md:col-span-2">
-        <span className={labelCls}>Budget range</span>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {BUDGETS.map((b) => (
-            <label
-              key={b.value}
-              className="cursor-pointer"
-            >
-              <input
-                type="radio"
-                name="budget"
-                value={b.value}
-                className="peer sr-only"
-              />
-              <span className="block bg-night-soft border border-line px-4 py-2.5 font-sans text-[12px] text-cream/65 transition hover:border-cream/40 peer-checked:bg-cream peer-checked:text-night peer-checked:border-cream">
-                {b.label}
-              </span>
-            </label>
-          ))}
-        </div>
+        <label htmlFor="offer" className={labelCls}>
+          Your offer
+        </label>
+        <input
+          id="offer"
+          name="offer"
+          type="text"
+          placeholder="Make an offer — e.g. $5,000 / event, all-in"
+          className={fieldCls}
+        />
+        <p className="mt-2 font-sans text-[11px] leading-snug text-cream/40">
+          Bookings go through review. Make your best offer, or leave blank if
+          you&apos;d rather discuss before committing to a number.
+        </p>
       </div>
 
       {/* Name */}

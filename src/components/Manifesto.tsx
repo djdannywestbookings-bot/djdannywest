@@ -19,7 +19,7 @@ const pillars = [
   {
     num: "03",
     title: "Hire the room-mover",
-    body: "Bookings start at $1,500. Subscribers get 10% off their first event — weddings, clubs, private.",
+    body: "Bookings by inquiry. Subscribers get a courtesy discount on their first event — weddings, clubs, private.",
   },
 ];
 

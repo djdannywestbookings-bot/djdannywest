@@ -132,7 +132,7 @@ export function Hero() {
               className="group inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream/70 transition hover:text-cream"
             >
               <span className="underline decoration-cream/25 underline-offset-[6px] transition group-hover:decoration-cream">
-                Book Danny — from $1,500
+                Book Danny · By Inquiry
               </span>
               <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
             </a>
