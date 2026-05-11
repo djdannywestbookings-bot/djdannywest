@@ -4,48 +4,42 @@ import { SquareClient, SquareEnvironment } from "square";
 /**
  * Square server SDK wrapper.
  *
- * Required env vars (set in Vercel):
- *   SQUARE_ACCESS_TOKEN         — Square Developer Dashboard → Application → Credentials
- *   SQUARE_LOCATION_ID          — Square Developer Dashboard → Application → Locations
- *   SQUARE_PLAN_VARIATION_ID    — id of the $20/mo subscription plan variation
- *   SQUARE_WEBHOOK_SIGNATURE_KEY — Square Developer Dashboard → Webhooks → Signature key
- *   SQUARE_ENVIRONMENT          — "sandbox" or "production" (default: sandbox)
+ * With the hosted-checkout-link flow (Path B), most Square API access is
+ * unused. Only the webhook signature key is strictly required. Access token
+ * is only needed when we want to enrich a webhook (e.g. look up a customer's
+ * email so we can match them to a member).
+ *
+ * Env vars:
+ *   SQUARE_WEBHOOK_SIGNATURE_KEY — REQUIRED. Webhook signing secret.
+ *   SQUARE_ACCESS_TOKEN          — OPTIONAL. Needed for Customers API lookups.
+ *   SQUARE_ENVIRONMENT           — OPTIONAL. "sandbox" or "production". Default: sandbox.
  */
 
 export type SquareConfig = {
-  accessToken: string;
-  locationId: string;
-  planVariationId: string;
+  accessToken: string | null;
   webhookSignatureKey: string;
   environment: "sandbox" | "production";
 };
 
 export function getSquareConfig(): SquareConfig | null {
-  const accessToken = process.env.SQUARE_ACCESS_TOKEN;
-  const locationId = process.env.SQUARE_LOCATION_ID;
-  const planVariationId = process.env.SQUARE_PLAN_VARIATION_ID;
   const webhookSignatureKey = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
+  if (!webhookSignatureKey) return null;
+
+  const accessToken = process.env.SQUARE_ACCESS_TOKEN || null;
   const environment =
     process.env.SQUARE_ENVIRONMENT === "production" ? "production" : "sandbox";
 
-  if (!accessToken || !locationId || !planVariationId || !webhookSignatureKey) {
-    return null;
-  }
-  return {
-    accessToken,
-    locationId,
-    planVariationId,
-    webhookSignatureKey,
-    environment,
-  };
+  return { accessToken, webhookSignatureKey, environment };
 }
 
 /**
- * Create a Square SDK client. Returns null if Square credentials aren't configured.
+ * Create a Square SDK client. Returns null if access token is missing or
+ * looks like a placeholder. Callers should null-check before any API call.
  */
 export function getSquareClient(): SquareClient | null {
   const cfg = getSquareConfig();
-  if (!cfg) return null;
+  if (!cfg?.accessToken) return null;
+  if (cfg.accessToken.startsWith("PASTE_") || cfg.accessToken === "TODO") return null;
   return new SquareClient({
     token: cfg.accessToken,
     environment:
@@ -53,6 +47,22 @@ export function getSquareClient(): SquareClient | null {
         ? SquareEnvironment.Production
         : SquareEnvironment.Sandbox,
   });
+}
+
+/**
+ * Fetch a Square customer's email by their customer_id. Returns null if
+ * we can't reach the API (token missing/invalid) or the customer has no email.
+ */
+export async function getCustomerEmail(customerId: string): Promise<string | null> {
+  const client = getSquareClient();
+  if (!client) return null;
+  try {
+    const result = await client.customers.get({ customerId });
+    return result.customer?.emailAddress ?? null;
+  } catch (err) {
+    console.error("[getCustomerEmail] failed for", customerId, err);
+    return null;
+  }
 }
 
 /**

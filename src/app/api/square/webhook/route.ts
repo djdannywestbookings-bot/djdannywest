@@ -1,29 +1,33 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { verifyWebhookSignature, getSquareConfig } from "@/lib/square/client";
+import {
+  verifyWebhookSignature,
+  getSquareConfig,
+  getCustomerEmail,
+} from "@/lib/square/client";
 
 /**
  * Square webhook endpoint.
  *
- * Square will POST signed events here. We verify the signature, log every
- * event into public.square_webhook_events for audit, and update the
- * public.subscriptions table when a subscription lifecycle event arrives.
+ * Square POSTs signed events here. We verify the signature, log every event
+ * into square_webhook_events for audit, and on subscription.created/updated
+ * we match the Square customer to a member by email (via Square Customers
+ * API) and upsert the subscriptions row so has_active_access() returns true.
  *
  * Configure the URL in Square Developer Dashboard → Application → Webhooks:
  *   https://djdannywest.com/api/square/webhook
  *
- * Subscribed events we need:
+ * Subscribed events:
  *   subscription.created
  *   subscription.updated
  *   invoice.payment_made
- *   invoice.refunded
  */
 
 export async function POST(request: NextRequest) {
   const cfg = getSquareConfig();
   if (!cfg) {
     return NextResponse.json(
-      { error: "Square not configured" },
+      { error: "Square webhook signing key not configured" },
       { status: 503 },
     );
   }
@@ -68,7 +72,11 @@ export async function POST(request: NextRequest) {
       ?.object;
     const sub = dataObject?.subscription as Record<string, unknown> | undefined;
 
-    if (sub && (eventType === "subscription.created" || eventType === "subscription.updated")) {
+    if (
+      sub &&
+      (eventType === "subscription.created" ||
+        eventType === "subscription.updated")
+    ) {
       const squareSubscriptionId = sub.id as string;
       const status = (sub.status as string) ?? "PENDING";
       const customerId = sub.customer_id as string | undefined;
@@ -76,12 +84,39 @@ export async function POST(request: NextRequest) {
       const startDate = sub.start_date as string | undefined;
       const canceledDate = sub.canceled_date as string | undefined;
 
-      // Look up an existing pending subscription for this customer (we created it at checkout-init time)
+      // Look up existing row by square_subscription_id (idempotent updates)
       const { data: existing } = await admin
         .from("subscriptions")
         .select("id, member_id")
         .eq("square_subscription_id", squareSubscriptionId)
         .maybeSingle();
+
+      // If no existing row, try to match to a member by Square customer email.
+      // This is how Path B (hosted checkout) links a payment back to a member.
+      let memberId: string | null = existing?.member_id ?? null;
+      if (!memberId && customerId) {
+        const email = await getCustomerEmail(customerId);
+        if (email) {
+          const adminAuth = admin.auth.admin;
+          // Paginate through users to find one with this email.
+          let page = 1;
+          while (page <= 50) {
+            const { data: list } = await adminAuth.listUsers({
+              page,
+              perPage: 200,
+            });
+            const match = (list?.users ?? []).find(
+              (u) => u.email?.toLowerCase() === email.toLowerCase(),
+            );
+            if (match) {
+              memberId = match.id;
+              break;
+            }
+            if ((list?.users?.length ?? 0) < 200) break;
+            page++;
+          }
+        }
+      }
 
       const patch = {
         status,
@@ -98,9 +133,16 @@ export async function POST(request: NextRequest) {
 
       if (existing) {
         await admin.from("subscriptions").update(patch).eq("id", existing.id);
+      } else if (memberId) {
+        // Insert a new row tying this Square subscription to the member
+        await admin.from("subscriptions").insert({
+          member_id: memberId,
+          ...patch,
+          created_at: new Date().toISOString(),
+        });
       }
-      // If no existing row, we can't safely associate to a member without a metadata lookup.
-      // The checkout flow creates the row first with member_id; we just update on webhook.
+      // If memberId is still null we leave the audit row but can't activate.
+      // An admin can manually grant a comp via /admin/members.
     }
 
     await admin
