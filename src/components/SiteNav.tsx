@@ -43,9 +43,12 @@ export function SiteNav({ active, solid = true }: Props) {
         {link("book", "Book", "/book")}
         {link("merch", "Merch", "/merchandise")}
       </nav>
-      <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/30">
-        Member login soon
-      </span>
+      <a
+        href="/mixes"
+        className="border border-cream/25 px-4 py-2 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/85 transition hover:border-cream hover:bg-cream hover:text-night"
+      >
+        Member Login →
+      </a>
     </header>
   );
 }

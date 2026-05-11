@@ -43,7 +43,8 @@ export function personSchema() {
       addressCountry: site.country,
     },
     sameAs: [
-      // Add Danny's real social profiles here once he provides them.
+      site.socials.instagram,
+      site.socials.tiktok,
     ],
   };
 }

@@ -22,6 +22,10 @@ export const site = {
   ],
   email: "djdannywestbookings@gmail.com",
   phone: "+1-817-308-6615",
+  socials: {
+    instagram: "https://www.instagram.com/djdannywest/",
+    tiktok: "https://www.tiktok.com/@djdannywest",
+  },
   // Used as the priceRange marker on LocalBusiness schema (signal, not a number).
   priceRange: "$$$$",
   // Known places Danny has played (used in schema + city pages).

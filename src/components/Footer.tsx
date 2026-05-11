@@ -1,5 +1,7 @@
 "use client";
 
+import { site } from "@/lib/site";
+
 const navItems = [
   { label: "Mixes", href: "/mixes" },
   { label: "Book Danny", href: "/book" },
@@ -11,6 +13,24 @@ const legalItems = [
   { label: "Privacy", href: "/privacy" },
   { label: "Cookies", href: "/cookies" },
 ];
+
+function InstagramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function TikTokIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.1 20.1a6.34 6.34 0 0 0 10.86-4.43V8.83a8.16 8.16 0 0 0 4.77 1.52V6.94a4.85 4.85 0 0 1-1.14-.25Z" />
+    </svg>
+  );
+}
 
 export function Footer() {
   return (
@@ -44,6 +64,35 @@ export function Footer() {
               Subscribe Now →
             </a>
           </p>
+
+          {/* Socials */}
+          <div className="mt-8 flex items-center gap-4">
+            <a
+              href={site.socials.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Danny West on Instagram"
+              className="flex h-10 w-10 items-center justify-center border border-line text-cream/60 transition hover:border-cream hover:text-cream"
+            >
+              <span className="block h-5 w-5">
+                <InstagramIcon />
+              </span>
+            </a>
+            <a
+              href={site.socials.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Danny West on TikTok"
+              className="flex h-10 w-10 items-center justify-center border border-line text-cream/60 transition hover:border-cream hover:text-cream"
+            >
+              <span className="block h-5 w-5">
+                <TikTokIcon />
+              </span>
+            </a>
+            <span className="ml-2 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/35">
+              @djdannywest
+            </span>
+          </div>
         </div>
 
         {/* Nav */}
