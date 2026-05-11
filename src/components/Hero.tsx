@@ -66,19 +66,21 @@ export function Hero() {
       <div className="relative z-10 mx-auto grid min-h-[calc(100vh-90px)] max-w-[1600px] grid-cols-1 items-end gap-14 px-6 pb-16 pt-8 md:grid-cols-12 md:px-12 md:pb-24 md:pt-4">
         {/* Text column */}
         <div className="md:col-span-8 lg:col-span-7">
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="mb-8 inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.34em] text-cream/80"
+          >
+            <span className="inline-block h-px w-10 bg-cream/40" />
+            A DJ
+          </motion.div>
+
           <h1 className="font-display font-light leading-[0.86] tracking-[-0.04em] text-cream">
-            <motion.span
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: easeOut, delay: 0.2 }}
-              className="font-sans block text-[13vw] font-medium tracking-[-0.04em] md:text-[clamp(64px,8vw,140px)]"
-            >
-              A DJ
-            </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 36 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: easeOut, delay: 0.32 }}
+              transition={{ duration: 1, ease: easeOut, delay: 0.22 }}
               className="opsz-display block text-[18vw] italic md:text-[clamp(80px,10.5vw,180px)]"
             >
               that moves
@@ -86,7 +88,7 @@ export function Hero() {
             <motion.span
               initial={{ opacity: 0, y: 36 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: easeOut, delay: 0.44 }}
+              transition={{ duration: 1, ease: easeOut, delay: 0.36 }}
               className="opsz-display block text-[18vw] text-ember md:text-[clamp(80px,10.5vw,180px)]"
             >
               rooms.
