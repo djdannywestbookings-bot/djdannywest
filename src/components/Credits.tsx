@@ -46,20 +46,11 @@ export function Credits() {
       <div className="relative mx-auto grid max-w-[1600px] grid-cols-1 gap-16 px-6 md:grid-cols-12 md:gap-10 md:px-12">
         {/* Section label + heading */}
         <div className="md:col-span-3">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7 }}
-            className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45"
-          >
-            <div className="mb-3 h-px w-12 bg-ember/70" />
-            No. 03 — On the Board
-          </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.9, ease: easeOut, delay: 0.1 }}
-            className="opsz-section mt-6 font-display text-[40px] font-light leading-[0.98] tracking-[-0.025em] text-cream md:text-[52px]"
+            className="opsz-section font-display text-[40px] font-light leading-[0.98] tracking-[-0.025em] text-cream md:text-[52px]"
           >
             <span className="italic">Where</span> DJ Danny West has played.
           </motion.h2>

@@ -99,34 +99,6 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Bottom-right floating tag */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.9 }}
-          className="md:col-span-4 lg:col-span-5"
-        >
-          <div className="ml-auto flex max-w-[280px] flex-col items-end gap-4 text-right">
-            <div className="flex items-center gap-2.5">
-              <span className="relative inline-flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-70" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
-              </span>
-              <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/85">
-                Now Playing · SiriusXM Vol 19
-              </span>
-            </div>
-            <div className="opsz-text font-display text-[15px] italic leading-snug text-cream/70 md:text-[16px]">
-              &ldquo;The mixes you can&apos;t get on Spotify. The sets that
-              don&apos;t exist on SoundCloud.&rdquo;
-            </div>
-            <div className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45">
-              <span>Dallas · Worldwide</span>
-              <span className="inline-block h-px w-6 bg-cream/30" />
-              <span>Est. 2026</span>
-            </div>
-          </div>
-        </motion.div>
       </div>
 
       {/* Marquee at bottom */}

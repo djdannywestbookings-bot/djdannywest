@@ -60,18 +60,7 @@ export function MixesPitch() {
         <div className="pointer-events-none absolute -left-[10%] bottom-[10%] h-[40vh] w-[40vh] rounded-full bg-ember/[0.07] blur-[180px]" />
 
         <div className="relative mx-auto grid max-w-[1600px] grid-cols-1 gap-10 px-6 md:grid-cols-12 md:px-12">
-          <div className="md:col-span-3">
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-              className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45"
-            >
-              <div className="mb-3 h-px w-12 bg-ember/70" />
-              No. 02 — The Listening Room
-            </motion.div>
-          </div>
-          <div className="md:col-span-9">
+          <div className="md:col-span-12">
             <h1 className="font-display font-light leading-[0.86] tracking-[-0.04em] text-cream">
               <span className="opsz-display block text-[18vw] italic md:text-[clamp(80px,10vw,180px)]">
                 The

@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { DM_Serif_Display, Geist } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { StructuredData } from "@/components/StructuredData";
 import { personSchema, localBusinessSchema, websiteSchema } from "@/lib/seo";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const dmSerif = DM_Serif_Display({
+  variable: "--font-dm-serif",
   subsets: ["latin"],
-  axes: ["opsz", "SOFT"],
+  weight: ["400"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
   display: "swap",
 });
@@ -83,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+    <html lang="en" className={`${dmSerif.variable} ${geist.variable}`}>
       <head>
         <StructuredData schemas={[personSchema(), localBusinessSchema(), websiteSchema()]} />
       </head>

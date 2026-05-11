@@ -37,20 +37,8 @@ export function Manifesto() {
 
       <div className="relative mx-auto grid max-w-[1600px] grid-cols-1 gap-16 px-6 md:grid-cols-12 md:gap-10 md:px-12">
         {/* Section label */}
-        <div className="md:col-span-3">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7 }}
-            className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45"
-          >
-            <div className="mb-3 h-px w-12 bg-ember/70" />
-            No. 02 — The Ethos
-          </motion.div>
-        </div>
-
         {/* Body */}
-        <div className="md:col-span-9">
+        <div className="md:col-span-12">
           <motion.p
             initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
