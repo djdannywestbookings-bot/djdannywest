@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import type { Mix } from "./MixCard";
+import { MixPlayer } from "@/components/player/MixPlayer";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -9,9 +10,13 @@ type Props = {
   mix: Mix;
   prev: Mix | null;
   next: Mix | null;
+  /** When set, the locked notice is replaced with the streaming player. */
+  muxPlaybackId?: string | null;
+  hasAccess?: boolean;
 };
 
-export function MixDetail({ mix, prev, next }: Props) {
+export function MixDetail({ mix, prev, next, muxPlaybackId, hasAccess }: Props) {
+  const canStream = !!muxPlaybackId && !!hasAccess;
   return (
     <>
       {/* Hero band */}
@@ -74,38 +79,54 @@ export function MixDetail({ mix, prev, next }: Props) {
               ))}
             </div>
 
-            {/* Locked notice */}
-            <div className="mt-12 border-t border-line pt-8">
-              <div className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/55">
-                <span className="relative inline-flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
-                </span>
-                Subscribers only · No previews
+            {/* Player or locked notice */}
+            {canStream && muxPlaybackId ? (
+              <div className="mt-12 border-t border-line pt-8">
+                <div className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/55">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-cream" />
+                  Now streaming
+                </div>
+                <div className="mt-5">
+                  <MixPlayer
+                    playbackId={muxPlaybackId}
+                    title={`${mix.title} · ${mix.subtitle}`}
+                    posterUrl={mix.coverArt}
+                  />
+                </div>
               </div>
-              <p className="mt-5 max-w-lg font-sans text-[15px] leading-[1.65] text-cream/70 md:text-[16px]">
-                The full mix streams to active subscribers. Tracklists, signed
-                playback, and every back-volume drop monthly. $20 / month, cancel
-                anytime.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-6">
-                <a
-                  href="/#subscribe"
-                  className="group inline-flex items-center gap-3 bg-ember px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition-colors duration-300 hover:bg-cream"
-                >
-                  Subscribe — $20 / month
-                  <span className="transition-transform duration-300 group-hover:translate-x-1">
-                    →
+            ) : (
+              <div className="mt-12 border-t border-line pt-8">
+                <div className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/55">
+                  <span className="relative inline-flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
                   </span>
-                </a>
-                <a
-                  href="/mixes"
-                  className="font-sans text-[11px] uppercase tracking-[0.24em] text-cream/60 underline decoration-cream/20 underline-offset-[6px] transition hover:text-cream hover:decoration-cream"
-                >
-                  ← All mixes
-                </a>
+                  Subscribers only · No previews
+                </div>
+                <p className="mt-5 max-w-lg font-sans text-[15px] leading-[1.65] text-cream/70 md:text-[16px]">
+                  The full mix streams to active subscribers. Tracklists, signed
+                  playback, and every back-volume drop monthly. $20 / month, cancel
+                  anytime.
+                </p>
+                <div className="mt-8 flex flex-wrap items-center gap-6">
+                  <a
+                    href="/subscribe"
+                    className="group inline-flex items-center gap-3 bg-ember px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition-colors duration-300 hover:bg-cream"
+                  >
+                    Subscribe — $20 / month
+                    <span className="transition-transform duration-300 group-hover:translate-x-1">
+                      →
+                    </span>
+                  </a>
+                  <a
+                    href="/mixes"
+                    className="font-sans text-[11px] uppercase tracking-[0.24em] text-cream/60 underline decoration-cream/20 underline-offset-[6px] transition hover:text-cream hover:decoration-cream"
+                  >
+                    ← All mixes
+                  </a>
+                </div>
               </div>
-            </div>
+            )}
           </motion.div>
         </div>
       </section>

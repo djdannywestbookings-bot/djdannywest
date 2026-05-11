@@ -30,9 +30,12 @@ export default async function AdminMixesPage() {
             The <span className="italic text-ember">catalog.</span>
           </h1>
         </div>
-        <div className="rounded-sm border border-dashed border-cream/25 px-4 py-2.5 font-sans text-[11px] uppercase tracking-[0.22em] text-cream/55">
-          Upload-mix UI ships with Mux integration
-        </div>
+        <Link
+          href="/admin/mixes/new"
+          className="bg-cream px-5 py-3 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition hover:bg-ember"
+        >
+          + Upload a mix
+        </Link>
       </div>
 
       <div className="divide-y divide-line border-y border-line">
