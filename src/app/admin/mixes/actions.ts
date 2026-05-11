@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient, requireAdmin } from "@/lib/supabase/admin";
+import { sendNewMixAlerts } from "@/lib/notifications/new-mix";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -22,6 +23,13 @@ export async function publishMix(formData: FormData): Promise<void> {
     })
     .eq("id", id);
   if (error) throw new Error(error.message);
+
+  // Fire new-mix email alerts. Best-effort — never block publish on email send.
+  try {
+    await sendNewMixAlerts(id);
+  } catch (err) {
+    console.error("[publishMix sendNewMixAlerts failed]", err);
+  }
 
   revalidatePath("/admin/mixes");
   revalidatePath("/mixes");
