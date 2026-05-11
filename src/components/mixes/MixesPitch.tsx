@@ -97,17 +97,17 @@ export function MixesPitch() {
               transition={{ duration: 0.7, delay: 0.6 }}
               className="mt-10 flex flex-wrap items-center gap-6"
             >
-              <button
-                type="button"
-                disabled
-                title="Subscriptions launch with the member portal — coming soon"
-                className="group inline-flex cursor-not-allowed items-center gap-3 bg-ember/80 px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-night opacity-90"
+              <a
+                href="/subscribe"
+                className="group inline-flex items-center gap-3 bg-ember px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition hover:bg-ember/85"
               >
                 Subscribe — $20 / month
-                <span>→</span>
-              </button>
+                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  →
+                </span>
+              </a>
               <span className="font-sans text-[10px] uppercase tracking-[0.28em] text-cream/40">
-                Checkout opens with the member portal launch
+                Cancel any time
               </span>
             </motion.div>
           </div>

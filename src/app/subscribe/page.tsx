@@ -1,0 +1,118 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { SiteNav } from "@/components/SiteNav";
+import { Footer } from "@/components/Footer";
+import { createClient } from "@/lib/supabase/server";
+import { SubscribeForm } from "@/components/subscribe/SubscribeForm";
+
+export const metadata: Metadata = {
+  title: "Subscribe",
+  robots: { index: false, follow: false },
+};
+
+export const dynamic = "force-dynamic";
+
+export default async function SubscribePage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login?next=/subscribe");
+
+  // Check if they already have an active subscription
+  const { data: existing } = await supabase
+    .from("subscriptions")
+    .select("status")
+    .eq("member_id", user.id)
+    .eq("status", "ACTIVE")
+    .maybeSingle();
+
+  // Read env vars — Application ID + Location ID are safe to expose client-side
+  // (they're identifiers, not secrets).
+  const applicationId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID ?? "";
+  const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ?? "";
+  const environment =
+    (process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT === "production"
+      ? "production"
+      : "sandbox") as "sandbox" | "production";
+  const configured = !!applicationId && !!locationId;
+
+  return (
+    <main className="bg-night text-cream">
+      <SiteNav />
+      <section className="mx-auto grid min-h-[80vh] max-w-[1200px] grid-cols-1 gap-12 px-6 pb-24 pt-20 md:grid-cols-12 md:px-12 md:pt-24">
+        <div className="md:col-span-5">
+          <Link
+            href="/mixes"
+            className="font-sans text-[11px] uppercase tracking-[0.28em] text-cream/55 transition hover:text-cream"
+          >
+            ← Back
+          </Link>
+          <p className="mt-6 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45">
+            — Become a member
+          </p>
+          <h1 className="mt-4 font-serif text-[56px] leading-[0.95] tracking-[-0.02em] md:text-[80px]">
+            $20 <span className="italic text-ember">a month.</span>
+          </h1>
+          <p className="mt-6 max-w-md font-sans text-[15px] leading-relaxed text-cream/65">
+            Full archive. New mixes uploaded weekly. Request a mix. Subscriber
+            booking discount on your first event. Cancel any time.
+          </p>
+          <ul className="mt-8 space-y-3 font-sans text-[13px] text-cream/65">
+            <li>· The full mix archive</li>
+            <li>· New mixes every week</li>
+            <li>· Submit a mix request once a month</li>
+            <li>· 10% off your first booking</li>
+            <li>· Cancel any time, no questions</li>
+          </ul>
+        </div>
+
+        <div className="md:col-span-7">
+          {existing ? (
+            <div className="border border-cream/30 bg-cream/[0.04] p-8">
+              <h2 className="font-serif text-[28px] text-cream">
+                You&apos;re already subscribed.
+              </h2>
+              <p className="mt-4 font-sans text-[14px] text-cream/65">
+                Streaming is on. Head to your member library.
+              </p>
+              <Link
+                href="/mixes/library"
+                className="mt-6 inline-flex bg-cream px-6 py-3 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition hover:bg-ember"
+              >
+                Open library →
+              </Link>
+            </div>
+          ) : configured ? (
+            <div className="border border-line bg-cream/[0.02] p-8">
+              <SubscribeForm
+                applicationId={applicationId}
+                locationId={locationId}
+                environment={environment}
+              />
+            </div>
+          ) : (
+            <div className="border border-dashed border-ember/40 bg-ember/[0.04] p-8">
+              <h2 className="font-serif text-[24px] text-cream">
+                Checkout opens soon.
+              </h2>
+              <p className="mt-4 font-sans text-[13px] leading-relaxed text-cream/65">
+                Payments will be live once the Square integration is configured.
+                If you&apos;re reading this in production, ping Danny — he&apos;s
+                working on it.
+              </p>
+              <Link
+                href="/account"
+                className="mt-6 inline-flex font-sans text-[11px] uppercase tracking-[0.24em] text-cream/70 transition hover:text-cream"
+              >
+                ← Back to dashboard
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
+      <Footer />
+    </main>
+  );
+}
