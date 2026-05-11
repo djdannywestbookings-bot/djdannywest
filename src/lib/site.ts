@@ -8,7 +8,7 @@ export const site = {
   url: "https://djdannywest.com",
   description:
     "DJ Danny West — Dallas / Fort Worth DJ. Official DJ for the Dallas Cowboys Stadium Club and SiriusXM Channel 13 Pitbull's Globalization. Bookings by inquiry — weddings, corporate events, clubs, and private parties.",
-  tagline: "Sets that move rooms.",
+  tagline: "A DJ that moves rooms.",
   city: "Arlington",
   region: "TX",
   country: "US",

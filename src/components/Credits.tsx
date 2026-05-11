@@ -59,13 +59,9 @@ export function Credits() {
             initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.9, ease: easeOut, delay: 0.1 }}
-            className="opsz-section mt-6 font-display text-[44px] font-light leading-[0.95] tracking-[-0.025em] text-cream md:text-[56px]"
+            className="opsz-section mt-6 font-display text-[40px] font-light leading-[0.98] tracking-[-0.025em] text-cream md:text-[52px]"
           >
-            <span className="italic">Where</span>
-            <br />
-            it&apos;s
-            <br />
-            played.
+            <span className="italic">Where</span> DJ Danny West has played.
           </motion.h2>
         </div>
 

@@ -8,18 +8,18 @@ const easeOut = [0.16, 1, 0.3, 1] as const;
 const pillars = [
   {
     num: "01",
-    title: "Two new mixes monthly",
-    body: "Recorded live or in-studio. Lossless audio, full tracklists, sets you couldn't be in the room for.",
+    title: "New mixes uploaded weekly",
+    body: "Recorded live or in studio. Lossless audio. DJ sets you can play in any room.",
   },
   {
     num: "02",
     title: "Request what you want",
-    body: "Subscribers can request a mix once a month. If it lands, I make it — and you get the credit.",
+    body: "Subscribers can request a mix. Post your Spotify or your favorite playlist, name the mix, and see if it makes the cut.",
   },
   {
     num: "03",
-    title: "Hire the room-mover",
-    body: "Bookings by inquiry. Subscribers get a courtesy discount on their first event — weddings, clubs, private.",
+    title: "Hire your favorite DJ",
+    body: "Send a booking inquiry to get a courtesy discount on your first event — weddings, clubs, private.",
   },
 ];
 
@@ -58,10 +58,7 @@ export function Manifesto() {
             className="opsz-section font-display text-[36px] font-light leading-[1.05] tracking-[-0.025em] text-cream md:text-[clamp(44px,5.2vw,88px)]"
           >
             The mixes you can&apos;t get on Spotify. The sets that don&apos;t
-            exist on SoundCloud.{" "}
-            <span className="italic text-cream/55">
-              The real rooms, the real nights, the real records.
-            </span>
+            exist on SoundCloud.
           </motion.p>
 
           <motion.div

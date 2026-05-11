@@ -35,7 +35,14 @@ export function Footer() {
             />
           </a>
           <p className="opsz-text mt-6 max-w-sm font-display text-[18px] italic leading-snug text-cream/55">
-            Sets that move rooms. Two new mixes every month. Subscribers only.
+            A DJ that moves rooms. New mixes uploaded weekly — subscribers
+            only.{" "}
+            <a
+              href="/mixes"
+              className="not-italic font-sans text-[11px] uppercase tracking-[0.24em] text-ember hover:text-cream transition"
+            >
+              Subscribe Now →
+            </a>
           </p>
         </div>
 

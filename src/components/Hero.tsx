@@ -70,7 +70,7 @@ export function Hero() {
               transition={{ duration: 1, ease: easeOut, delay: 0.2 }}
               className="opsz-display block text-[18vw] italic md:text-[clamp(80px,10.5vw,180px)]"
             >
-              Sets
+              A DJ
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 36 }}
@@ -78,7 +78,7 @@ export function Hero() {
               transition={{ duration: 1, ease: easeOut, delay: 0.32 }}
               className="opsz-display block text-[18vw] md:text-[clamp(80px,10.5vw,180px)]"
             >
-              that move
+              that moves
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 36 }}
@@ -96,32 +96,29 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.65 }}
             className="mt-12 max-w-md font-sans text-[15px] leading-[1.65] text-cream/75 md:text-[17px]"
           >
-            A private archive of the mixes I play in clubs, on rooftops, at
-            weddings, after hours. New mixes released weekly.{" "}
-            <span className="text-cream">No previews — subscribers only.</span>
+            <span className="text-cream">New mixes released weekly.</span>{" "}
+            Subscribers only.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.85 }}
-            className="mt-12 flex flex-wrap items-center gap-6"
+            className="mt-12 flex flex-wrap items-center gap-4"
           >
             <a
               href="/mixes"
               className="group relative inline-flex items-center gap-3 overflow-hidden bg-ember px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition-colors duration-300 hover:bg-cream"
             >
-              <span className="relative z-10">Subscribe — $20 / month</span>
+              <span className="relative z-10">Subscribe Now</span>
               <span className="relative z-10 transition-transform duration-300 group-hover:translate-x-1">→</span>
             </a>
             <a
               href="/book"
-              className="group inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream/70 transition hover:text-cream"
+              className="group relative inline-flex items-center gap-3 border border-cream/40 px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition-colors duration-300 hover:bg-cream hover:text-night hover:border-cream"
             >
-              <span className="underline decoration-cream/25 underline-offset-[6px] transition group-hover:decoration-cream">
-                Book Danny · By Inquiry
-              </span>
-              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+              <span className="relative z-10">Book DJ Danny West</span>
+              <span className="relative z-10 transition-transform duration-300 group-hover:translate-x-1">→</span>
             </a>
           </motion.div>
         </div>
