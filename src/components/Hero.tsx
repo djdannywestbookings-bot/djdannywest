@@ -63,12 +63,12 @@ export function Hero() {
       <div className="relative z-10 mx-auto grid min-h-[calc(100vh-90px)] max-w-[1600px] grid-cols-1 items-end gap-14 px-6 pb-16 pt-8 md:grid-cols-12 md:px-12 md:pb-24 md:pt-4">
         {/* Text column */}
         <div className="md:col-span-8 lg:col-span-7">
-          <h1 className="font-display font-light leading-[0.84] tracking-[-0.045em] text-cream">
+          <h1 className="font-display font-light leading-[0.86] tracking-[-0.04em] text-cream">
             <motion.span
-              initial={{ opacity: 0, y: 36 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: easeOut, delay: 0.2 }}
-              className="opsz-display block text-[18vw] italic md:text-[clamp(80px,10.5vw,180px)]"
+              className="opsz-display block text-[14vw] font-normal md:text-[clamp(64px,8vw,140px)]"
             >
               A DJ
             </motion.span>
@@ -76,7 +76,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 36 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: easeOut, delay: 0.32 }}
-              className="opsz-display block text-[18vw] md:text-[clamp(80px,10.5vw,180px)]"
+              className="opsz-display block text-[18vw] italic md:text-[clamp(80px,10.5vw,180px)]"
             >
               that moves
             </motion.span>
