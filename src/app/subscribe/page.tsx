@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase/server";
-import { SubscribeForm } from "@/components/subscribe/SubscribeForm";
 
 export const metadata: Metadata = {
   title: "Subscribe",
@@ -13,6 +12,10 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+// Square hosted checkout link for the Monthly Membership.
+// Configured once in Square Dashboard; carries plan / cadence / receipt.
+const SQUARE_CHECKOUT_URL = "https://square.link/u/dSVJQXec";
+
 export default async function SubscribePage() {
   const supabase = await createClient();
   const {
@@ -20,7 +23,7 @@ export default async function SubscribePage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/subscribe");
 
-  // Check if they already have an active subscription
+  // Check if they already have an active subscription or comp access
   const { data: existing } = await supabase
     .from("subscriptions")
     .select("status")
@@ -28,15 +31,11 @@ export default async function SubscribePage() {
     .eq("status", "ACTIVE")
     .maybeSingle();
 
-  // Read env vars — Application ID + Location ID are safe to expose client-side
-  // (they're identifiers, not secrets).
-  const applicationId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID ?? "";
-  const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ?? "";
-  const environment =
-    (process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT === "production"
-      ? "production"
-      : "sandbox") as "sandbox" | "production";
-  const configured = !!applicationId && !!locationId;
+  // Pre-fill the email at Square checkout so the webhook can match them
+  // back to our member account.
+  const checkoutUrl = user.email
+    ? `${SQUARE_CHECKOUT_URL}?prefilled_email=${encodeURIComponent(user.email)}`
+    : SQUARE_CHECKOUT_URL;
 
   return (
     <main className="bg-night text-cream">
@@ -84,30 +83,40 @@ export default async function SubscribePage() {
                 Open library →
               </Link>
             </div>
-          ) : configured ? (
-            <div className="border border-line bg-cream/[0.02] p-8">
-              <SubscribeForm
-                applicationId={applicationId}
-                locationId={locationId}
-                environment={environment}
-              />
-            </div>
           ) : (
-            <div className="border border-dashed border-ember/40 bg-ember/[0.04] p-8">
-              <h2 className="font-serif text-[24px] text-cream">
-                Checkout opens soon.
+            <div className="border border-line bg-cream/[0.02] p-8">
+              <h2 className="font-serif text-[28px] text-cream">
+                Continue to checkout
               </h2>
-              <p className="mt-4 font-sans text-[13px] leading-relaxed text-cream/65">
-                Payments will be live once the Square integration is configured.
-                If you&apos;re reading this in production, ping Danny — he&apos;s
-                working on it.
+              <p className="mt-4 max-w-md font-sans text-[14px] leading-relaxed text-cream/65">
+                You&apos;ll be sent to Square&apos;s secure checkout to complete
+                your subscription. Pick the <strong>Subscription — Monthly
+                ($20)</strong> option, not One-time purchase. Use the same email
+                you signed up with here so we can unlock your library
+                automatically.
               </p>
-              <Link
-                href="/account"
-                className="mt-6 inline-flex font-sans text-[11px] uppercase tracking-[0.24em] text-cream/70 transition hover:text-cream"
+              <a
+                href={checkoutUrl}
+                className="mt-8 inline-flex items-center bg-ember px-7 py-4 font-sans text-[12px] uppercase tracking-[0.24em] text-night transition hover:bg-cream"
               >
-                ← Back to dashboard
-              </Link>
+                Subscribe via Square →
+              </a>
+              <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.18em] text-cream/45">
+                Powered by Square · $20/mo · Cancel anytime
+              </p>
+              <div className="mt-10 border-t border-line pt-6">
+                <p className="font-sans text-[12px] leading-relaxed text-cream/55">
+                  After paying, your library unlocks within a minute. If it
+                  doesn&apos;t, email{" "}
+                  <a
+                    className="underline hover:text-cream"
+                    href="mailto:djdannywestbookings@gmail.com"
+                  >
+                    djdannywestbookings@gmail.com
+                  </a>{" "}
+                  and we&apos;ll sort it.
+                </p>
+              </div>
             </div>
           )}
         </div>
