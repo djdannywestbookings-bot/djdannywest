@@ -3,7 +3,7 @@
 const navItems = [
   { label: "Mixes", href: "/mixes" },
   { label: "Book Danny", href: "/book" },
-  { label: "Subscribe", href: "/#subscribe" },
+  { label: "Merch", href: "/merchandise" },
 ];
 
 const legalItems = [

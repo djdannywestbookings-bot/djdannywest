@@ -51,31 +51,18 @@ export function Hero() {
         </div>
         <nav className="hidden items-center gap-10 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/65 md:flex">
           <a href="/mixes" className="transition hover:text-cream">Mixes</a>
-          <a href="#book" className="transition hover:text-cream">Book</a>
-          <a href="#subscribe" className="transition hover:text-cream">Subscribe</a>
+          <a href="/book" className="transition hover:text-cream">Book</a>
+          <a href="/merchandise" className="transition hover:text-cream">Merch</a>
         </nav>
-        <a
-          href="#subscribe"
-          className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember transition hover:text-cream"
-        >
-          $20 / mo →
-        </a>
+        <span className="hidden font-sans text-[10px] uppercase tracking-[0.32em] text-cream/30 md:inline">
+          Member login soon
+        </span>
       </header>
 
       {/* Hero content */}
       <div className="relative z-10 mx-auto grid min-h-[calc(100vh-90px)] max-w-[1600px] grid-cols-1 items-end gap-14 px-6 pb-16 pt-8 md:grid-cols-12 md:px-12 md:pb-24 md:pt-4">
         {/* Text column */}
         <div className="md:col-span-8 lg:col-span-7">
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="mb-10 inline-flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/60"
-          >
-            <span className="inline-block h-px w-10 bg-cream/30" />
-            Subscriber archive · No. 001
-          </motion.div>
-
           <h1 className="font-display font-light leading-[0.84] tracking-[-0.045em] text-cream">
             <motion.span
               initial={{ opacity: 0, y: 36 }}
@@ -110,7 +97,7 @@ export function Hero() {
             className="mt-12 max-w-md font-sans text-[15px] leading-[1.65] text-cream/75 md:text-[17px]"
           >
             A private archive of the mixes I play in clubs, on rooftops, at
-            weddings, after hours. Two new sets every month.{" "}
+            weddings, after hours. New mixes released weekly.{" "}
             <span className="text-cream">No previews — subscribers only.</span>
           </motion.p>
 
@@ -121,14 +108,14 @@ export function Hero() {
             className="mt-12 flex flex-wrap items-center gap-6"
           >
             <a
-              href="#subscribe"
+              href="/mixes"
               className="group relative inline-flex items-center gap-3 overflow-hidden bg-ember px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition-colors duration-300 hover:bg-cream"
             >
               <span className="relative z-10">Subscribe — $20 / month</span>
               <span className="relative z-10 transition-transform duration-300 group-hover:translate-x-1">→</span>
             </a>
             <a
-              href="#book"
+              href="/book"
               className="group inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream/70 transition hover:text-cream"
             >
               <span className="underline decoration-cream/25 underline-offset-[6px] transition group-hover:decoration-cream">

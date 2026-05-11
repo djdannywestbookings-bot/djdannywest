@@ -1,7 +1,7 @@
 "use client";
 
 type Props = {
-  active?: "mixes" | "book" | "subscribe";
+  active?: "mixes" | "book" | "merch";
   /** When the nav sits over a hero with its own video/photography, this is `false` so it floats transparently. */
   solid?: boolean;
 };
@@ -41,14 +41,11 @@ export function SiteNav({ active, solid = true }: Props) {
       <nav className="hidden items-center gap-10 font-sans text-[10px] uppercase tracking-[0.32em] md:flex">
         {link("mixes", "Mixes", "/mixes")}
         {link("book", "Book", "/book")}
-        {link("subscribe", "Subscribe", "/#subscribe")}
+        {link("merch", "Merch", "/merchandise")}
       </nav>
-      <a
-        href="/#subscribe"
-        className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember transition hover:text-cream"
-      >
-        $20 / mo →
-      </a>
+      <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/30">
+        Member login soon
+      </span>
     </header>
   );
 }

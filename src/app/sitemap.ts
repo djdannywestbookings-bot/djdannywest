@@ -9,11 +9,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${site.url}/`, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
-    { url: `${site.url}/mixes`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${site.url}/mixes`, lastModified: now, changeFrequency: "weekly", priority: 0.95 },
     { url: `${site.url}/book`, lastModified: now, changeFrequency: "monthly", priority: 0.95 },
+    { url: `${site.url}/merchandise`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${site.url}/dj-dallas`, lastModified: now, changeFrequency: "monthly", priority: 0.95 },
     { url: `${site.url}/dj-fort-worth`, lastModified: now, changeFrequency: "monthly", priority: 0.95 },
   ];
+  // Mix detail pages stay indexable so cards crawled from elsewhere still resolve;
+  // the /mixes/library catalog itself is noindex (member-facing browsing only).
   const mixRoutes: MetadataRoute.Sitemap = mixes.map((m) => ({
     url: `${site.url}/mixes/${m.slug}`,
     lastModified: now,
