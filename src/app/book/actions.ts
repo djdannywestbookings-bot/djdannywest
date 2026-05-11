@@ -1,6 +1,8 @@
 "use server";
 
 import { Resend } from "resend";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 export type BookingInquiry = {
   eventType: string;
@@ -106,6 +108,30 @@ export async function submitBookingInquiry(
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
     return { ok: false, error: "That email looks off — please double-check." };
+  }
+
+  // Persist to DB. Use admin client so anonymous (signed-out) submitters can still write.
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const admin = createAdminClient();
+    await admin.from("booking_inquiries").insert({
+      member_id: user?.id ?? null,
+      event_type: data.eventType || null,
+      event_date: data.eventDate ? data.eventDate : null,
+      location: data.location || null,
+      guest_count: data.guests || null,
+      offer: data.offer || null,
+      contact_name: data.name,
+      contact_email: data.email,
+      contact_phone: data.phone || null,
+      how_heard: data.howHeard || null,
+      notes: data.notes || null,
+      status: "new",
+    });
+  } catch (err) {
+    // Persisting to DB is best-effort — never block the email send on it.
+    console.error("[BOOKING DB INSERT FAILED]", err);
   }
 
   const apiKey = process.env.RESEND_API_KEY;

@@ -45,39 +45,12 @@ export default async function AccountPage() {
               subscriptions.
             </p>
 
-            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
-              <div className="border-t-2 border-ember/70 bg-cream/[0.03] p-7">
-                <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">— 01</div>
-                <div className="opsz-text mt-4 font-display text-[22px] leading-tight text-cream">Browse the library</div>
-                <p className="mt-3 font-sans text-[14px] leading-[1.6] text-cream/60">
-                  Streaming unlocks once subscriptions ship. Until then, browse
-                  the catalog and queue what you want first.
-                </p>
-                <a href="/mixes/library" className="mt-5 inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition hover:text-ember">
-                  Open library →
-                </a>
-              </div>
-              <div className="border-t-2 border-ember/70 bg-cream/[0.03] p-7">
-                <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">— 02</div>
-                <div className="opsz-text mt-4 font-display text-[22px] leading-tight text-cream">Book a private event</div>
-                <p className="mt-3 font-sans text-[14px] leading-[1.6] text-cream/60">
-                  Members get a courtesy discount on your first booking.
-                </p>
-                <a href="/book" className="mt-5 inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition hover:text-ember">
-                  Send inquiry →
-                </a>
-              </div>
-              <div className="border-t-2 border-ember/70 bg-cream/[0.03] p-7">
-                <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">— 03</div>
-                <div className="opsz-text mt-4 font-display text-[22px] leading-tight text-cream">Notifications</div>
-                <p className="mt-3 font-sans text-[14px] leading-[1.6] text-cream/60">
-                  Choose what hits your inbox — new mix drops, request updates,
-                  announcements.
-                </p>
-                <a href="/account/notifications" className="mt-5 inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition hover:text-ember">
-                  Manage preferences →
-                </a>
-              </div>
+            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+              <Card n="01" title="Browse the library" body="Full mix archive. Streaming unlocks with an active subscription." cta="Open library →" href="/mixes/library" />
+              <Card n="02" title="Request a mix" body="Tell me what to make. One request per month — I'll let you know when it's live." cta="Submit a request →" href="/account/request-mix" />
+              <Card n="03" title="Your subscription" body="See your plan, billing date, or cancel any time." cta="Manage subscription →" href="/account/subscription" />
+              <Card n="04" title="Book a private event" body="Members get a courtesy discount on your first booking." cta="Send inquiry →" href="/book" />
+              <Card n="05" title="Notifications" body="Choose what hits your inbox — new mix drops, request updates, announcements." cta="Manage preferences →" href="/account/notifications" />
             </div>
 
             <form action={signOut} className="mt-16">
@@ -93,5 +66,37 @@ export default async function AccountPage() {
       </section>
       <Footer />
     </main>
+  );
+}
+
+function Card({
+  n,
+  title,
+  body,
+  cta,
+  href,
+}: {
+  n: string;
+  title: string;
+  body: string;
+  cta: string;
+  href: string;
+}) {
+  return (
+    <div className="border-t-2 border-ember/70 bg-cream/[0.03] p-7">
+      <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
+        — {n}
+      </div>
+      <div className="opsz-text mt-4 font-display text-[22px] leading-tight text-cream">
+        {title}
+      </div>
+      <p className="mt-3 font-sans text-[14px] leading-[1.6] text-cream/60">{body}</p>
+      <a
+        href={href}
+        className="mt-5 inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition hover:text-ember"
+      >
+        {cta}
+      </a>
+    </div>
   );
 }

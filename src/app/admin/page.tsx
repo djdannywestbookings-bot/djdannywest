@@ -5,23 +5,37 @@ export default async function AdminOverviewPage() {
   const supabase = createAdminClient();
 
   // Pull a few key counts in parallel
-  const [usersRes, mixesRes, seriesRes, compsRes, notesRes] = await Promise.all([
-    supabase.from("profiles").select("id", { count: "exact", head: true }),
-    supabase.from("mixes").select("id", { count: "exact", head: true }),
-    supabase.from("series").select("id", { count: "exact", head: true }),
-    supabase
-      .from("comp_grants")
-      .select("id", { count: "exact", head: true })
-      .is("revoked_at", null),
-    supabase.from("admin_notes").select("id", { count: "exact", head: true }),
-  ]);
+  const [usersRes, mixesRes, seriesRes, compsRes, openReqRes, newBookRes, activeSubsRes] =
+    await Promise.all([
+      supabase.from("profiles").select("id", { count: "exact", head: true }),
+      supabase.from("mixes").select("id", { count: "exact", head: true }),
+      supabase.from("series").select("id", { count: "exact", head: true }),
+      supabase
+        .from("comp_grants")
+        .select("id", { count: "exact", head: true })
+        .is("revoked_at", null),
+      supabase
+        .from("mix_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "open"),
+      supabase
+        .from("booking_inquiries")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "new"),
+      supabase
+        .from("subscriptions")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "ACTIVE"),
+    ]);
 
   const stats = [
     { label: "Members", value: usersRes.count ?? 0, href: "/admin/members" },
+    { label: "Active subs", value: activeSubsRes.count ?? 0, href: "/admin/members" },
     { label: "Active comps", value: compsRes.count ?? 0, href: "/admin/members?filter=comped" },
     { label: "Series", value: seriesRes.count ?? 0, href: "/admin/series" },
     { label: "Mixes", value: mixesRes.count ?? 0, href: "/admin/mixes" },
-    { label: "Admin notes", value: notesRes.count ?? 0, href: "/admin/members" },
+    { label: "Open requests", value: openReqRes.count ?? 0, href: "/admin/requests" },
+    { label: "New inquiries", value: newBookRes.count ?? 0, href: "/admin/bookings?filter=new" },
   ];
 
   // Recent signups
@@ -46,7 +60,7 @@ export default async function AdminOverviewPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-5 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-5 md:grid-cols-4 lg:grid-cols-7">
         {stats.map((s) => (
           <Link
             key={s.label}

@@ -1,42 +1,115 @@
-# DJ Danny West — Progress
+# DJ Danny West — Build Progress
 
-Last updated: 2026-05-10
+Last touched: 2026-05-11
 
-## Done
-- Project scaffolded: Next.js 16 (App Router) + TypeScript + Tailwind v4 + Motion (Framer Motion successor) + ESLint
-- Design system v0: Fraunces (display, variable) + Inter (body), warm dark palette (`night`, `cream`, `ember`)
-- Homepage Hero v0: editorial headline "Sets that move rooms.", placeholder portrait card with rotating vinyl rings + DW monogram watermark, primary CTA "Subscribe — $20/mo", secondary "Book Danny — from $1,500", scrolling marquee of mix titles
-- Manifesto section v0: section label, large editorial paragraph, 3-pillar grid (mixes / requests / bookings)
-- Domain purchased: djdannywest.com (in Cloudflare)
-- TypeScript clean (`tsc --noEmit`), production build compiles clean
+## Live at djdannywest.com
 
-## In progress
-- Awaiting Danny's review of Hero v0 screenshots before iterating on the look
+### Public pages
+- **/** — hero (full-bleed promo video), credits marquee, manifesto, "where it's played" credits, footer
+- **/mixes** — subscription pitch page with 3 pillars and Subscribe CTA → /subscribe
+- **/mixes/library** — DB-backed series-shelf layout (gated to signed-in members)
+- **/mixes/series/[slug]** — individual series detail
+- **/mixes/[slug]** — per-mix detail with prev/next within series
+- **/book** — editorial booking inquiry form; persists to DB + emails via Resend
+- **/dj-dallas** + **/dj-fort-worth** — SEO-targeted city landing pages
+- **/merchandise** — coming-soon page
+- **/subscribe** — Square Web Payments SDK card form; gated to signed-in users
+- **/login**, **/signup**, **/forgot-password**, **/reset-password** — auth flow
 
-## Blocked / waiting on Danny
-- GitHub account confirmation + repo creation (or grant CLI access)
-- Vercel signup + repo connection
-- Real photography of Danny (for v1 hero portrait)
-- Logo / wordmark direction (for v1)
+### Member-facing (signed-in)
+- **/account** — dashboard with 5 action cards
+- **/account/notifications** — email pref toggles (saved to DB)
+- **/account/subscription** — view + cancel subscription
+- **/account/request-mix** — submit a mix request, see past requests (1 per 30d)
 
-## Next
-1. Iterate on hero based on Danny's feedback
-2. Push to GitHub
-3. Deploy to Vercel staging
-4. Verify on Danny's actual phone + laptop
-5. Build the second page (Mixes index — locked grid of mixes with paywall CTAs)
+### Admin (gated to djdannywestbookings@gmail.com)
+- **/admin** — overview: 7 stat tiles + recent signups
+- **/admin/members** — searchable, filterable members list
+- **/admin/members/[id]** — full member detail: identity editor, activity, comp grant/revoke, private admin notes, password reset
+- **/admin/series** — series CRUD (create/edit/publish/delete)
+- **/admin/mixes** — mix list, publish/unpublish, series-assignment
+- **/admin/requests** — mix request queue with status workflow + admin response
+- **/admin/bookings** — booking inquiry queue with status workflow + private admin notes
 
-## Stack and services (locked)
-- Next.js 16 + TypeScript + Tailwind v4 + Motion — frontend
-- Supabase (Postgres + Auth + Storage) — to be added when we build accounts
-- Mux — to be added when we build the player
-- Stripe — to be added when we build subscriptions
-- Resend — to be added when we wire transactional email
-- PostHog — to be added when we ship to staging
-- Vercel — hosting (Hobby tier for staging, Pro for prod)
-- Cloudflare — DNS
+### API routes
+- **POST /api/square/checkout** — starts a Square subscription
+- **POST /api/square/webhook** — receives Square events, syncs subscriptions table
+- **POST /api/square/cancel** — cancels signed-in member's active subscription
 
-## Open risks (not yet addressed)
-- Music licensing for streamed mixes (the single biggest business risk — flagged in the brief)
-- Auto-renewal disclosure language on checkout (CA law) — owed at checkout build
-- ToS / Privacy / Cookie pages — placeholders to be added pre-launch, lawyer review required
+## Database (Supabase)
+
+### Tables (all with RLS)
+- `profiles` — extends auth.users
+- `series` — mix collections
+- `mixes` — DB-backed catalog (19 SiriusXM mixes seeded)
+- `member_plays` — play tracking (writes when Mux is wired)
+- `member_mix_seen` — "new" badge tracking
+- `member_followed_series` — series follows
+- `member_notification_prefs` — email/SMS opt-ins
+- `comp_grants` — free-access grants
+- `admin_notes` — private notes per member
+- `admin_users` — admin allowlist (Danny seeded)
+- `subscriptions` — Square-backed sub state
+- `square_webhook_events` — audit log
+- `mix_requests` — member submissions, admin workflow
+- `booking_inquiries` — persisted from /book form
+
+### Functions
+- `is_admin()` — checks admin_users
+- `has_active_access(member_id)` — true if ACTIVE sub OR active comp grant
+
+### Triggers
+- `on_auth_user_created` — auto-creates profile + notification_prefs rows on signup
+
+## Auth
+- Email + password via Supabase Auth
+- Email verification (Supabase sends from noreply@mail.app.supabase.io)
+- Forgot/reset password flow
+- Smart redirect: signed-in users hitting /login bounce to /account
+- Friendly error messages via `humanise()` helper
+- OAuth buttons (Google / Apple) disabled with "SOON" labels until providers configured
+
+## What's wired but waiting on env vars in Vercel
+
+### Square subscriptions
+Code is shipped; checkout/webhook/cancel routes return 503 cleanly until configured.
+See **SQUARE_SETUP.md** in your workspace folder for the 15-minute setup checklist.
+
+Required env vars:
+- `SQUARE_ACCESS_TOKEN`
+- `SQUARE_LOCATION_ID`
+- `SQUARE_PLAN_VARIATION_ID`
+- `SQUARE_WEBHOOK_SIGNATURE_KEY`
+- `SQUARE_ENVIRONMENT` (sandbox | production)
+- `NEXT_PUBLIC_SQUARE_APPLICATION_ID`
+- `NEXT_PUBLIC_SQUARE_LOCATION_ID`
+- `NEXT_PUBLIC_SQUARE_ENVIRONMENT`
+
+### Resend booking emails
+Already wired; sends from `onboarding@resend.dev` (default) until djdannywest.com is verified
+on Resend.
+
+## What's NOT yet built (next-session candidates)
+
+1. **Mux audio player** — DB column `mux_playback_id` exists, but no upload UI, no
+   gated playback URLs, no persistent mini-player, no play-tracking writes.
+2. **New-mix email alerts** — notification prefs save to DB, but no trigger that
+   sends "new mix uploaded" emails via Resend yet.
+3. **Custom mix purchase ($100)** — Square one-time charge flow.
+4. **Spotify playlist intake parsing** — playlist URLs save now, but no Spotify API
+   integration to fetch tracks and surface admin-side trends.
+5. **Member dashboard upgrades** — "continue listening" (resume-state), "new since
+   last visit" badge in nav, "recommended for you" based on listening history.
+6. **Library page polish** — currently slices to 8 mixes per shelf with "View all" link;
+   could grow into "trending this week" / "in progress" / "never played" filters.
+7. **Google OAuth** — Application + OAuth consent screen + Supabase provider config.
+8. **Apple Sign-in** — requires $99/yr Apple Developer Program.
+
+## Working rules
+1. Be honest about what's real — don't claim something works that hasn't been tested
+2. Scope discipline — don't refactor unrelated things
+3. Stop at real blockers — flag what needs Danny vs what I can do solo
+4. No hidden changes — every commit message describes what changed
+5. Validate before claiming "done" — local tsc + next build before pushing
+6. Drive autonomously — only ask Danny for things only Danny can do
+7. Secrets never in chat — PATs generated via Chrome, stored in temp files, revoked
