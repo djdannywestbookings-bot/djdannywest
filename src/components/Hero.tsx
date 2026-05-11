@@ -33,36 +33,7 @@ export function Hero() {
       {/* Grain over everything */}
       <div className="grain pointer-events-none absolute inset-0 z-[1] opacity-[0.14] mix-blend-overlay" />
 
-      {/* Top nav */}
-      <header className="relative z-20 mx-auto flex max-w-[1600px] items-center justify-between px-6 py-6 md:px-12 md:py-8">
-        <div className="flex items-center gap-3">
-          <span className="relative inline-flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
-          </span>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/brand/wordmark-white.png"
-            alt="Danny West"
-            width={1053}
-            height={652}
-            className="h-9 w-auto md:h-10"
-          />
-        </div>
-        <nav className="hidden items-center gap-10 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/65 md:flex">
-          <a href="/mixes" className="transition hover:text-cream">Mixes</a>
-          <a href="/book" className="transition hover:text-cream">Book</a>
-          <a href="/merchandise" className="transition hover:text-cream">Merch</a>
-        </nav>
-        <a
-          href="/login"
-          className="hidden bg-cream px-4 py-2 font-sans text-[10px] font-medium uppercase tracking-[0.32em] text-night transition hover:bg-ember md:inline-block"
-        >
-          Member Login →
-        </a>
-      </header>
-
-      {/* Hero content */}
+      {/* Hero content (nav rendered separately by parent SiteNav) */}
       <div className="relative z-10 mx-auto grid min-h-[calc(100vh-90px)] max-w-[1600px] grid-cols-1 items-end gap-14 px-6 pb-16 pt-8 md:grid-cols-12 md:px-12 md:pb-24 md:pt-4">
         {/* Text column */}
         <div className="md:col-span-8 lg:col-span-7">

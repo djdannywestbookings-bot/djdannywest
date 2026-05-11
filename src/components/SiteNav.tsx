@@ -1,12 +1,20 @@
-"use client";
+import { getCurrentUser } from "@/lib/supabase/getUser";
+import { signOut } from "@/app/auth/actions";
 
 type Props = {
   active?: "mixes" | "book" | "merch";
-  /** When the nav sits over a hero with its own video/photography, this is `false` so it floats transparently. */
+  /** When the nav sits over a hero with its own video/photography, pass `false` so it floats transparently. */
   solid?: boolean;
 };
 
-export function SiteNav({ active, solid = true }: Props) {
+/**
+ * Site navigation header.
+ * Async server component — auth-aware so the right-hand button reflects whether
+ * the visitor is signed in (Member Login vs My Account + Sign out).
+ */
+export async function SiteNav({ active, solid = true }: Props) {
+  const user = await getCurrentUser();
+
   const link = (key: string, label: string, href: string) => (
     <a
       href={href}
@@ -43,12 +51,32 @@ export function SiteNav({ active, solid = true }: Props) {
         {link("book", "Book", "/book")}
         {link("merch", "Merch", "/merchandise")}
       </nav>
-      <a
-        href="/login"
-        className="bg-cream px-4 py-2 font-sans text-[10px] font-medium uppercase tracking-[0.32em] text-night transition hover:bg-ember"
-      >
-        Member Login →
-      </a>
+
+      {user ? (
+        <div className="flex items-center gap-4">
+          <form action={signOut} className="hidden md:block">
+            <button
+              type="submit"
+              className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45 transition hover:text-ember"
+            >
+              Sign out
+            </button>
+          </form>
+          <a
+            href="/account"
+            className="bg-cream px-4 py-2 font-sans text-[10px] font-medium uppercase tracking-[0.32em] text-night transition hover:bg-ember"
+          >
+            My Account →
+          </a>
+        </div>
+      ) : (
+        <a
+          href="/login"
+          className="bg-cream px-4 py-2 font-sans text-[10px] font-medium uppercase tracking-[0.32em] text-night transition hover:bg-ember"
+        >
+          Member Login →
+        </a>
+      )}
     </header>
   );
 }

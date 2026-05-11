@@ -88,9 +88,19 @@ export function AuthForm({ mode }: { mode: Mode }) {
           />
         </div>
         <div>
-          <label htmlFor="password" className={labelCls}>
-            Password{mode === "signup" ? " · 8+ characters" : ""}
-          </label>
+          <div className="flex items-baseline justify-between gap-3">
+            <label htmlFor="password" className={labelCls}>
+              Password{mode === "signup" ? " · 8+ characters" : ""}
+            </label>
+            {mode === "signin" && (
+              <a
+                href="/forgot-password"
+                className="font-sans text-[10px] uppercase tracking-[0.28em] text-cream/45 transition hover:text-ember"
+              >
+                Forgot?
+              </a>
+            )}
+          </div>
           <input
             id="password"
             name="password"

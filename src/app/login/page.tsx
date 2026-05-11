@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { getCurrentUser } from "@/lib/supabase/getUser";
 
 export const metadata: Metadata = {
   title: "Member Login — DJ Danny West",
@@ -9,7 +11,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  // Already signed in? Skip the form, send them straight to the dashboard.
+  const user = await getCurrentUser();
+  if (user) redirect("/account");
   return (
     <main className="bg-night text-cream">
       <SiteNav />
