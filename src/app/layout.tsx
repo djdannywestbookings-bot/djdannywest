@@ -21,7 +21,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — Dallas DJ · Fort Worth DJ · Bookings from $1,500`,
+    default: `${site.name} — Dallas DJ · Fort Worth DJ · Bookings by inquiry`,
     template: `%s | ${site.name}`,
   },
   description: site.description,
