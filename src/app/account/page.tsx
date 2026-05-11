@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/auth/actions";
 
 export const metadata: Metadata = {
-  title: "Member Dashboard — DJ Danny West",
+  title: "Member Dashboard",
   robots: { index: false, follow: false },
 };
 

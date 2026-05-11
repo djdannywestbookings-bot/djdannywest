@@ -21,9 +21,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const mix = mixes.find((m) => m.slug === slug);
-  if (!mix) return { title: "Mix not found — DJ Danny West" };
+  if (!mix) return { title: "Mix not found" };
   return {
-    title: `${mix.title} · ${mix.subtitle} — DJ Danny West`,
+    title: `${mix.title} · ${mix.subtitle}`,
     description: `Subscribers-only mix from DJ Danny West. ${mix.source}, ${mix.duration} run-time.`,
   };
 }

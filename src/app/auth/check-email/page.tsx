@@ -3,7 +3,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Check your email — DJ Danny West",
+  title: "Check your email",
   robots: { index: false, follow: false },
 };
 

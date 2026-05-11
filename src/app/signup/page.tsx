@@ -6,7 +6,7 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { getCurrentUser } from "@/lib/supabase/getUser";
 
 export const metadata: Metadata = {
-  title: "Create your account — DJ Danny West",
+  title: "Create your account",
   description: "Sign up for a DJ Danny West member account.",
   robots: { index: false, follow: false },
 };

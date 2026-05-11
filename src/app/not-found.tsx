@@ -3,7 +3,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Off the floor — DJ Danny West",
+  title: "Off the floor",
   description: "Page not found.",
 };
 

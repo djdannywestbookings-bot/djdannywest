@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 
 export const metadata: Metadata = {
-  title: "Forgot password — DJ Danny West",
+  title: "Forgot password",
   robots: { index: false, follow: false },
 };
 

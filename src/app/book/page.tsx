@@ -5,7 +5,7 @@ import { BookHero } from "@/components/book/BookHero";
 import { BookForm } from "@/components/book/BookForm";
 
 export const metadata: Metadata = {
-  title: "Book Danny West — Inquire",
+  title: "Book Danny — Inquire",
   description:
     "Book DJ Danny West for your wedding, corporate event, club, or private party. Bookings by inquiry — make an offer or describe your event. I respond personally within 24 hours.",
 };

@@ -3,7 +3,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Merch — Coming soon | DJ Danny West",
+  title: "Merch — Coming soon",
   description: "DJ Danny West merch line — coming soon. Mock-ups in motion.",
 };
 

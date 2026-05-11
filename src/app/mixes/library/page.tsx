@@ -6,7 +6,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Library — DJ Danny West Member Archive",
+  title: "Library — Member Archive",
   description:
     "Member library — full archive of DJ Danny West mixes. Streaming unlocks with an active subscription.",
   robots: { index: false, follow: false },

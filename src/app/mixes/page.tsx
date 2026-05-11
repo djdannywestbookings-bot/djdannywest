@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { MixesPitch } from "@/components/mixes/MixesPitch";
 
 export const metadata: Metadata = {
-  title: "Subscribe — Mixes by DJ Danny West",
+  title: "Mixes — Subscribe",
   description:
     "Full archive of mixes from DJ Danny West — sets recorded for SiriusXM, residencies, weddings, and rooms you couldn't be in. New mixes released weekly. Subscribers only — $20/month.",
 };
