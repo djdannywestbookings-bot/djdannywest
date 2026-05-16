@@ -20,6 +20,86 @@ const pillars = [
   },
 ];
 
+/**
+ * Vinyl-record SVG: 32 concentric grooves + a label disc in the center.
+ * Sized via viewBox so it scales cleanly. Strokes use currentColor so
+ * the parent wrapper controls the tint.
+ */
+function VinylDisc({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 600 600"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden
+    >
+      {/* outer rim */}
+      <circle cx="300" cy="300" r="298" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      {/* grooves */}
+      {Array.from({ length: 30 }).map((_, i) => (
+        <circle
+          key={i}
+          cx="300"
+          cy="300"
+          r={90 + i * 6.5}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.5"
+          opacity={0.55}
+        />
+      ))}
+      {/* center label disc */}
+      <circle cx="300" cy="300" r="78" fill="currentColor" opacity="0.08" />
+      <circle cx="300" cy="300" r="78" fill="none" stroke="currentColor" strokeWidth="1" />
+      {/* spindle hole */}
+      <circle cx="300" cy="300" r="6" fill="currentColor" opacity="0.7" />
+      {/* label rule */}
+      <line
+        x1="222"
+        y1="300"
+        x2="378"
+        y2="300"
+        stroke="currentColor"
+        strokeWidth="0.4"
+        opacity="0.5"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Thin equalizer-style vertical bars — pure decorative texture sitting
+ * along the bottom edge of the section to add quiet rhythm.
+ */
+function EqualizerBars({ className = "" }: { className?: string }) {
+  // Pseudo-randomized but deterministic heights so server + client agree
+  const heights = [
+    18, 32, 24, 46, 12, 38, 28, 52, 22, 42, 16, 34, 30, 48, 20, 36, 26, 44, 14,
+    40, 30, 52, 18, 32, 28, 46, 22, 38, 16, 34, 24, 42, 12, 36, 30, 48,
+  ];
+  return (
+    <svg
+      viewBox={`0 0 ${heights.length * 14} 60`}
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="none"
+      className={className}
+      aria-hidden
+    >
+      {heights.map((h, i) => (
+        <rect
+          key={i}
+          x={i * 14}
+          y={60 - h}
+          width="3"
+          height={h}
+          fill="currentColor"
+          opacity={0.42}
+        />
+      ))}
+    </svg>
+  );
+}
+
 export function Manifesto() {
   const ref = useRef(null);
   const inView = useInView(ref, { margin: "-15%", once: true });
@@ -29,15 +109,37 @@ export function Manifesto() {
       ref={ref}
       className="relative w-full overflow-hidden bg-cream py-32 text-night md:py-48"
     >
-      {/* Subtle grain texture so the cream surface still has depth */}
+      {/* Layer 1 — grain texture for film-paper warmth */}
       <div className="grain pointer-events-none absolute inset-0 opacity-[0.18] mix-blend-multiply" />
 
-      {/* Soft warm wash on the left — keeps the brand's honey-gold heritage */}
-      <div className="pointer-events-none absolute -left-[10%] top-1/4 h-[50vh] w-[50vh] rounded-full bg-ember/[0.18] blur-[180px]" />
-      {/* Quiet right-side wash, slightly cooler */}
-      <div className="pointer-events-none absolute -right-[8%] bottom-[10%] h-[40vh] w-[40vh] rounded-full bg-ember-soft/[0.12] blur-[180px]" />
+      {/* Layer 2 — soft warm honey wash on the left */}
+      <div className="pointer-events-none absolute -left-[10%] top-1/4 h-[50vh] w-[50vh] rounded-full bg-ember/[0.20] blur-[180px]" />
 
-      {/* Top + bottom hairlines to set the section apart from the dark above/below */}
+      {/* Layer 3 — vinyl disc bleeding off the right edge. Honey-tinted so it
+          reads as part of the brand and not generic blackline. */}
+      <div
+        className="pointer-events-none absolute -right-[18%] top-1/2 hidden h-[140vh] w-[140vh] -translate-y-1/2 text-ember-soft opacity-[0.42] md:block"
+        aria-hidden
+      >
+        <VinylDisc className="h-full w-full" />
+      </div>
+      {/* Mobile-only smaller vinyl disc — top-right corner */}
+      <div
+        className="pointer-events-none absolute -right-[30%] top-[6%] h-[80vw] w-[80vw] text-ember-soft opacity-[0.35] md:hidden"
+        aria-hidden
+      >
+        <VinylDisc className="h-full w-full" />
+      </div>
+
+      {/* Layer 4 — quiet equalizer rhythm along the bottom */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-12 text-night opacity-[0.10]"
+        aria-hidden
+      >
+        <EqualizerBars className="h-full w-full" />
+      </div>
+
+      {/* Hairlines */}
       <div className="absolute inset-x-0 top-0 h-px bg-night/10" />
       <div className="absolute inset-x-0 bottom-0 h-px bg-night/10" />
 
@@ -62,10 +164,10 @@ export function Manifesto() {
             {pillars.map((p) => (
               <div
                 key={p.title}
-                className="group relative flex flex-col overflow-hidden border-t-2 border-ember bg-night/[0.03] p-7 backdrop-blur-sm transition-colors duration-300 hover:bg-night/[0.06] md:p-9"
+                className="group relative flex flex-col overflow-hidden border-t-2 border-ember bg-cream/95 p-7 backdrop-blur-sm transition-colors duration-300 hover:bg-cream md:p-9"
               >
                 {/* subtle inner glow on hover */}
-                <div className="pointer-events-none absolute -right-1/4 -top-1/2 h-[150%] w-[150%] rounded-full bg-ember/[0.08] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="pointer-events-none absolute -right-1/4 -top-1/2 h-[150%] w-[150%] rounded-full bg-ember/[0.10] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
 
                 <div className="opsz-text relative font-display text-2xl leading-tight tracking-[-0.01em] text-night md:text-[26px]">
                   {p.title}
