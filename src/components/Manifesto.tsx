@@ -7,17 +7,14 @@ const easeOut = [0.16, 1, 0.3, 1] as const;
 
 const pillars = [
   {
-    num: "01",
     title: "New mixes uploaded weekly",
     body: "Recorded live or in studio. Lossless audio. DJ sets you can play in any room.",
   },
   {
-    num: "02",
     title: "Request what you want",
     body: "Subscribers can request a mix. Post your Spotify or your favorite playlist, name the mix, and see if it makes the cut.",
   },
   {
-    num: "03",
     title: "Hire your favorite DJ",
     body: "Send a booking inquiry to get a courtesy discount on your first event — weddings, clubs, private.",
   },
@@ -30,20 +27,27 @@ export function Manifesto() {
   return (
     <section
       ref={ref}
-      className="relative w-full overflow-hidden bg-night py-32 md:py-48"
+      className="relative w-full overflow-hidden bg-cream py-32 text-night md:py-48"
     >
-      <div className="grain pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-overlay" />
-      <div className="pointer-events-none absolute -left-[10%] top-1/3 h-[40vh] w-[40vh] rounded-full bg-ember/[0.07] blur-[180px]" />
+      {/* Subtle grain texture so the cream surface still has depth */}
+      <div className="grain pointer-events-none absolute inset-0 opacity-[0.18] mix-blend-multiply" />
+
+      {/* Soft warm wash on the left — keeps the brand's honey-gold heritage */}
+      <div className="pointer-events-none absolute -left-[10%] top-1/4 h-[50vh] w-[50vh] rounded-full bg-ember/[0.18] blur-[180px]" />
+      {/* Quiet right-side wash, slightly cooler */}
+      <div className="pointer-events-none absolute -right-[8%] bottom-[10%] h-[40vh] w-[40vh] rounded-full bg-ember-soft/[0.12] blur-[180px]" />
+
+      {/* Top + bottom hairlines to set the section apart from the dark above/below */}
+      <div className="absolute inset-x-0 top-0 h-px bg-night/10" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-night/10" />
 
       <div className="relative mx-auto grid max-w-[1600px] grid-cols-1 gap-16 px-6 md:grid-cols-12 md:gap-10 md:px-12">
-        {/* Section label */}
-        {/* Body */}
         <div className="md:col-span-12">
           <motion.p
             initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 1, ease: easeOut }}
-            className="opsz-section font-display text-[36px] font-light leading-[1.05] tracking-[-0.025em] text-cream md:text-[clamp(44px,5.2vw,88px)]"
+            className="opsz-section font-display text-[36px] font-light leading-[1.05] tracking-[-0.025em] text-night md:text-[clamp(44px,5.2vw,88px)]"
           >
             The mixes you can&apos;t get on Spotify. The sets that don&apos;t
             exist on SoundCloud.
@@ -57,19 +61,16 @@ export function Manifesto() {
           >
             {pillars.map((p) => (
               <div
-                key={p.num}
-                className="group relative flex flex-col overflow-hidden border-t-2 border-ember/70 bg-cream/[0.03] p-7 backdrop-blur-sm transition-colors duration-300 hover:bg-cream/[0.05] md:p-9"
+                key={p.title}
+                className="group relative flex flex-col overflow-hidden border-t-2 border-ember bg-night/[0.03] p-7 backdrop-blur-sm transition-colors duration-300 hover:bg-night/[0.06] md:p-9"
               >
                 {/* subtle inner glow on hover */}
-                <div className="pointer-events-none absolute -top-1/2 -right-1/4 h-[150%] w-[150%] rounded-full bg-ember/[0.04] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="pointer-events-none absolute -right-1/4 -top-1/2 h-[150%] w-[150%] rounded-full bg-ember/[0.08] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
 
-                <div className="relative font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
-                  — {p.num}
-                </div>
-                <div className="opsz-text relative mt-5 font-display text-2xl leading-tight tracking-[-0.01em] text-cream md:text-[26px]">
+                <div className="opsz-text relative font-display text-2xl leading-tight tracking-[-0.01em] text-night md:text-[26px]">
                   {p.title}
                 </div>
-                <div className="relative mt-3 font-sans text-[14px] leading-[1.6] text-cream/65">
+                <div className="relative mt-3 font-sans text-[14px] leading-[1.6] text-night/65">
                   {p.body}
                 </div>
               </div>

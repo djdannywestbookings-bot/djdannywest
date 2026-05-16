@@ -38,13 +38,21 @@ export function Credits() {
     <section
       ref={ref}
       id="credits"
-      className="relative w-full overflow-hidden border-t border-line bg-night py-32 md:py-40"
+      className="relative w-full overflow-hidden bg-night-soft py-32 md:py-40"
     >
-      <div className="grain pointer-events-none absolute inset-0 opacity-[0.12] mix-blend-overlay" />
-      <div className="pointer-events-none absolute right-[-10%] top-[20%] h-[40vh] w-[40vh] rounded-full bg-ember/[0.08] blur-[180px]" />
+      {/* Layered grain + warm bloom to give the dark surface life */}
+      <div className="grain pointer-events-none absolute inset-0 opacity-[0.16] mix-blend-overlay" />
+
+      {/* Two ember blooms — one top-right, one bottom-left — for visual rhythm */}
+      <div className="pointer-events-none absolute -right-[8%] top-[10%] h-[55vh] w-[55vh] rounded-full bg-ember/[0.14] blur-[180px]" />
+      <div className="pointer-events-none absolute -left-[10%] bottom-[5%] h-[40vh] w-[40vh] rounded-full bg-ember/[0.08] blur-[180px]" />
+
+      {/* Subtle vertical hairlines — visual nods to a mixing console */}
+      <div className="pointer-events-none absolute inset-y-0 left-[18%] hidden w-px bg-cream/[0.04] md:block" />
+      <div className="pointer-events-none absolute inset-y-0 right-[22%] hidden w-px bg-cream/[0.04] md:block" />
 
       <div className="relative mx-auto grid max-w-[1600px] grid-cols-1 gap-16 px-6 md:grid-cols-12 md:gap-10 md:px-12">
-        {/* Section label + heading */}
+        {/* Section heading */}
         <div className="md:col-span-3">
           <motion.h2
             initial={{ opacity: 0, y: 24 }}

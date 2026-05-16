@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Geist } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { StructuredData } from "@/components/StructuredData";
 import { personSchema, localBusinessSchema, websiteSchema } from "@/lib/seo";
 
-const dmSerif = DM_Serif_Display({
-  variable: "--font-dm-serif",
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
+// Single-typeface system. Geist is Vercel's modern sans — crisp at every
+// size, no serif, no decorative character. All headings + body use it.
 const geist = Geist({
   variable: "--font-geist",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -84,7 +79,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSerif.variable} ${geist.variable}`}>
+    <html lang="en" className={geist.variable}>
       <head>
         <StructuredData schemas={[personSchema(), localBusinessSchema(), websiteSchema()]} />
       </head>

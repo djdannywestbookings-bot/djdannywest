@@ -7,14 +7,14 @@
   --color-cream: #F5F1EA;
   --color-cream-soft: #B8B0A4;
   --color-cream-muted: #6E665D;
-  /* Honey-gold accent — replaces saturated red-orange. Higher legibility, premium feel. */
+  /* Honey-gold accent — kept available but used sparingly. */
   --color-ember: #E5B97A;
   --color-ember-soft: #B0884E;
   --color-line: rgba(245, 241, 234, 0.08);
 
-  /* Typography — Direction C: DM Serif Display + Geist Sans */
-  --font-display: var(--font-dm-serif), ui-serif, Georgia, serif;
-  --font-serif: var(--font-dm-serif), ui-serif, Georgia, serif;
+  /* Typography — single-typeface minimalist (Geist Sans for everything). */
+  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -28,7 +28,7 @@ html, body {
 }
 
 ::selection {
-  background: var(--color-ember);
+  background: var(--color-cream);
   color: var(--color-night);
 }
 
@@ -38,13 +38,10 @@ html, body {
   background-size: 240px 240px;
 }
 
-/* Variable font axis helper for Fraunces */
-.opsz-display {
-  font-variation-settings: "opsz" 144;
-}
-.opsz-section {
-  font-variation-settings: "opsz" 96;
-}
+/* Legacy opsz utilities — no-ops now that we're sans-only, kept so existing
+   markup still compiles. */
+.opsz-display,
+.opsz-section,
 .opsz-text {
-  font-variation-settings: "opsz" 36;
+  font-variation-settings: normal;
 }
