@@ -4,9 +4,9 @@ import { Footer } from "@/components/Footer";
 import { MixesPitch } from "@/components/mixes/MixesPitch";
 
 export const metadata: Metadata = {
-  title: "Mixes — Subscribe",
+  title: "Exclusive DJ Danny West Mixes — Subscribe",
   description:
-    "Full archive of mixes from DJ Danny West — sets recorded for SiriusXM, residencies, weddings, and rooms you couldn't be in. New mixes released weekly. Subscribers only — $20/month.",
+    "Live-recorded DJ sets across every genre, every vibe. A non-stop party in your headphones. New mixes every week. Lossless audio. Subscribers only — $20/month.",
 };
 
 export default function MixesPage() {

@@ -21,9 +21,9 @@ const pillars = [
 ];
 
 /**
- * Vinyl-record SVG: 32 concentric grooves + a label disc in the center.
- * Sized via viewBox so it scales cleanly. Strokes use currentColor so
- * the parent wrapper controls the tint.
+ * Vinyl-record SVG: a more record-looking disc with track-separator grooves,
+ * a visible center label, a glossy highlight arc, and the spindle hole.
+ * Strokes use currentColor so the parent wrapper controls the honey tint.
  */
 function VinylDisc({ className = "" }: { className?: string }) {
   return (
@@ -33,34 +33,45 @@ function VinylDisc({ className = "" }: { className?: string }) {
       className={className}
       aria-hidden
     >
-      {/* outer rim */}
-      <circle cx="300" cy="300" r="298" fill="none" stroke="currentColor" strokeWidth="1.2" />
-      {/* grooves */}
-      {Array.from({ length: 30 }).map((_, i) => (
-        <circle
-          key={i}
-          cx="300"
-          cy="300"
-          r={90 + i * 6.5}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.5"
-          opacity={0.55}
-        />
-      ))}
-      {/* center label disc */}
-      <circle cx="300" cy="300" r="78" fill="currentColor" opacity="0.08" />
-      <circle cx="300" cy="300" r="78" fill="none" stroke="currentColor" strokeWidth="1" />
-      {/* spindle hole */}
-      <circle cx="300" cy="300" r="6" fill="currentColor" opacity="0.7" />
-      {/* label rule */}
-      <line
-        x1="222"
-        y1="300"
-        x2="378"
-        y2="300"
+      {/* Outer rim — two stacked strokes for a real-edge feel */}
+      <circle cx="300" cy="300" r="298" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="300" cy="300" r="293" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.4" />
+
+      {/* 42 grooves; every 7th is thicker — mimics the track separators you
+         can see on a real record under raking light */}
+      {Array.from({ length: 42 }).map((_, i) => {
+        const isSeparator = i % 7 === 0;
+        return (
+          <circle
+            key={`g-${i}`}
+            cx="300"
+            cy="300"
+            r={125 + i * 4}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={isSeparator ? 0.9 : 0.4}
+            opacity={isSeparator ? 0.65 : 0.45}
+          />
+        );
+      })}
+
+      {/* Center label disc — bigger, slightly solid so it reads as a paper label */}
+      <circle cx="300" cy="300" r="115" fill="currentColor" opacity="0.22" />
+      <circle cx="300" cy="300" r="115" fill="none" stroke="currentColor" strokeWidth="1.2" />
+
+      {/* Inner label rings */}
+      <circle cx="300" cy="300" r="92" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.55" />
+      <circle cx="300" cy="300" r="55" fill="none" stroke="currentColor" strokeWidth="0.4" opacity="0.4" />
+
+      {/* Spindle hole */}
+      <circle cx="300" cy="300" r="6" fill="currentColor" opacity="0.85" />
+
+      {/* Glossy highlight arc — top-right reflection */}
+      <path
+        d="M 300 78 A 222 222 0 0 1 522 300"
+        fill="none"
         stroke="currentColor"
-        strokeWidth="0.4"
+        strokeWidth="0.9"
         opacity="0.5"
       />
     </svg>
@@ -68,11 +79,9 @@ function VinylDisc({ className = "" }: { className?: string }) {
 }
 
 /**
- * Thin equalizer-style vertical bars — pure decorative texture sitting
- * along the bottom edge of the section to add quiet rhythm.
+ * Thin equalizer-style bars along the bottom edge — quiet rhythm.
  */
 function EqualizerBars({ className = "" }: { className?: string }) {
-  // Pseudo-randomized but deterministic heights so server + client agree
   const heights = [
     18, 32, 24, 46, 12, 38, 28, 52, 22, 42, 16, 34, 30, 48, 20, 36, 26, 44, 14,
     40, 30, 52, 18, 32, 28, 46, 22, 38, 16, 34, 24, 42, 12, 36, 30, 48,
@@ -112,23 +121,35 @@ export function Manifesto() {
       {/* Layer 1 — grain texture for film-paper warmth */}
       <div className="grain pointer-events-none absolute inset-0 opacity-[0.18] mix-blend-multiply" />
 
-      {/* Layer 2 — soft warm honey wash on the left */}
+      {/* Layer 2 — soft honey wash on the left for color depth */}
       <div className="pointer-events-none absolute -left-[10%] top-1/4 h-[50vh] w-[50vh] rounded-full bg-ember/[0.20] blur-[180px]" />
 
-      {/* Layer 3 — vinyl disc bleeding off the right edge. Honey-tinted so it
-          reads as part of the brand and not generic blackline. */}
+      {/* Layer 3 — spinning vinyl disc bleeding off the right edge.
+         Slow ~50s rotation so it feels alive without being distracting. */}
       <div
-        className="pointer-events-none absolute -right-[18%] top-1/2 hidden h-[140vh] w-[140vh] -translate-y-1/2 text-ember-soft opacity-[0.42] md:block"
+        className="pointer-events-none absolute -right-[18%] top-1/2 hidden h-[140vh] w-[140vh] -translate-y-1/2 text-ember-soft opacity-[0.55] md:block"
         aria-hidden
       >
-        <VinylDisc className="h-full w-full" />
+        <motion.div
+          className="h-full w-full will-change-transform"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+        >
+          <VinylDisc className="h-full w-full" />
+        </motion.div>
       </div>
-      {/* Mobile-only smaller vinyl disc — top-right corner */}
+      {/* Mobile-only smaller spinning vinyl disc */}
       <div
-        className="pointer-events-none absolute -right-[30%] top-[6%] h-[80vw] w-[80vw] text-ember-soft opacity-[0.35] md:hidden"
+        className="pointer-events-none absolute -right-[30%] top-[4%] h-[90vw] w-[90vw] text-ember-soft opacity-[0.45] md:hidden"
         aria-hidden
       >
-        <VinylDisc className="h-full w-full" />
+        <motion.div
+          className="h-full w-full will-change-transform"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 55, repeat: Infinity, ease: "linear" }}
+        >
+          <VinylDisc className="h-full w-full" />
+        </motion.div>
       </div>
 
       {/* Layer 4 — quiet equalizer rhythm along the bottom */}
@@ -164,15 +185,12 @@ export function Manifesto() {
             {pillars.map((p) => (
               <div
                 key={p.title}
-                className="group relative flex flex-col overflow-hidden border-t-2 border-ember bg-cream/95 p-7 backdrop-blur-sm transition-colors duration-300 hover:bg-cream md:p-9"
+                className="group relative flex flex-col overflow-hidden border border-night/12 bg-cream/35 p-7 backdrop-blur-md transition-colors duration-300 hover:bg-cream/55 md:p-9"
               >
-                {/* subtle inner glow on hover */}
-                <div className="pointer-events-none absolute -right-1/4 -top-1/2 h-[150%] w-[150%] rounded-full bg-ember/[0.10] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
-
                 <div className="opsz-text relative font-display text-2xl leading-tight tracking-[-0.01em] text-night md:text-[26px]">
                   {p.title}
                 </div>
-                <div className="relative mt-3 font-sans text-[14px] leading-[1.6] text-night/65">
+                <div className="relative mt-3 font-sans text-[14px] leading-[1.6] text-night/70">
                   {p.body}
                 </div>
               </div>
