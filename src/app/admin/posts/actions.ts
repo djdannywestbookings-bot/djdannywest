@@ -158,6 +158,9 @@ export async function deletePost(formData: FormData): Promise<void> {
  * Build the eligible-recipient list and send the new-post email.
  * - Active subscribers (subscriptions.status = 'ACTIVE', joined to auth.users for email)
  * - Confirmed booking clients (booking_inquiries.status in 'booked','completed')
+ * Filters out anyone with insider_posts_email = false in member_notification_prefs.
+ * Booking clients without an account (no member_id, so no prefs row) are
+ * emailed unconditionally — they can reply to opt out.
  * Dedupes by lower(email) before sending.
  */
 async function sendInsiderBlast(post: {
@@ -173,6 +176,12 @@ async function sendInsiderBlast(post: {
 
   const admin = createAdminClient();
 
+  type Recipient = {
+    email: string;
+    name: string | null;
+    memberId: string | null;
+  };
+
   // 1. Active subscribers — join through auth.users to pull email + name.
   const { data: subRows } = await admin
     .from("subscriptions")
@@ -180,7 +189,7 @@ async function sendInsiderBlast(post: {
     .eq("status", "ACTIVE");
 
   const subscriberIds = (subRows ?? []).map((r) => r.member_id).filter(Boolean);
-  let subscriberEmails: { email: string; name: string | null }[] = [];
+  let subscriberEmails: Recipient[] = [];
   if (subscriberIds.length > 0) {
     const { data: users } = await admin.auth.admin.listUsers({ perPage: 1000 });
     const idSet = new Set(subscriberIds);
@@ -192,30 +201,50 @@ async function sendInsiderBlast(post: {
           (u.user_metadata?.display_name as string | undefined) ??
           (u.user_metadata?.full_name as string | undefined) ??
           null,
+        memberId: u.id,
       }));
   }
 
-  // 2. Confirmed booking clients.
+  // 2. Confirmed booking clients (may or may not have a Supabase account).
   const { data: bookings } = await admin
     .from("booking_inquiries")
-    .select("contact_email, contact_name")
+    .select("contact_email, contact_name, member_id")
     .in("status", ["booked", "completed"]);
-  const clientEmails = (bookings ?? [])
+  const clientEmails: Recipient[] = (bookings ?? [])
     .filter((b) => !!b.contact_email)
     .map((b) => ({
       email: b.contact_email!,
       name: b.contact_name ?? null,
+      memberId: (b.member_id as string | null) ?? null,
     }));
 
-  // 3. Dedupe by lowercase email.
-  const seen = new Set<string>();
-  const recipients: { email: string; name: string | null }[] = [];
+  // 3. Dedupe by lowercase email — subscriber entry wins (has memberId for sure).
+  const seen = new Map<string, Recipient>();
   for (const r of [...subscriberEmails, ...clientEmails]) {
     const key = r.email.toLowerCase();
     if (seen.has(key)) continue;
-    seen.add(key);
-    recipients.push(r);
+    seen.set(key, r);
   }
+  const merged = [...seen.values()];
+
+  // 4. Filter on insider_posts_email preference.
+  //    - Recipient has a memberId → look up their pref; skip if explicitly false.
+  //    - No memberId → no prefs row; send unconditionally.
+  const memberIds = merged.map((r) => r.memberId).filter((id): id is string => !!id);
+  const optedOutSet = new Set<string>();
+  if (memberIds.length > 0) {
+    const { data: prefRows } = await admin
+      .from("member_notification_prefs")
+      .select("member_id, insider_posts_email")
+      .in("member_id", memberIds);
+    for (const row of prefRows ?? []) {
+      if (row.insider_posts_email === false) optedOutSet.add(row.member_id);
+    }
+  }
+
+  const recipients = merged.filter(
+    (r) => !(r.memberId && optedOutSet.has(r.memberId)),
+  );
 
   if (recipients.length === 0) {
     console.log("[INSIDER BLAST] No eligible recipients.");

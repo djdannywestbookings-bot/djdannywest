@@ -8,18 +8,14 @@ A members-only blog that lives at `/insider`. Access goes to:
 
 Everyone else hits a friendly gate that points them to `/subscribe` or `/book`. The pages are `noindex` so Google never sees them.
 
-## One-time DB migration
+## One-time DB migrations
 
-Open the **Supabase SQL editor** for the `djdannywest` project and run the contents of `supabase/migrations/001_posts_insider.sql`. It:
+Open the **Supabase SQL editor** for the `djdannywest` project and run, in order:
 
-1. Creates the `posts` table (slug, title, excerpt, cover, body_markdown, status, published_at, timestamps)
-2. Adds an `updated_at` trigger
-3. Creates `has_insider_access(user_id)` SQL function (the same access rules the app uses)
-4. Enables RLS on `posts` with two policies:
-   - `posts_read_published` — published posts visible only to users who pass `has_insider_access()`
-   - `posts_admin_all` — admins have full CRUD
+1. `supabase/migrations/001_posts_insider.sql` — creates the `posts` table + RLS + `has_insider_access()` SQL function.
+2. `supabase/migrations/002_insider_notification_pref.sql` — adds `insider_posts_email` column to `member_notification_prefs` (default `true`). Members can toggle this in `/account/notifications`.
 
-The migration is idempotent (uses `if not exists` and `drop policy if exists` patterns) — re-run it any time without harm.
+Both migrations are idempotent (uses `if not exists` and `drop policy if exists` patterns) — re-run them any time without harm.
 
 ## Marking a booking as confirmed
 

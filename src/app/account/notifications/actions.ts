@@ -19,6 +19,7 @@ export async function saveNotificationPrefs(
     new_mix_followed_email: formData.get("new_mix_followed_email") === "on",
     mix_request_fulfilled_email: formData.get("mix_request_fulfilled_email") === "on",
     announcements_email: formData.get("announcements_email") === "on",
+    insider_posts_email: formData.get("insider_posts_email") === "on",
     new_mix_sms: formData.get("new_mix_sms") === "on",
     updated_at: new Date().toISOString(),
   };

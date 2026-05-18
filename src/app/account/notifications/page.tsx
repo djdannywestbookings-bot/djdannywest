@@ -32,6 +32,7 @@ export default async function NotificationsPage() {
     new_mix_followed_email: true,
     mix_request_fulfilled_email: true,
     announcements_email: true,
+    insider_posts_email: true,
     new_mix_sms: false,
   };
 
@@ -53,6 +54,12 @@ export default async function NotificationsPage() {
       title: "Mix request fulfilled",
       sub: "If you've submitted a mix request, I'll let you know when it's live.",
       checked: p.mix_request_fulfilled_email,
+    },
+    {
+      name: "insider_posts_email",
+      title: "Insider posts",
+      sub: "Members-only blog drops — crate notes, behind-the-scenes, what I'm playing right now.",
+      checked: p.insider_posts_email ?? true,
     },
     {
       name: "announcements_email",
