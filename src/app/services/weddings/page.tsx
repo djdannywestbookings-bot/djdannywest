@@ -59,11 +59,6 @@ const faq = [
     answer:
       "Yes to all of it. Open-format is the lane I live in — Latin, hip-hop, country, top 40, house, oldies, EDM. Bi-cultural weddings are a sweet spot. Tell me the room and I'll mix to it.",
   },
-  {
-    question: "What's your backup plan if equipment fails?",
-    answer:
-      "Redundant gear on site — backup mixer, headphones, controller, laptop, music drive. I've worked enough rooms to know that the only acceptable answer is 'no one notices.'",
-  },
 ];
 
 export const metadata: Metadata = {

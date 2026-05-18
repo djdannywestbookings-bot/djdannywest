@@ -85,11 +85,6 @@ const groups: FaqGroup[] = [
           "Yes. General liability coverage with the ability to provide a certificate naming your venue or production company as additional insured. Most DFW venues require this — happy to handle.",
       },
       {
-        question: "What's your backup plan if equipment fails?",
-        answer:
-          "Redundant gear on every booking — backup mixer, headphones, controller, laptop, music drive on a separate power source. I've worked enough rooms to know the only acceptable outcome is 'nobody noticed.'",
-      },
-      {
         question: "Will you provide a microphone for toasts and the ceremony?",
         answer:
           "Yes. Wireless lapel and handheld mics for officiants, vows, toasts, hosts. Soundcheck before doors. I work with your planner on cues.",
