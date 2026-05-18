@@ -38,6 +38,8 @@ export function MixDetail({ mix, prev, next, muxPlaybackId, hasAccess }: Props) 
                 src={mix.coverArt}
                 alt={`${mix.title} ${mix.subtitle} cover`}
                 className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
               {/* Locked badge — top right */}
               <div className="absolute right-4 top-4 flex items-center gap-1.5 bg-night/55 px-2 py-1 backdrop-blur-sm">

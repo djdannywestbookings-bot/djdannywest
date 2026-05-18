@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { site } from "@/lib/site";
 
 const siteItems = [
@@ -68,8 +69,7 @@ export function Footer() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
             </span>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/brand/wordmark-white.png"
               alt="Danny West"
               width={1053}

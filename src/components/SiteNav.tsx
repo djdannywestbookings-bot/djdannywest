@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getCurrentUser } from "@/lib/supabase/getUser";
 import { getInsiderAccess } from "@/lib/supabase/insiderAccess";
 import { signOut } from "@/app/auth/actions";
@@ -42,12 +43,12 @@ export async function SiteNav({ active, solid = true }: Props) {
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60" />
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
         </span>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/brand/wordmark-white.png"
           alt="Danny West"
           width={1053}
           height={652}
+          priority
           className="h-9 w-auto md:h-10"
         />
       </a>

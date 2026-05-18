@@ -43,6 +43,7 @@ export function MixCard({ mix, index }: Props) {
           alt={`${mix.title} ${mix.subtitle} cover art`}
           className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           loading="lazy"
+          decoding="async"
         />
 
         {/* Subtle hover overlay — invites the click */}

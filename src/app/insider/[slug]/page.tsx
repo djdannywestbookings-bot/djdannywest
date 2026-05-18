@@ -96,6 +96,8 @@ export default async function InsiderPostPage({
               src={p.cover_image_url}
               alt=""
               className="w-full border border-line"
+              loading="lazy"
+              decoding="async"
             />
           </div>
         </section>
