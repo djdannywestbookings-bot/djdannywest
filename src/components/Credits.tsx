@@ -60,7 +60,7 @@ export function Credits() {
             transition={{ duration: 0.9, ease: easeOut, delay: 0.1 }}
             className="opsz-section font-display text-[40px] font-light leading-[0.98] tracking-[-0.025em] text-cream md:text-[52px]"
           >
-            <span className="italic">Some of</span> DJ Danny West&apos;s past performances.
+            <span className="italic">Some of</span> DJ Danny West&apos;s Past Performances
           </motion.h2>
         </div>
 
