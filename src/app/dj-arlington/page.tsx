@@ -90,6 +90,7 @@ export default function ArlingtonPage() {
         doing={doing}
         rooms={rooms}
         faq={faq}
+        currentCityHref="/dj-arlington"
       />
       <Footer />
     </main>

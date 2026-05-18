@@ -90,6 +90,7 @@ export default function PlanoPage() {
         doing={doing}
         rooms={rooms}
         faq={faq}
+        currentCityHref="/dj-plano"
       />
       <Footer />
     </main>

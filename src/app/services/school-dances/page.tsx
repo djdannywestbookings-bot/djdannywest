@@ -102,6 +102,7 @@ export default function SchoolDancesPage() {
         proof={proof}
         proofHeading="Where I've played"
         faq={faq}
+        currentServiceHref="/services/school-dances"
       />
       <Footer />
     </main>

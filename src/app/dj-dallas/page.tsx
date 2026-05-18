@@ -88,6 +88,7 @@ export default function DallasPage() {
         doing={doing}
         rooms={rooms}
         faq={faq}
+        currentCityHref="/dj-dallas"
       />
       <Footer />
     </main>

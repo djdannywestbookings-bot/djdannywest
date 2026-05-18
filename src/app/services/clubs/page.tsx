@@ -108,6 +108,7 @@ export default function ClubsPage() {
         proof={proof}
         proofHeading="Floors I've held"
         faq={faq}
+        currentServiceHref="/services/clubs"
       />
       <Footer />
     </main>

@@ -91,6 +91,7 @@ export default function FortWorthPage() {
         doing={doing}
         rooms={rooms}
         faq={faq}
+        currentCityHref="/dj-fort-worth"
       />
       <Footer />
     </main>

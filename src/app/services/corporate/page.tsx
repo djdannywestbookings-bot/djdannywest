@@ -109,6 +109,7 @@ export default function CorporatePage() {
         proof={proof}
         proofHeading="Rooms I've worked"
         faq={faq}
+        currentServiceHref="/services/corporate"
       />
       <Footer />
     </main>

@@ -110,6 +110,7 @@ export default function WeddingsPage() {
         proof={proof}
         proofHeading="Rooms I know"
         faq={faq}
+        currentServiceHref="/services/weddings"
       />
       <Footer />
     </main>

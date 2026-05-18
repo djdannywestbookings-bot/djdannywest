@@ -102,6 +102,7 @@ export default function BirthdaysPage() {
         proof={proof}
         proofHeading="Where I've played"
         faq={faq}
+        currentServiceHref="/services/birthdays"
       />
       <Footer />
     </main>

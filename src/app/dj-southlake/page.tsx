@@ -88,6 +88,7 @@ export default function SouthlakePage() {
         doing={doing}
         rooms={rooms}
         faq={faq}
+        currentCityHref="/dj-southlake"
       />
       <Footer />
     </main>

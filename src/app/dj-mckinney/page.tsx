@@ -90,6 +90,7 @@ export default function McKinneyPage() {
         doing={doing}
         rooms={rooms}
         faq={faq}
+        currentCityHref="/dj-mckinney"
       />
       <Footer />
     </main>

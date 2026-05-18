@@ -109,6 +109,7 @@ export default function QuinceanerasPage() {
         proof={proof}
         proofHeading="The credibility"
         faq={faq}
+        currentServiceHref="/services/quinceaneras"
       />
       <Footer />
     </main>

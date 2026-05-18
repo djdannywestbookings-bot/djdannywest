@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { RelatedLinks } from "@/components/seo/RelatedLinks";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -25,6 +26,8 @@ export type ServicePageProps = {
   proofHeading: string;
   /** Service-specific FAQ */
   faq: { question: string; answer: string }[];
+  /** Used by the RelatedLinks section to gray out this page's own entry. */
+  currentServiceHref?: string;
 };
 
 export function ServicePage(props: ServicePageProps) {
@@ -39,6 +42,7 @@ export function ServicePage(props: ServicePageProps) {
     proof,
     proofHeading,
     faq,
+    currentServiceHref,
   } = props;
 
   return (
@@ -214,6 +218,9 @@ export function ServicePage(props: ServicePageProps) {
           </div>
         </div>
       </section>
+
+      {/* RELATED LINKS — internal-linking cluster for local SEO */}
+      <RelatedLinks currentService={currentServiceHref} />
 
       {/* BOTTOM CTA */}
       <section className="relative overflow-hidden bg-night py-24 md:py-32">

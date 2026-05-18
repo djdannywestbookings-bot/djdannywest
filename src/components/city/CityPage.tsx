@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { RelatedLinks } from "@/components/seo/RelatedLinks";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -20,10 +21,12 @@ export type CityPageProps = {
   rooms: string[];
   /** FAQ items, also rendered into JSON-LD by the page */
   faq: { question: string; answer: string }[];
+  /** Used by the RelatedLinks section to gray out this page's own entry. */
+  currentCityHref?: string;
 };
 
 export function CityPage(props: CityPageProps) {
-  const { city, region, eyebrow, tagline, intro, doing, rooms, faq } = props;
+  const { city, region, eyebrow, tagline, intro, doing, rooms, faq, currentCityHref } = props;
 
   return (
     <>
@@ -198,6 +201,9 @@ export function CityPage(props: CityPageProps) {
           </div>
         </div>
       </section>
+
+      {/* RELATED LINKS — internal-linking cluster for local SEO */}
+      <RelatedLinks currentCity={currentCityHref} />
 
       {/* BOTTOM CTA */}
       <section className="relative overflow-hidden bg-night py-24 md:py-32">

@@ -89,6 +89,7 @@ export default function IrvingPage() {
         doing={doing}
         rooms={rooms}
         faq={faq}
+        currentCityHref="/dj-irving"
       />
       <Footer />
     </main>

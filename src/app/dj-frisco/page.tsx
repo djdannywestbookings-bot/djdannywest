@@ -89,6 +89,7 @@ export default function FriscoPage() {
         doing={doing}
         rooms={rooms}
         faq={faq}
+        currentCityHref="/dj-frisco"
       />
       <Footer />
     </main>
