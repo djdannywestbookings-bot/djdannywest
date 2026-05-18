@@ -21,7 +21,12 @@ const SERVICE_SLUGS = [
   "services/quinceaneras",
   "services/corporate",
   "services/private-parties",
+  "services/clubs",
+  "services/school-dances",
+  "services/birthdays",
 ];
+
+const TOP_PAGES = ["faq"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -43,6 +48,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly",
     priority: 0.9,
   }));
+  const topRoutes: MetadataRoute.Sitemap = TOP_PAGES.map((slug) => ({
+    url: `${site.url}/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.85,
+  }));
   // Mix detail pages stay indexable so cards crawled from elsewhere still resolve;
   // the /mixes/library catalog itself is noindex (member-facing browsing only).
   const mixRoutes: MetadataRoute.Sitemap = mixes.map((m) => ({
@@ -51,5 +62,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly",
     priority: 0.6,
   }));
-  return [...staticRoutes, ...cityRoutes, ...serviceRoutes, ...mixRoutes];
+  return [...staticRoutes, ...cityRoutes, ...serviceRoutes, ...topRoutes, ...mixRoutes];
 }
