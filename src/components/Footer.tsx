@@ -2,10 +2,32 @@
 
 import { site } from "@/lib/site";
 
-const navItems = [
+const siteItems = [
   { label: "Mixes", href: "/mixes" },
   { label: "Book Danny", href: "/book" },
+  { label: "FAQ", href: "/faq" },
   { label: "Merch", href: "/merchandise" },
+];
+
+const serviceItems = [
+  { label: "Wedding DJ", href: "/services/weddings" },
+  { label: "Quinceañera DJ", href: "/services/quinceaneras" },
+  { label: "Corporate DJ", href: "/services/corporate" },
+  { label: "Private Parties", href: "/services/private-parties" },
+  { label: "Clubs · Nightlife", href: "/services/clubs" },
+  { label: "School Dances · Proms", href: "/services/school-dances" },
+  { label: "Birthdays · Sweet 16", href: "/services/birthdays" },
+];
+
+const cityItems = [
+  { label: "Dallas", href: "/dj-dallas" },
+  { label: "Fort Worth", href: "/dj-fort-worth" },
+  { label: "Arlington", href: "/dj-arlington" },
+  { label: "Plano", href: "/dj-plano" },
+  { label: "Frisco", href: "/dj-frisco" },
+  { label: "Irving", href: "/dj-irving" },
+  { label: "McKinney", href: "/dj-mckinney" },
+  { label: "Southlake", href: "/dj-southlake" },
 ];
 
 const legalItems = [
@@ -39,7 +61,7 @@ export function Footer() {
 
       <div className="relative mx-auto grid max-w-[1600px] grid-cols-1 gap-12 px-6 py-16 md:grid-cols-12 md:gap-10 md:px-12 md:py-20">
         {/* Brand mark + tagline */}
-        <div className="md:col-span-5">
+        <div className="md:col-span-4">
           <a href="/" className="inline-flex items-center gap-3">
             <span className="relative inline-flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60" />
@@ -58,7 +80,7 @@ export function Footer() {
             A DJ that moves rooms. New mixes uploaded weekly — subscribers
             only.{" "}
             <a
-              href="/mixes"
+              href="/subscribe"
               className="not-italic font-sans text-[11px] uppercase tracking-[0.24em] text-ember hover:text-cream transition"
             >
               Subscribe Now →
@@ -95,13 +117,13 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Nav */}
-        <div className="md:col-span-3">
+        {/* Site */}
+        <div className="md:col-span-2">
           <div className="mb-5 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/40">
             Site
           </div>
           <ul className="space-y-3">
-            {navItems.map((item) => (
+            {siteItems.map((item) => (
               <li key={item.label}>
                 <a
                   href={item.href}
@@ -114,17 +136,17 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* Legal */}
-        <div className="md:col-span-2">
+        {/* Services */}
+        <div className="md:col-span-3">
           <div className="mb-5 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/40">
-            Legal
+            DFW DJ Services
           </div>
           <ul className="space-y-3">
-            {legalItems.map((item) => (
+            {serviceItems.map((item) => (
               <li key={item.label}>
                 <a
                   href={item.href}
-                  className="font-sans text-[13px] text-cream/55 transition hover:text-cream"
+                  className="font-sans text-[13px] text-cream/75 transition hover:text-cream"
                 >
                   {item.label}
                 </a>
@@ -133,26 +155,54 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* Contact */}
-        <div className="md:col-span-2">
+        {/* Cities */}
+        <div className="md:col-span-3">
           <div className="mb-5 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/40">
-            Bookings
+            Cities I serve
           </div>
-          <a
-            href="/book"
-            className="opsz-text font-display text-[18px] italic text-cream transition hover:text-ember"
-          >
-            Inquire →
-          </a>
-          <div className="mt-2 font-sans text-[12px] text-cream/45">
-            By inquiry
-          </div>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-3">
+            {cityItems.map((item) => (
+              <li key={item.label}>
+                <a
+                  href={item.href}
+                  className="font-sans text-[13px] text-cream/75 transition hover:text-cream"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Bottom bar */}
-        <div className="md:col-span-12 mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-8 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/35">
-          <span>© {new Date().getFullYear()} Danny West</span>
-          <span>Dallas · Worldwide</span>
+        {/* Legal + Bookings strip */}
+        <div className="md:col-span-12 mt-4 grid grid-cols-1 gap-8 border-t border-line pt-8 md:grid-cols-12">
+          <div className="md:col-span-4 flex items-center gap-6">
+            <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/35">
+              © {new Date().getFullYear()} Danny West
+            </span>
+            <span className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/35">
+              Dallas · Worldwide
+            </span>
+          </div>
+          <div className="md:col-span-5 flex flex-wrap items-center gap-6">
+            {legalItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45 transition hover:text-cream"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+          <div className="md:col-span-3 md:text-right">
+            <a
+              href="/book"
+              className="font-sans text-[11px] uppercase tracking-[0.24em] text-ember transition hover:text-cream"
+            >
+              Bookings by inquiry →
+            </a>
+          </div>
         </div>
       </div>
     </footer>
