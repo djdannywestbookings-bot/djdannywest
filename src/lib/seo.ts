@@ -121,6 +121,34 @@ export function cityServiceSchema(city: string, region = "TX") {
   };
 }
 
+/** Service-specific schema — used on /services/weddings, /services/quinceaneras, etc. */
+export function serviceSchema(opts: {
+  name: string;
+  description: string;
+  serviceType?: string;
+  areaServed?: string[];
+  url?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: opts.name,
+    serviceType: opts.serviceType ?? opts.name,
+    provider: { "@id": localBusinessId },
+    areaServed: (opts.areaServed ?? site.areaServed).map((a) => ({
+      "@type": "City",
+      name: a,
+    })),
+    description: opts.description,
+    url: opts.url,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+  };
+}
+
 /** Helper for FAQPage schema — boosts featured snippets in search. */
 export function faqSchema(items: { question: string; answer: string }[]) {
   return {

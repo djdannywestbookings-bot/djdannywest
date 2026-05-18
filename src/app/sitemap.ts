@@ -5,6 +5,24 @@ import type { Mix } from "@/components/mixes/MixCard";
 
 const mixes = mixesJson as Mix[];
 
+const CITY_SLUGS = [
+  "dj-dallas",
+  "dj-fort-worth",
+  "dj-arlington",
+  "dj-plano",
+  "dj-frisco",
+  "dj-irving",
+  "dj-mckinney",
+  "dj-southlake",
+];
+
+const SERVICE_SLUGS = [
+  "services/weddings",
+  "services/quinceaneras",
+  "services/corporate",
+  "services/private-parties",
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -12,9 +30,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${site.url}/mixes`, lastModified: now, changeFrequency: "weekly", priority: 0.95 },
     { url: `${site.url}/book`, lastModified: now, changeFrequency: "monthly", priority: 0.95 },
     { url: `${site.url}/merchandise`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${site.url}/dj-dallas`, lastModified: now, changeFrequency: "monthly", priority: 0.95 },
-    { url: `${site.url}/dj-fort-worth`, lastModified: now, changeFrequency: "monthly", priority: 0.95 },
   ];
+  const cityRoutes: MetadataRoute.Sitemap = CITY_SLUGS.map((slug) => ({
+    url: `${site.url}/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.92,
+  }));
+  const serviceRoutes: MetadataRoute.Sitemap = SERVICE_SLUGS.map((slug) => ({
+    url: `${site.url}/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.9,
+  }));
   // Mix detail pages stay indexable so cards crawled from elsewhere still resolve;
   // the /mixes/library catalog itself is noindex (member-facing browsing only).
   const mixRoutes: MetadataRoute.Sitemap = mixes.map((m) => ({
@@ -23,5 +51,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly",
     priority: 0.6,
   }));
-  return [...staticRoutes, ...mixRoutes];
+  return [...staticRoutes, ...cityRoutes, ...serviceRoutes, ...mixRoutes];
 }

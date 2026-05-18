@@ -85,7 +85,7 @@ export default function FortWorthPage() {
       <CityPage
         city={city}
         region="Fort Worth, TX · Tarrant County"
-        eyebrow="No. 07 — Fort Worth"
+        eyebrow="Fort Worth"
         tagline="Touring-level DJ, 25 minutes from downtown. Weddings, corporate, private, club. Based in Arlington — Fort Worth is home turf. Bookings by inquiry."
         intro={intro}
         doing={doing}

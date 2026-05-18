@@ -82,7 +82,7 @@ export default function DallasPage() {
       <CityPage
         city={city}
         region="Dallas, TX · DFW Metroplex"
-        eyebrow="No. 06 — Dallas"
+        eyebrow="Dallas"
         tagline="Weddings, corporate floors, clubs, private events. Based in Arlington, working Dallas every weekend. You talk to me, you book me."
         intro={intro}
         doing={doing}
