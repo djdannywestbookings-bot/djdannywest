@@ -45,3 +45,88 @@ html, body {
 .opsz-text {
   font-variation-settings: normal;
 }
+
+/* ============================================================
+   Insider posts — long-form prose styling.
+   Applied via <article class="insider-prose"> on /insider/[slug].
+   ============================================================ */
+.insider-prose {
+  color: rgba(245, 241, 234, 0.82);
+  font-size: 17px;
+  line-height: 1.75;
+}
+.insider-prose > * + * {
+  margin-top: 1.2em;
+}
+.insider-prose h1,
+.insider-prose h2,
+.insider-prose h3 {
+  color: var(--color-cream);
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin-top: 1.8em;
+}
+.insider-prose h1 { font-size: 2.2rem; }
+.insider-prose h2 { font-size: 1.7rem; }
+.insider-prose h3 { font-size: 1.3rem; letter-spacing: 0.02em; text-transform: uppercase; }
+.insider-prose p { margin: 0; }
+.insider-prose strong { color: var(--color-cream); font-weight: 600; }
+.insider-prose em { font-style: italic; color: var(--color-cream); }
+.insider-prose ul,
+.insider-prose ol {
+  padding-left: 1.4em;
+}
+.insider-prose ul { list-style: disc; }
+.insider-prose ol { list-style: decimal; }
+.insider-prose li { margin-top: 0.4em; }
+.insider-prose .insider-link,
+.insider-prose a {
+  color: var(--color-ember);
+  text-decoration: underline;
+  text-decoration-color: rgba(229, 185, 122, 0.35);
+  text-underline-offset: 4px;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+.insider-prose .insider-link:hover,
+.insider-prose a:hover {
+  color: var(--color-cream);
+  text-decoration-color: var(--color-cream);
+}
+.insider-prose code {
+  background: rgba(245, 241, 234, 0.08);
+  border: 1px solid var(--color-line);
+  padding: 0.1em 0.4em;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.insider-prose pre {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--color-line);
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-size: 0.9em;
+}
+.insider-prose pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.insider-prose hr {
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  margin: 2.5em 0;
+}
+.insider-prose .insider-quote,
+.insider-prose blockquote {
+  border-left: 2px solid var(--color-ember);
+  padding: 4px 0 4px 22px;
+  font-style: italic;
+  color: var(--color-cream);
+  font-size: 1.1em;
+  line-height: 1.55;
+}
+.insider-prose img {
+  width: 100%;
+  border: 1px solid var(--color-line);
+}

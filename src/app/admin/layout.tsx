@@ -13,6 +13,7 @@ const navItems = [
   { href: "/admin/members", label: "Members" },
   { href: "/admin/series", label: "Series" },
   { href: "/admin/mixes", label: "Mixes" },
+  { href: "/admin/posts", label: "Posts" },
   { href: "/admin/requests", label: "Requests" },
   { href: "/admin/bookings", label: "Bookings" },
 ];
