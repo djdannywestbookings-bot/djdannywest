@@ -26,7 +26,7 @@ const SERVICE_SLUGS = [
   "services/birthdays",
 ];
 
-const TOP_PAGES = ["faq"];
+const TOP_PAGES = ["faq", "wedding-dj-guide"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

@@ -5,6 +5,7 @@ import { site } from "@/lib/site";
 const siteItems = [
   { label: "Mixes", href: "/mixes" },
   { label: "Book Danny", href: "/book" },
+  { label: "Wedding DJ Guide", href: "/wedding-dj-guide" },
   { label: "FAQ", href: "/faq" },
   { label: "Merch", href: "/merchandise" },
 ];
