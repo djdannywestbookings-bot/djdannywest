@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
+import { AccountShell } from "@/components/account/AccountShell";
 import { createClient } from "@/lib/supabase/server";
 import { saveNotificationPrefs } from "./actions";
 
@@ -69,31 +69,38 @@ export default async function NotificationsPage() {
     },
   ];
 
-  return (
-    <div className="flex min-h-screen flex-col">
-      <SiteNav />
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 pb-24 pt-16 md:pt-24">
-        <Link
-          href="/account"
-          className="font-sans text-[11px] uppercase tracking-[0.28em] text-cream/55 transition hover:text-cream"
-        >
-          ← Member dashboard
-        </Link>
-        <div className="mt-6">
-          <p className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45">
-            — Notifications
-          </p>
-          <h1 className="mt-3 font-serif text-[56px] leading-[0.95] tracking-[-0.02em] md:text-[72px]">
-            What you <span className="italic text-ember">hear</span>{" "}
-            <span className="italic text-ember">about.</span>
-          </h1>
-          <p className="mt-6 max-w-xl font-sans text-[14px] leading-relaxed text-cream/65">
-            Choose what hits your inbox. You can change this any time. Transactional emails
-            (password resets, booking confirmations) always send — those aren't optional.
-          </p>
-        </div>
+  const displayName =
+    (user.user_metadata?.name as string | undefined) ||
+    (user.user_metadata?.full_name as string | undefined) ||
+    user.email?.split("@")[0] ||
+    "Member";
 
-        <form action={saveNotificationPrefs} className="mt-12 space-y-2">
+  return (
+    <main className="bg-night text-cream">
+      <SiteNav />
+      <div className="relative overflow-hidden bg-night">
+        <div className="grain pointer-events-none absolute inset-0 opacity-[0.10] mix-blend-overlay" />
+        <AccountShell
+          active="notifications"
+          displayName={displayName}
+          email={user.email ?? ""}
+        >
+          <header>
+            <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45">
+              <div className="mb-2 h-px w-10 bg-ember/70" />
+              Notifications
+            </div>
+            <h1 className="mt-4 font-display text-[clamp(40px,5vw,72px)] font-light leading-[0.95] tracking-[-0.03em] text-cream">
+              What you <span className="italic text-ember">hear about.</span>
+            </h1>
+            <p className="mt-6 max-w-xl font-sans text-[15px] leading-relaxed text-cream/65">
+              Choose what hits your inbox. You can change this any time.
+              Transactional emails (password resets, booking confirmations) always
+              send — those aren&apos;t optional.
+            </p>
+          </header>
+
+          <form action={saveNotificationPrefs} className="mt-10 space-y-2">
           {toggles.map((t) => (
             <label
               key={t.name}
@@ -131,17 +138,18 @@ export default async function NotificationsPage() {
             />
           </label>
 
-          <div className="pt-6">
-            <button
-              type="submit"
-              className="bg-cream px-8 py-3.5 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition hover:bg-ember"
-            >
-              Save preferences →
-            </button>
-          </div>
-        </form>
-      </main>
+            <div className="pt-6">
+              <button
+                type="submit"
+                className="bg-cream px-8 py-3.5 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition hover:bg-ember"
+              >
+                Save preferences →
+              </button>
+            </div>
+          </form>
+        </AccountShell>
+      </div>
       <Footer />
-    </div>
+    </main>
   );
 }

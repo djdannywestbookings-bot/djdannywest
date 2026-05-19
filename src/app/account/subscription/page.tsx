@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
+import { AccountShell } from "@/components/account/AccountShell";
 import { createClient } from "@/lib/supabase/server";
 import { ManageButton } from "@/components/subscribe/ManageButton";
 
@@ -61,25 +62,33 @@ export default async function AccountSubscriptionPage() {
   const hasComp = comps && comps.length > 0;
   const isActiveSub = sub?.status === "ACTIVE";
 
+  const displayName =
+    (user.user_metadata?.name as string | undefined) ||
+    (user.user_metadata?.full_name as string | undefined) ||
+    user.email?.split("@")[0] ||
+    "Member";
+
   return (
     <main className="bg-night text-cream">
       <SiteNav />
-      <section className="mx-auto max-w-3xl px-6 pb-24 pt-20 md:pt-24">
-        <Link
-          href="/account"
-          className="font-sans text-[11px] uppercase tracking-[0.28em] text-cream/55 transition hover:text-cream"
+      <div className="relative overflow-hidden bg-night">
+        <div className="grain pointer-events-none absolute inset-0 opacity-[0.10] mix-blend-overlay" />
+        <AccountShell
+          active="subscription"
+          displayName={displayName}
+          email={user.email ?? ""}
         >
-          ← Member dashboard
-        </Link>
+          <header>
+            <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45">
+              <div className="mb-2 h-px w-10 bg-ember/70" />
+              Your subscription
+            </div>
+            <h1 className="mt-4 font-display text-[clamp(40px,5vw,72px)] font-light leading-[0.95] tracking-[-0.03em] text-cream">
+              The <span className="italic text-ember">membership.</span>
+            </h1>
+          </header>
 
-        <p className="mt-6 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45">
-          — Your subscription
-        </p>
-        <h1 className="mt-3 font-serif text-[56px] leading-[0.95] tracking-[-0.02em] md:text-[72px]">
-          The <span className="italic text-ember">membership.</span>
-        </h1>
-
-        <div className="mt-12 space-y-8">
+          <div className="mt-10 space-y-8">
           {/* Active subscription */}
           {isActiveSub && sub && (
             <div className="border-t-2 border-ember/70 bg-cream/[0.03] p-7">
@@ -161,8 +170,9 @@ export default async function AccountSubscriptionPage() {
               </dl>
             </div>
           )}
-        </div>
-      </section>
+          </div>
+        </AccountShell>
+      </div>
       <Footer />
     </main>
   );

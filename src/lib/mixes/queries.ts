@@ -132,6 +132,53 @@ export async function getMixBySlug(
 }
 
 /**
+ * Get the single most-recently published mix across all series. Used by
+ * the member dashboard's "Just Dropped" hero.
+ */
+export async function getLatestMix(): Promise<DbMix | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("mixes")
+    .select("*")
+    .eq("is_published", true)
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .limit(1)
+    .maybeSingle();
+  return (data as DbMix) ?? null;
+}
+
+/**
+ * For each published series, return the series + its newest mix (or null).
+ * Used by the member dashboard's "Your Series" shelf.
+ */
+export async function getSeriesWithLatestMix(): Promise<
+  Array<{ series: DbSeries; latest: DbMix | null }>
+> {
+  const supabase = await createClient();
+  const seriesList = await getAllSeries();
+  if (seriesList.length === 0) return [];
+
+  const seriesIds = seriesList.map((s) => s.id);
+  const { data: mixes } = await supabase
+    .from("mixes")
+    .select("*")
+    .in("series_id", seriesIds)
+    .eq("is_published", true)
+    .order("published_at", { ascending: false, nullsFirst: false });
+
+  const latestBySeries = new Map<string, DbMix>();
+  for (const m of (mixes as DbMix[]) ?? []) {
+    if (!m.series_id) continue;
+    if (!latestBySeries.has(m.series_id)) latestBySeries.set(m.series_id, m);
+  }
+
+  return seriesList.map((s) => ({
+    series: s,
+    latest: latestBySeries.get(s.id) ?? null,
+  }));
+}
+
+/**
  * Get the prev/next mix within the same series for a given mix slug.
  * Newest-first ordering — "prev" = newer, "next" = older, matching the UX of the library page.
  */
