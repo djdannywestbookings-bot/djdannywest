@@ -15,6 +15,7 @@ const navItems = [
   { href: "/admin/mixes", label: "Mixes" },
   { href: "/admin/posts", label: "Posts" },
   { href: "/admin/requests", label: "Requests" },
+  { href: "/admin/custom-mixes", label: "Custom mixes" },
   { href: "/admin/bookings", label: "Bookings" },
 ];
 

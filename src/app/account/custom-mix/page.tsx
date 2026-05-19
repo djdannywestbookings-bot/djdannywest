@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 import { AccountShell } from "@/components/account/AccountShell";
+import { CustomMixOrderForm } from "@/components/custom-mix/CustomMixOrderForm";
 import { createClient } from "@/lib/supabase/server";
+import { getStripeConfig } from "@/lib/stripe/client";
 
 export const metadata: Metadata = {
   title: "Custom mix",
@@ -12,25 +14,65 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-/**
- * Placeholder for the $100 custom-mix product page.
- *
- * Round 2 will replace this with:
- *   - 8–15 song input rows (Spotify URL or freeform "title — artist")
- *   - Mood / vibe dropdown, target length, occasion, do-not-do
- *   - Stripe one-time checkout ($100)
- *   - On success: row in custom_mix_orders, admin email, member dashboard tracker
- *   - Admin /admin/custom-mixes queue + deliver action
- *
- * For now we render the product description + a notify-me CTA so the
- * sidebar link works and the offering is publicly visible.
- */
+type OrderRow = {
+  id: string;
+  status: string;
+  amount_cents: number;
+  vibe: string | null;
+  target_length_minutes: number | null;
+  occasion: string | null;
+  created_at: string;
+  delivered_at: string | null;
+  delivery_mix_url: string | null;
+};
+
+function statusLabel(s: string): { label: string; cls: string } {
+  switch (s) {
+    case "pending_payment":
+      return { label: "Awaiting payment", cls: "border-cream/30 text-cream/65" };
+    case "paid":
+      return { label: "Paid · in queue", cls: "border-cream/50 text-cream" };
+    case "in_progress":
+      return { label: "Building it now", cls: "border-ember/60 text-ember" };
+    case "delivered":
+      return { label: "Delivered", cls: "border-cream/60 text-cream" };
+    case "refunded":
+      return { label: "Refunded", cls: "border-cream/20 text-cream/45" };
+    default:
+      return { label: s, cls: "border-cream/20 text-cream/55" };
+  }
+}
+
+function fmtDate(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export default async function CustomMixPage() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/account/custom-mix");
+
+  const cfg = getStripeConfig();
+  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || null;
+  const stripeReady = !!cfg && !!publishableKey;
+
+  // Load member's past orders (newest first)
+  const { data: orders } = await supabase
+    .from("custom_mix_orders")
+    .select(
+      "id, status, amount_cents, vibe, target_length_minutes, occasion, created_at, delivered_at, delivery_mix_url",
+    )
+    .eq("member_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  const rows = (orders ?? []) as OrderRow[];
 
   const displayName =
     (user.user_metadata?.name as string | undefined) ||
@@ -57,13 +99,73 @@ export default async function CustomMixPage() {
               Your songs.{" "}
               <span className="italic text-ember">A real DJ mix.</span>
             </h1>
-            <p className="mt-6 max-w-2xl font-sans text-[16px] leading-[1.65] text-cream/75">
+            <p className="mt-6 max-w-2xl font-sans text-[15px] leading-[1.65] text-cream/70">
               Send me 8–15 songs you love. I&apos;ll blend them into a 60–90
               minute mix that flows like a real DJ set — keys, energy,
-              transitions, the whole thing. For your wedding pre-party, your
-              gym, your dad&apos;s 60th, your road trip. Yours, only yours.
+              transitions, the whole thing. Yours, only yours. Delivered in 7
+              days or less.
             </p>
           </header>
+
+          {/* PAST ORDERS — only shown if any exist */}
+          {rows.length > 0 ? (
+            <section className="mt-12">
+              <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45">
+                <div className="mb-2 h-px w-10 bg-ember/70" />
+                Your orders
+              </div>
+              <ul className="mt-5 divide-y divide-cream/10 border-y border-cream/10">
+                {rows.map((o) => {
+                  const s = statusLabel(o.status);
+                  return (
+                    <li
+                      key={o.id}
+                      className="grid grid-cols-12 gap-3 py-5"
+                    >
+                      <div className="col-span-12 md:col-span-6">
+                        <div className="font-display text-[18px] text-cream">
+                          {o.occasion || "Custom mix"}
+                        </div>
+                        <div className="mt-1 font-sans text-[12px] text-cream/55">
+                          {o.vibe ? `${o.vibe} · ` : ""}
+                          {o.target_length_minutes ? `${o.target_length_minutes} min · ` : ""}
+                          ${(o.amount_cents / 100).toFixed(0)}
+                        </div>
+                      </div>
+                      <div className="col-span-6 md:col-span-3">
+                        <span
+                          className={`inline-block border ${s.cls} px-2.5 py-1 font-sans text-[10px] uppercase tracking-[0.22em]`}
+                        >
+                          {s.label}
+                        </span>
+                        {o.delivery_mix_url ? (
+                          <a
+                            href={o.delivery_mix_url}
+                            target="_blank"
+                            rel="noopener"
+                            className="ml-3 inline-flex items-center gap-1 font-sans text-[11px] uppercase tracking-[0.22em] text-ember transition hover:text-cream"
+                          >
+                            Listen / Download →
+                          </a>
+                        ) : null}
+                      </div>
+                      <div className="col-span-6 text-right font-sans text-[11px] uppercase tracking-[0.22em] text-cream/45 md:col-span-3">
+                        Ordered {fmtDate(o.created_at)}
+                        {o.delivered_at ? (
+                          <>
+                            <br />
+                            <span className="text-ember">
+                              Delivered {fmtDate(o.delivered_at)}
+                            </span>
+                          </>
+                        ) : null}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ) : null}
 
           {/* WHAT YOU GET */}
           <section className="mt-12">
@@ -90,77 +192,30 @@ export default async function CustomMixPage() {
             </div>
           </section>
 
-          {/* COMING SOON CTA */}
-          <section className="mt-12 border border-ember/40 bg-gradient-to-br from-ember/[0.08] to-transparent p-7 md:p-10">
-            <div className="font-sans text-[10px] uppercase tracking-[0.28em] text-ember">
-              Ordering opens this week
-            </div>
-            <h2 className="mt-3 font-display text-[28px] font-light leading-tight tracking-[-0.01em] text-cream md:text-[36px]">
-              Want to be first in line?
-            </h2>
-            <p className="mt-3 max-w-xl font-sans text-[14px] leading-[1.6] text-cream/65">
-              Drop a note via the request-a-mix form — mention it&apos;s for a
-              custom mix and I&apos;ll personally reach out the moment ordering
-              goes live. Or just check back here in a few days.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center gap-4">
-              <a
-                href="/account/request-mix"
-                className="group inline-flex items-center gap-2 bg-ember px-7 py-3.5 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition hover:bg-cream"
-              >
-                Reach out via request form
-                <span className="transition-transform duration-300 group-hover:translate-x-1">
-                  →
-                </span>
-              </a>
-              <a
-                href="/account"
-                className="font-sans text-[11px] uppercase tracking-[0.24em] text-cream/65 underline decoration-cream/20 underline-offset-[6px] transition hover:text-cream hover:decoration-cream"
-              >
-                Back to dashboard
-              </a>
-            </div>
-          </section>
-
-          {/* THE PROCESS */}
+          {/* ORDER FORM / CHECKOUT */}
           <section className="mt-14">
             <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/45">
               <div className="mb-2 h-px w-10 bg-ember/70" />
-              How it&apos;ll work
+              {rows.length > 0 ? "Order another" : "Order your custom mix"}
             </div>
-            <ol className="mt-5 space-y-5 border-y border-cream/10 py-5">
-              {[
-                {
-                  n: "01",
-                  t: "You order + send your songs",
-                  b: "Stripe checkout ($100). On the same page you drop 8–15 song titles or Spotify links, plus the vibe and length you want.",
-                },
-                {
-                  n: "02",
-                  t: "I confirm + start building",
-                  b: "Within 24 hours I email you confirming the brief is clear and giving you a delivery ETA.",
-                },
-                {
-                  n: "03",
-                  t: "I deliver inside 7 days",
-                  b: "MP3 download + private streaming link in your member dashboard + email. You own the mix.",
-                },
-              ].map((step) => (
-                <li key={step.n} className="grid grid-cols-12 gap-4">
-                  <div className="col-span-2 font-sans text-[11px] uppercase tracking-[0.32em] text-ember md:col-span-1">
-                    {step.n}
-                  </div>
-                  <div className="col-span-10 md:col-span-11">
-                    <div className="font-display text-[19px] text-cream">
-                      {step.t}
-                    </div>
-                    <div className="mt-1 font-sans text-[13px] leading-[1.6] text-cream/60">
-                      {step.b}
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ol>
+            <div className="mt-5 border border-cream/15 bg-cream/[0.04] p-6 md:p-8">
+              {stripeReady ? (
+                <CustomMixOrderForm publishableKey={publishableKey} />
+              ) : (
+                <div className="font-sans text-[14px] text-cream/65">
+                  Custom mix ordering is currently offline. Send a note via
+                  {" "}
+                  <a
+                    href="/account/request-mix"
+                    className="text-ember underline decoration-ember/40 underline-offset-[5px] transition hover:text-cream"
+                  >
+                    /account/request-mix
+                  </a>
+                  {" "}
+                  and I&apos;ll reply personally.
+                </div>
+              )}
+            </div>
           </section>
         </AccountShell>
       </div>
