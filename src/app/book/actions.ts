@@ -111,27 +111,50 @@ export async function submitBookingInquiry(
   }
 
   // Persist to DB. Use admin client so anonymous (signed-out) submitters can still write.
+  let inquiryId: string | null = null;
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const admin = createAdminClient();
-    await admin.from("booking_inquiries").insert({
-      member_id: user?.id ?? null,
-      event_type: data.eventType || null,
-      event_date: data.eventDate ? data.eventDate : null,
-      location: data.location || null,
-      guest_count: data.guests || null,
-      offer: data.offer || null,
-      contact_name: data.name,
-      contact_email: data.email,
-      contact_phone: data.phone || null,
-      how_heard: data.howHeard || null,
-      notes: data.notes || null,
-      status: "new",
-    });
+    const { data: row } = await admin
+      .from("booking_inquiries")
+      .insert({
+        member_id: user?.id ?? null,
+        event_type: data.eventType || null,
+        event_date: data.eventDate ? data.eventDate : null,
+        location: data.location || null,
+        guest_count: data.guests || null,
+        offer: data.offer || null,
+        contact_name: data.name,
+        contact_email: data.email,
+        contact_phone: data.phone || null,
+        how_heard: data.howHeard || null,
+        notes: data.notes || null,
+        status: "new",
+      })
+      .select("id")
+      .single();
+    inquiryId = (row?.id as string | undefined) ?? null;
   } catch (err) {
     // Persisting to DB is best-effort — never block the email send on it.
     console.error("[BOOKING DB INSERT FAILED]", err);
+  }
+
+  // Enqueue the 5-step welcome drip. Best-effort — failures here do not
+  // prevent the booking confirmation email from being sent.
+  if (inquiryId) {
+    try {
+      const { enqueueInquiryDrip } = await import("@/lib/notifications/inquiry-drip-queue");
+      await enqueueInquiryDrip({
+        inquiryId,
+        contactEmail: data.email,
+        contactName: data.name,
+        eventType: data.eventType || null,
+        eventDate: data.eventDate || null,
+      });
+    } catch (err) {
+      console.error("[INQUIRY DRIP ENQUEUE FAILED]", err);
+    }
   }
 
   const apiKey = process.env.RESEND_API_KEY;
