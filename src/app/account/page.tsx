@@ -79,32 +79,8 @@ export default async function AccountPage() {
             </h1>
           </header>
 
-          {/* JUST DROPPED */}
-          {latest ? (
-            <section className="mt-14">
-              <SectionLabel>Just dropped</SectionLabel>
-              <JustDroppedCard mix={latest} />
-            </section>
-          ) : null}
-
-          {/* YOUR SERIES */}
-          {seriesWithLatest.length > 0 ? (
-            <section className="mt-16">
-              <SectionLabel>Your series</SectionLabel>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {seriesWithLatest.map(({ series, latest }) => (
-                  <SeriesShelfCard
-                    key={series.id}
-                    series={series}
-                    latest={latest}
-                  />
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {/* WHAT YOU CAN DO */}
-          <section className="mt-16">
+          {/* WHAT YOU CAN DO — pinned high so it stays a sales opportunity */}
+          <section className="mt-12">
             <SectionLabel>What you can do</SectionLabel>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <ActionCard
@@ -125,6 +101,30 @@ export default async function AccountPage() {
               />
             </div>
           </section>
+
+          {/* JUST DROPPED */}
+          {latest ? (
+            <section className="mt-16">
+              <SectionLabel>Just dropped</SectionLabel>
+              <JustDroppedCard mix={latest} />
+            </section>
+          ) : null}
+
+          {/* YOUR SERIES */}
+          {seriesWithLatest.length > 0 ? (
+            <section className="mt-16">
+              <SectionLabel>Your series</SectionLabel>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {seriesWithLatest.map(({ series, latest }) => (
+                  <SeriesShelfCard
+                    key={series.id}
+                    series={series}
+                    latest={latest}
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
         </AccountShell>
       </div>
       <Footer />
