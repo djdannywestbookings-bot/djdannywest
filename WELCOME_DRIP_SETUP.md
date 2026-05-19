@@ -7,15 +7,17 @@ while Danny replies + recovers leads who go quiet.
 
 ## Schedule
 
-| Step | Offset | Subject |
-|---|---|---|
-| 1 | 0 hours (next cron tick, within 1 hour) | "Got it, [name] — here's what happens next" |
-| 2 | 48 hours | "While you wait — who I usually play for" |
-| 3 | 120 hours (5 days) | "Venue notes — for [event type]" |
-| 4 | 216 hours (9 days) | "One story from a wedding last fall" |
-| 5 | 336 hours (14 days) | "Still thinking it over? (No pressure)" |
+| Step | Offset | Actual send | Subject |
+|---|---|---|---|
+| 1 | 0 hours | Next daily cron after submit (≤24h) | "Got it, [name] — here's what happens next" |
+| 2 | 48 hours | Day 2 cron tick | "While you wait — who I usually play for" |
+| 3 | 120 hours | Day 5 cron tick | "Venue notes — for [event type]" |
+| 4 | 216 hours | Day 9 cron tick | "One story from a wedding last fall" |
+| 5 | 336 hours | Day 14 cron tick | "Still thinking it over? (No pressure)" |
 
 Schedule offsets are in `DRIP_SCHEDULE_HOURS` (src/lib/notifications/inquiry-drip.ts).
+
+**Cron cadence:** The cron runs **once daily at 13:00 UTC** (= 8am ET, 5am PT). Vercel's Hobby tier caps cron frequency at once-per-day; if you upgrade to Pro, you can edit `vercel.json` to `"0 * * * *"` (hourly) for snappier sends. Either way the existing booking-confirmation email fires synchronously from the form action, so the inquirer NEVER hits a silence gap waiting for the drip.
 
 ## One-time DB migration
 

@@ -18,8 +18,19 @@ import { site } from "@/lib/site";
  * No "Dear valued customer" — Danny writes to one person.
  */
 
+// Schedule offsets (in hours from inquiry submitted_at).
+//
+// IMPORTANT: the cron job runs once daily on Vercel's free Hobby tier
+// (Hobby caps cron frequency at once per day). So actual send time is
+// "the next 13:00 UTC after the offset elapses".
+//
+// Step 1's job is "here's what happens next" — the existing booking-
+// inquiry confirmation email fires SYNCHRONOUSLY from the form action,
+// so step 1 is a layered follow-up, not the only confirmation. Even
+// with a 24-hour cron lag, the inquirer never goes through a silence
+// gap.
 export const DRIP_SCHEDULE_HOURS = [
-  0, // step 1 — sent immediately on inquiry submit
+  0, // step 1 — fires on next daily cron tick (≤24h after submit)
   48, // step 2 — 2 days
   120, // step 3 — 5 days
   216, // step 4 — 9 days
