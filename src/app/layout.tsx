@@ -4,6 +4,8 @@ import "./globals.css";
 import { site } from "@/lib/site";
 import { StructuredData } from "@/components/StructuredData";
 import { personSchema, localBusinessSchema, websiteSchema } from "@/lib/seo";
+import { PlayerProvider } from "@/components/player/PlayerProvider";
+import { PersistentMiniPlayer } from "@/components/player/PersistentMiniPlayer";
 
 // Single-typeface system. Geist is Vercel's modern sans — crisp at every
 // size, no serif, no decorative character. All headings + body use it.
@@ -84,7 +86,14 @@ export default function RootLayout({
         <StructuredData schemas={[personSchema(), localBusinessSchema(), websiteSchema()]} />
       </head>
       <body className="min-h-screen bg-night text-cream antialiased">
-        {children}
+        {/* Global player provider — keeps the bottom MiniPlayer alive across
+            page navigations. Subscription is re-validated server-side on
+            every playback-token fetch, so a lapsed subscription will stop
+            new plays the next time a track is selected. */}
+        <PlayerProvider>
+          {children}
+          <PersistentMiniPlayer />
+        </PlayerProvider>
       </body>
     </html>
   );
