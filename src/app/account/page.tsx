@@ -87,17 +87,19 @@ export default async function AccountPage() {
                 label="Free · 1 per month"
                 title="Request a mix"
                 body="Tell me what you want next — vibe, occasion, a reference playlist. I'll let you know when it's live. Queue-based."
-                cta="Submit a request →"
+                cta="Submit a request"
                 href="/account/request-mix"
                 tone="cream"
+                badge="Included"
               />
               <ActionCard
-                label="One-time · $100 · 7-day turnaround"
+                label="One-time · 7-day turnaround"
                 title="Custom mix"
                 body="Send 8–15 songs. I build you a 60–90 minute mix that flows like a real DJ set. Wedding pre-party, gym, road trip — yours, yours only."
-                cta="Order a custom mix →"
+                cta="Order — $100"
                 href="/account/custom-mix"
                 tone="ember"
+                badge="$100"
               />
             </div>
           </section>
@@ -261,6 +263,7 @@ function ActionCard({
   cta,
   href,
   tone,
+  badge,
 }: {
   label: string;
   title: string;
@@ -268,31 +271,75 @@ function ActionCard({
   cta: string;
   href: string;
   tone: "cream" | "ember";
+  badge?: string;
 }) {
-  const accent =
-    tone === "ember"
-      ? "border-ember/60 bg-gradient-to-br from-ember/[0.06] to-transparent"
-      : "border-line bg-cream/[0.04]";
+  // Two distinct treatments so the cards visually contrast each other AND
+  // the dark page surface. Both have:
+  //   - a thick top accent bar (cream or ember)
+  //   - a brighter card body (cream tint or ember glow) so they pop
+  //   - a corner badge for premium pricing
+  //   - a hover lift + glow ring for tactile feel
+  if (tone === "ember") {
+    return (
+      <a
+        href={href}
+        className="group relative block overflow-hidden border border-ember/70 bg-[radial-gradient(ellipse_at_top_left,_rgba(229,185,122,0.22),_rgba(10,9,7,0.0)_60%)] bg-night/80 p-8 shadow-[0_0_0_1px_rgba(229,185,122,0.05),0_30px_80px_-30px_rgba(229,185,122,0.25)] transition-all duration-500 hover:-translate-y-1 hover:border-ember hover:shadow-[0_0_0_1px_rgba(229,185,122,0.15),0_40px_100px_-30px_rgba(229,185,122,0.45)]"
+      >
+        {/* Top accent bar */}
+        <span className="absolute inset-x-0 top-0 h-[3px] bg-ember" />
+        {/* Corner badge */}
+        {badge ? (
+          <span className="absolute right-5 top-5 inline-flex items-center gap-1.5 border border-ember/60 bg-night/80 px-2.5 py-1 font-sans text-[9px] uppercase tracking-[0.28em] text-ember backdrop-blur-sm">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-ember" />
+            {badge}
+          </span>
+        ) : null}
+        <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-ember">
+          {label}
+        </div>
+        <h3 className="mt-4 font-display text-[32px] font-light leading-[1.0] tracking-[-0.015em] text-cream md:text-[40px]">
+          {title}
+        </h3>
+        <p className="mt-4 max-w-md font-sans text-[14px] leading-[1.65] text-cream/75 md:text-[15px]">
+          {body}
+        </p>
+        <div className="mt-6 inline-flex items-center gap-3 bg-ember px-6 py-3 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition group-hover:bg-cream">
+          {cta}
+          <span className="transition-transform duration-300 group-hover:translate-x-1">
+            →
+          </span>
+        </div>
+      </a>
+    );
+  }
   return (
     <a
       href={href}
-      className={`group block border ${accent} p-6 transition hover:border-cream/40`}
+      className="group relative block overflow-hidden border border-cream/15 bg-[linear-gradient(180deg,_rgba(245,241,234,0.08)_0%,_rgba(245,241,234,0.03)_100%)] p-8 shadow-[0_0_0_1px_rgba(245,241,234,0.03),0_20px_60px_-30px_rgba(0,0,0,0.6)] transition-all duration-500 hover:-translate-y-1 hover:border-cream/45 hover:bg-[linear-gradient(180deg,_rgba(245,241,234,0.12)_0%,_rgba(245,241,234,0.05)_100%)]"
     >
-      <div
-        className={`font-sans text-[10px] uppercase tracking-[0.28em] ${
-          tone === "ember" ? "text-ember" : "text-cream/55"
-        }`}
-      >
+      {/* Top accent bar */}
+      <span className="absolute inset-x-0 top-0 h-[3px] bg-cream/70" />
+      {/* Corner badge */}
+      {badge ? (
+        <span className="absolute right-5 top-5 inline-flex items-center gap-1.5 border border-cream/30 bg-night/60 px-2.5 py-1 font-sans text-[9px] uppercase tracking-[0.28em] text-cream/85 backdrop-blur-sm">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-cream/85" />
+          {badge}
+        </span>
+      ) : null}
+      <div className="font-sans text-[10px] uppercase tracking-[0.32em] text-cream/65">
         {label}
       </div>
-      <h3 className="mt-3 font-display text-[26px] font-light leading-tight tracking-[-0.01em] text-cream md:text-[30px]">
+      <h3 className="mt-4 font-display text-[32px] font-light leading-[1.0] tracking-[-0.015em] text-cream md:text-[40px]">
         {title}
       </h3>
-      <p className="mt-3 font-sans text-[14px] leading-[1.6] text-cream/65">
+      <p className="mt-4 max-w-md font-sans text-[14px] leading-[1.65] text-cream/70 md:text-[15px]">
         {body}
       </p>
-      <div className="mt-5 inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition group-hover:text-ember">
+      <div className="mt-6 inline-flex items-center gap-3 border border-cream/40 bg-cream/[0.04] px-6 py-3 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition group-hover:border-cream group-hover:bg-cream group-hover:text-night">
         {cta}
+        <span className="transition-transform duration-300 group-hover:translate-x-1">
+          →
+        </span>
       </div>
     </a>
   );
