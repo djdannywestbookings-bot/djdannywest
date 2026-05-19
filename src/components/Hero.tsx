@@ -44,7 +44,7 @@ export function Hero() {
               transition={{ duration: 1, ease: easeOut, delay: 0.22 }}
               className="opsz-display block text-[18vw] italic md:text-[clamp(80px,10.5vw,180px)]"
             >
-              that moves
+              A DJ That
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 36 }}
@@ -52,7 +52,7 @@ export function Hero() {
               transition={{ duration: 1, ease: easeOut, delay: 0.36 }}
               className="opsz-display block text-[18vw] italic md:text-[clamp(80px,10.5vw,180px)]"
             >
-              rooms.
+              Moves Rooms
             </motion.span>
           </h1>
 
