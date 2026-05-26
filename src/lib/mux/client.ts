@@ -73,10 +73,17 @@ export function generatePlaybackToken(
   const cfg = getMuxConfig();
   if (!cfg) return null;
   const key = Buffer.from(cfg.signingKeyPrivateBase64, "base64").toString("utf8");
+  // Mux requires the aud claim to be the short code, not the long name.
+  const audClaim = {
+    video: "v",
+    thumbnail: "t",
+    gif: "g",
+    storyboard: "s",
+  }[audience];
   return jwt.sign(
     {
       sub: playbackId,
-      aud: audience,
+      aud: audClaim,
       exp: Math.floor(Date.now() / 1000) + expiresInSeconds,
       kid: cfg.signingKeyId,
     },
