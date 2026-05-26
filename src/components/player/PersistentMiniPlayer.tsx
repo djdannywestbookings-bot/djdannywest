@@ -230,8 +230,6 @@ function PlayerBody({
               background: "transparent",
               color: "#F5F1EA",
               width: "100%",
-              ["--controls" as string]: "none",
-              ["--media-object-fit" as string]: "contain",
             }}
           />
         )}
