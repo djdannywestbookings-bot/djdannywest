@@ -50,14 +50,11 @@ export default async function SubscribePage() {
             $20 <span className="italic text-ember">a month.</span>
           </h1>
           <p className="mt-6 max-w-md font-sans text-[15px] leading-relaxed text-cream/65">
-            Full archive. New mixes uploaded weekly. Request a mix. Subscriber
-            booking discount on your first event. Cancel any time.
+            Full archive. New mixes uploaded weekly. Cancel any time.
           </p>
           <ul className="mt-8 space-y-3 font-sans text-[13px] text-cream/65">
             <li>· The full mix archive</li>
             <li>· New mixes every week</li>
-            <li>· Submit a mix request once a month</li>
-            <li>· 10% off your first booking</li>
             <li>· Cancel any time, no questions</li>
           </ul>
           <p className="mt-10 font-sans text-[11px] uppercase tracking-[0.18em] text-cream/45">
