@@ -1,21 +1,19 @@
-"use client";
-
-import { motion } from "motion/react";
 import { Marquee } from "./Marquee";
 
-const easeOut = [0.16, 1, 0.3, 1] as const;
-
 /**
+ * Hero entry animations are now driven by pure CSS `@keyframes` (defined in
+ * globals.css) instead of motion's `initial`/`animate` props. Reason: motion
+ * sets `opacity: 0` as inline style during SSR, and if hydration ever fails
+ * or is slow, the hero stays invisible. CSS animations are JS-agnostic — they
+ * run automatically when the element mounts, the default state of every
+ * element is visible, and `prefers-reduced-motion: reduce` skips the
+ * animation entirely (handled in globals.css). No-JS fallback is therefore
+ * the default render state.
+ *
  * Headline sizing math (worked out to prevent "Moves Rooms" orphaning):
  *   Mobile 390px:    14vw  = 54.6px  · "Moves Rooms" ~300px in 342 col → fits
- *   Mobile 414px:    14vw  = 57.9px  · ~319px in 366 col → fits
- *   Tablet 768px:    8vw   = 61.4px  · ~338px in ~672 col → fits
- *   Desktop 1024px:  8vw   = 81.9px  · ~451px in ~928 col → fits
  *   Desktop 1440px:  8vw   = 115.2px · ~634px in ~1344 col → fits comfortably
- *   Desktop 1920px:  8vw → clamp ceiling at 140px · ~770px → fits
- * Combined with full-width column (col-span-12 instead of -7) the headline
- * always reads as a two-line block ("A DJ That" / "Moves Rooms") with no
- * orphans at any reasonable viewport.
+ *   Desktop 1920px:  8vw → clamp ceiling at 140px → ~770px → fits
  */
 export function Hero() {
   return (
@@ -49,39 +47,31 @@ export function Hero() {
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-90px)] max-w-[1600px] flex-col justify-end gap-14 px-6 pb-16 pt-8 md:px-12 md:pb-24 md:pt-4">
         <div className="w-full">
           <h1 className="font-display font-extrabold leading-[0.88] tracking-[-0.04em] text-cream">
-            <motion.span
-              initial={{ opacity: 0, y: 36 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: easeOut, delay: 0.22 }}
-              className="opsz-display block text-[14vw] md:text-[clamp(56px,8vw,140px)]"
+            <span
+              className="hero-rise opsz-display block text-[14vw] md:text-[clamp(56px,8vw,140px)]"
+              style={{ animationDelay: "0.22s" }}
             >
               A DJ That
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 36 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: easeOut, delay: 0.36 }}
-              className="opsz-display block italic text-[14vw] md:text-[clamp(56px,8vw,140px)]"
+            </span>
+            <span
+              className="hero-rise opsz-display block italic text-[14vw] md:text-[clamp(56px,8vw,140px)]"
+              style={{ animationDelay: "0.36s" }}
             >
               Moves Rooms
-            </motion.span>
+            </span>
           </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.65 }}
-            className="mt-10 max-w-md font-sans text-[17px] leading-[1.7] text-cream/80 md:text-[18px]"
+          <p
+            className="hero-fade mt-10 max-w-md font-sans text-[17px] leading-[1.7] text-cream/80 md:text-[18px]"
+            style={{ animationDelay: "0.65s" }}
           >
             <span className="text-cream">New mixes released weekly.</span>{" "}
             Subscribers only.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.85 }}
-            className="mt-10 flex max-w-[440px] flex-col gap-4"
+          <div
+            className="hero-fade mt-10 flex max-w-[440px] flex-col gap-4"
+            style={{ animationDelay: "0.85s" }}
           >
             <a
               href="/subscribe"
@@ -97,7 +87,7 @@ export function Hero() {
               <span className="relative z-10">Book DJ Danny West</span>
               <span className="relative z-10 transition-transform duration-300 group-hover:translate-x-1">→</span>
             </a>
-          </motion.div>
+          </div>
         </div>
       </div>
 

@@ -55,3 +55,53 @@ html, body {
 .opsz-text {
   font-variation-settings: "opsz" 14, "SOFT" 100;
 }
+
+/* ============================================================
+   Hero entry animations — pure CSS, JS-agnostic.
+   The Hero component applies `.hero-rise` / `.hero-fade` classes
+   plus an inline `animationDelay` to stagger the entrance. The
+   default render state of every element is VISIBLE (opacity 1,
+   no transform); the keyframes overlay the entrance starting
+   from a hidden state. `animation-fill-mode: both` keeps the
+   element at the `from` frame during the delay, then at the
+   `to` frame after completion.
+
+   Why this matters: if hydration ever fails or is slow, the hero
+   still renders correctly — no inline `opacity: 0` from motion
+   that would leave the headline invisible without JS.
+   `prefers-reduced-motion: reduce` skips the animation entirely.
+   ============================================================ */
+@keyframes hero-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero-rise {
+  animation: hero-rise-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-fade {
+  animation: hero-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-fade {
+    animation: none;
+  }
+}
