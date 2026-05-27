@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import MuxPlayer from "@mux/mux-player-react";
 import { motion, AnimatePresence } from "motion/react";
 import { usePlayer, type NowPlaying } from "./PlayerProvider";
@@ -9,10 +9,16 @@ import { usePlayer, type NowPlaying } from "./PlayerProvider";
  * Sticky bottom-pinned mini-player that lives in the root layout so audio
  * keeps playing as the user navigates between pages.
  *
+ * Mux's default control bar is hidden — we drive the underlying audio
+ * element ourselves so the visual language is editorial / DJ-room: a big
+ * play/pause button, an oversized waveform scrubber (procedurally
+ * generated per-mix, deterministic from the playback ID), hover-time
+ * preview, ember-on-cream progress.
+ *
  * Pulls a signed playback token from /api/mux/playback-token for every
  * track. That endpoint runs the has_active_access() server-side check,
  * so the moment a subscription lapses the next token request fails and
- * the player stops working — built-in auth refresh on every play.
+ * the player stops working.
  *
  * Sets navigator.mediaSession metadata so iOS / Android lock screens
  * and Bluetooth headphones show the track title, series, cover art,
@@ -48,17 +54,20 @@ function PlayerBody({
 }) {
   const [token, setToken] = useState<string | null>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
-  // Mux player ref so we can set Media Session action handlers
   const muxRef = useRef<HTMLElement | null>(null);
 
+  // Custom UI state — driven by the mux-player audio engine
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
   // Fetch a fresh signed JWT every time the loaded track changes.
-  // The /api/mux/playback-token endpoint re-checks has_active_access()
-  // on every call, so this also serves as the "still subscribed?"
-  // verification on each play.
   useEffect(() => {
     let cancelled = false;
     setToken(null);
     setTokenError(null);
+    setCurrentTime(0);
+    setDuration(0);
     (async () => {
       try {
         const resp = await fetch(
@@ -89,6 +98,58 @@ function PlayerBody({
     };
   }, [nowPlaying.playbackId]);
 
+  // Bind audio engine events into local state for the custom UI
+  useEffect(() => {
+    const el = muxRef.current as
+      | (HTMLElement & {
+          play: () => Promise<void>;
+          pause: () => void;
+          currentTime: number;
+          duration: number;
+          paused: boolean;
+          volume: number;
+        })
+      | null;
+    if (!el) return;
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    const onTime = () => setCurrentTime(el.currentTime || 0);
+    const onDur = () => setDuration(el.duration || 0);
+    el.addEventListener("play", onPlay);
+    el.addEventListener("pause", onPause);
+    el.addEventListener("timeupdate", onTime);
+    el.addEventListener("durationchange", onDur);
+    el.addEventListener("loadedmetadata", onDur);
+    return () => {
+      el.removeEventListener("play", onPlay);
+      el.removeEventListener("pause", onPause);
+      el.removeEventListener("timeupdate", onTime);
+      el.removeEventListener("durationchange", onDur);
+      el.removeEventListener("loadedmetadata", onDur);
+    };
+  }, [token]);
+
+  const togglePlay = () => {
+    const el = muxRef.current as (HTMLElement & {
+      play: () => Promise<void>;
+      pause: () => void;
+      paused: boolean;
+    }) | null;
+    if (!el) return;
+    if (el.paused) {
+      el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
+  };
+
+  const seekTo = (time: number) => {
+    const el = muxRef.current as (HTMLElement & { currentTime: number }) | null;
+    if (el && isFinite(time)) {
+      el.currentTime = Math.max(0, Math.min(duration || time, time));
+    }
+  };
+
   // Wire navigator.mediaSession so the lock-screen / AirPods / Bluetooth
   // controls show the right track and respond to taps.
   useEffect(() => {
@@ -108,20 +169,17 @@ function PlayerBody({
         : [],
     });
 
-    const player = muxRef.current as (HTMLAudioElement & { play: () => Promise<void>; pause: () => void; currentTime: number; duration: number }) | null;
+    const player = muxRef.current as
+      | (HTMLAudioElement & {
+          play: () => Promise<void>;
+          pause: () => void;
+          currentTime: number;
+          duration: number;
+        })
+      | null;
     const handlers: Array<[MediaSessionAction, MediaSessionActionHandler]> = [
-      [
-        "play",
-        () => {
-          player?.play().catch(() => {});
-        },
-      ],
-      [
-        "pause",
-        () => {
-          player?.pause();
-        },
-      ],
+      ["play", () => { player?.play().catch(() => {}); }],
+      ["pause", () => { player?.pause(); }],
       [
         "seekbackward",
         (details: { seekOffset?: number }) => {
@@ -145,7 +203,7 @@ function PlayerBody({
       ],
       [
         "seekto",
-        (details: { seekTime?: number; fastSeek?: boolean }) => {
+        (details: { seekTime?: number }) => {
           if (player && typeof details.seekTime === "number") {
             player.currentTime = details.seekTime;
           }
@@ -156,7 +214,7 @@ function PlayerBody({
       try {
         navigator.mediaSession.setActionHandler(action, handler);
       } catch {
-        // Some platforms reject unknown actions silently — ignore.
+        /* unsupported actions silently ignored */
       }
     }
     return () => {
@@ -171,46 +229,10 @@ function PlayerBody({
   }, [nowPlaying]);
 
   return (
-    <div className="mx-auto flex max-w-[1600px] items-center gap-4 px-4 py-3 md:gap-6 md:px-8 md:py-4">
-      {/* Track meta */}
-      <div className="flex min-w-0 flex-1 items-center gap-3 md:flex-[0_0_280px]">
-        <div className="relative aspect-square h-12 w-12 shrink-0 overflow-hidden bg-night-soft md:h-14 md:w-14">
-          {nowPlaying.coverUrl ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={nowPlaying.coverUrl}
-              alt=""
-              className="h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center font-display text-[20px] text-cream/20">
-              ♫
-            </div>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="truncate font-display text-[14px] leading-tight text-cream md:text-[15px]">
-            {nowPlaying.title}
-          </div>
-          {nowPlaying.subtitle ? (
-            <div className="truncate font-sans text-[11px] uppercase tracking-[0.2em] text-cream/45">
-              {nowPlaying.subtitle}
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      {/* Mux Player — handles its own play/pause/scrub UI */}
-      <div className="flex-1">
-        {tokenError ? (
-          <div className="font-sans text-[12px] text-ember">{tokenError}</div>
-        ) : !token ? (
-          <div className="font-sans text-[11px] uppercase tracking-[0.22em] text-cream/45">
-            Loading…
-          </div>
-        ) : (
+    <div className="mx-auto flex max-w-[1600px] items-center gap-4 px-4 py-3 md:gap-5 md:px-8 md:py-4">
+      {/* Hidden Mux Player — drives audio decode/HLS playback */}
+      <div className="hidden">
+        {token ? (
           <MuxPlayer
             ref={(el) => {
               muxRef.current = el as unknown as HTMLElement | null;
@@ -221,18 +243,97 @@ function PlayerBody({
               video_title: nowPlaying.title,
               video_series: nowPlaying.subtitle ?? undefined,
             }}
-            accentColor="#E5B97A"
-            primaryColor="#F5F1EA"
             audio
             streamType="on-demand"
             autoPlay
             style={{
               background: "transparent",
-              color: "#F5F1EA",
-              width: "100%",
+              ["--controls" as string]: "none",
             }}
           />
+        ) : null}
+      </div>
+
+      {/* Cover art */}
+      <div className="relative aspect-square h-12 w-12 shrink-0 overflow-hidden bg-night-soft md:h-16 md:w-16">
+        {nowPlaying.coverUrl ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={nowPlaying.coverUrl}
+            alt=""
+            className="h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center font-display text-[22px] text-cream/20">
+            ♫
+          </div>
         )}
+        {isPlaying ? (
+          <div className="pointer-events-none absolute inset-0 ring-1 ring-ember/50" />
+        ) : null}
+      </div>
+
+      {/* Track meta — hides on small screens to make room for waveform */}
+      <div className="hidden min-w-0 lg:block lg:w-[200px]">
+        <div className="truncate font-display text-[14px] leading-tight text-cream">
+          {nowPlaying.title}
+        </div>
+        {nowPlaying.subtitle ? (
+          <div className="mt-1 truncate font-sans text-[10px] uppercase tracking-[0.22em] text-cream/45">
+            {nowPlaying.subtitle}
+          </div>
+        ) : null}
+      </div>
+
+      {/* Play / pause button — ember filled circle, dominant visual cue */}
+      <button
+        type="button"
+        onClick={togglePlay}
+        disabled={!token}
+        aria-label={isPlaying ? "Pause" : "Play"}
+        className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ember text-night transition hover:scale-105 disabled:opacity-40 md:h-12 md:w-12"
+      >
+        {isPlaying ? (
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <rect x="3" y="2" width="3.5" height="12" rx="0.5" />
+            <rect x="9.5" y="2" width="3.5" height="12" rx="0.5" />
+          </svg>
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style={{ marginLeft: 2 }}>
+            <path d="M3.5 2.5L13 8L3.5 13.5V2.5Z" />
+          </svg>
+        )}
+      </button>
+
+      {/* Current time */}
+      <div className="hidden shrink-0 font-sans text-[11px] uppercase tracking-[0.2em] tabular-nums text-cream/65 md:block md:w-12 md:text-right">
+        {formatTime(currentTime)}
+      </div>
+
+      {/* Waveform scrubber — the visual centerpiece */}
+      <div className="min-w-0 flex-1">
+        {tokenError ? (
+          <div className="font-sans text-[12px] text-ember">{tokenError}</div>
+        ) : !token ? (
+          <div className="font-sans text-[11px] uppercase tracking-[0.22em] text-cream/45">
+            Loading…
+          </div>
+        ) : (
+          <Waveform
+            currentTime={currentTime}
+            duration={duration}
+            onSeek={seekTo}
+            seed={nowPlaying.playbackId}
+            isPlaying={isPlaying}
+          />
+        )}
+      </div>
+
+      {/* Duration */}
+      <div className="hidden shrink-0 font-sans text-[11px] uppercase tracking-[0.2em] tabular-nums text-cream/65 md:block md:w-12">
+        {formatTime(duration)}
       </div>
 
       {/* Close */}
@@ -259,4 +360,138 @@ function PlayerBody({
       </button>
     </div>
   );
+}
+
+/**
+ * Procedural-but-deterministic waveform display.
+ *
+ * Real per-track waveforms would require pre-rendering audio peaks server-side
+ * or pulling Mux's audio_waveform image (which requires extra signed tokens
+ * and adds load latency). For now: seed an RNG from the playback ID and walk
+ * a smoothly-varying random function across N bars. Each track gets a unique-
+ * looking waveform, identical across reloads, and renders instantly with no
+ * extra network calls. Real waveform integration = a later pass.
+ */
+function Waveform({
+  currentTime,
+  duration,
+  onSeek,
+  seed,
+  isPlaying,
+}: {
+  currentTime: number;
+  duration: number;
+  onSeek: (time: number) => void;
+  seed: string;
+  isPlaying: boolean;
+}) {
+  const bars = useMemo(() => generateBars(seed, 140), [seed]);
+  const progress = duration > 0 ? Math.min(1, currentTime / duration) : 0;
+  const [hoverRatio, setHoverRatio] = useState<number | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+
+  const ratioFromEvent = (clientX: number): number => {
+    const el = trackRef.current;
+    if (!el) return 0;
+    const rect = el.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  };
+
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) =>
+    setHoverRatio(ratioFromEvent(e.clientX));
+  const handleLeave = () => setHoverRatio(null);
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (duration <= 0) return;
+    onSeek(ratioFromEvent(e.clientX) * duration);
+  };
+
+  const hoverTime =
+    hoverRatio !== null && duration > 0 ? hoverRatio * duration : null;
+
+  return (
+    <div className="relative" style={{ paddingTop: 18 }}>
+      {hoverTime !== null && hoverRatio !== null ? (
+        <div
+          className="pointer-events-none absolute font-sans text-[10px] uppercase tracking-[0.2em] tabular-nums text-cream/85"
+          style={{
+            top: 0,
+            left: `${hoverRatio * 100}%`,
+            transform: "translateX(-50%)",
+          }}
+        >
+          {formatTime(hoverTime)}
+        </div>
+      ) : null}
+      <div
+        ref={trackRef}
+        onMouseMove={handleMove}
+        onMouseLeave={handleLeave}
+        onClick={handleClick}
+        role="slider"
+        aria-label="Seek"
+        aria-valuemin={0}
+        aria-valuemax={duration || 0}
+        aria-valuenow={currentTime}
+        tabIndex={0}
+        className="relative flex h-12 cursor-pointer items-center gap-[2px] select-none"
+      >
+        {bars.map((h, i) => {
+          const barRatio = (i + 0.5) / bars.length;
+          const past = barRatio <= progress;
+          const isHead = isPlaying && Math.abs(barRatio - progress) < 1 / bars.length;
+          return (
+            <div
+              key={i}
+              style={{ height: `${Math.max(8, h * 100)}%` }}
+              className={
+                "flex-1 rounded-[1px] transition-[background-color,transform] duration-100 " +
+                (past ? "bg-ember" : "bg-cream/30") +
+                (isHead ? " scale-y-[1.15]" : "")
+              }
+            />
+          );
+        })}
+        {hoverRatio !== null ? (
+          <div
+            className="pointer-events-none absolute top-0 h-full w-px bg-cream/50"
+            style={{ left: `${hoverRatio * 100}%` }}
+          />
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+/** Walk a smoothly-varying seeded function across N points so bars feel natural. */
+function generateBars(seed: string, count: number): number[] {
+  // FNV-1a-ish hash for a deterministic 32-bit seed
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = (h * 16777619) >>> 0;
+  }
+  const rand = () => {
+    h = (h * 1664525 + 1013904223) >>> 0;
+    return (h & 0x7fffffff) / 0x7fffffff;
+  };
+
+  const out: number[] = [];
+  let v = 0.5;
+  for (let i = 0; i < count; i++) {
+    // Bounded random walk so consecutive bars stay correlated
+    const delta = (rand() - 0.5) * 0.45;
+    v = Math.max(0.18, Math.min(0.95, v + delta));
+    // Add a quasi-rhythmic pulse so it doesn't read as pure noise
+    const pulse = 0.08 * Math.sin(i * 0.42) + 0.05 * Math.sin(i * 0.13);
+    out.push(Math.max(0.12, Math.min(1, v + pulse)));
+  }
+  return out;
+}
+
+function formatTime(s: number): string {
+  if (!isFinite(s) || s < 0) return "0:00";
+  const total = Math.floor(s);
+  const min = Math.floor(total / 60);
+  const sec = total % 60;
+  return `${min}:${sec.toString().padStart(2, "0")}`;
 }

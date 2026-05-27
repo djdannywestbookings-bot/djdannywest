@@ -1,51 +1,45 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0A0907"/>
-      <stop offset="0.55" stop-color="#14110D"/>
-      <stop offset="1" stop-color="#0A0907"/>
-    </linearGradient>
-    <radialGradient id="ember" cx="0.85" cy="0.15" r="0.65">
-      <stop offset="0" stop-color="#E5B97A" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#E5B97A" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="grain" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
-      <feColorMatrix values="0 0 0 0 0.96  0 0 0 0 0.94  0 0 0 0 0.92  0 0 0 0.5 0"/>
-    </filter>
-  </defs>
-
-  <rect width="1000" height="1000" fill="url(#bg)"/>
-  <rect width="1000" height="1000" fill="url(#ember)"/>
-  <rect width="1000" height="1000" filter="url(#grain)" opacity="0.45"/>
-
-  <!-- TOP STRIP -->
-  <g font-family="Inter, system-ui, sans-serif" fill="#F5F1EA">
-    <text x="80" y="105" font-size="20" letter-spacing="5" fill-opacity="0.78">SIRIUSXM</text>
-    <text x="80" y="135" font-size="20" letter-spacing="5" fill-opacity="0.78">PITBULL GLOBALIZATION</text>
-    <text x="80" y="165" font-size="20" letter-spacing="5" fill-opacity="0.78">CHANNEL 13</text>
-    <line x1="80" y1="190" x2="180" y2="190" stroke="#E5B97A" stroke-opacity="0.85" stroke-width="2"/>
-  </g>
-
-  <!-- VOLUME LABEL -->
-  <g font-family="Inter, system-ui, sans-serif" fill="#F5F1EA" fill-opacity="0.5">
-    <text x="80" y="430" font-size="22" letter-spacing="8">VOLUME</text>
-  </g>
-
-  <!-- HUGE VOLUME NUMBER (vertically centered around y=620) -->
-  <g font-family="Fraunces, Georgia, serif" fill="#F5F1EA"
-     style="font-variation-settings: 'opsz' 144;">
-    <text x="80" y="780" font-size="380" font-style="italic" font-weight="300"
-          letter-spacing="-18">01</text>
-  </g>
-
-  <!-- ember dot accent next to number -->
-  <circle cx="920" cy="430" r="6" fill="#E5B97A"/>
-
-  <!-- BOTTOM STRIP -->
-  <g font-family="Inter, system-ui, sans-serif" fill="#F5F1EA" fill-opacity="0.55">
-    <line x1="80" y1="930" x2="920" y2="930" stroke="#F5F1EA" stroke-opacity="0.18" stroke-width="1"/>
-    <text x="80" y="970" font-size="20" letter-spacing="5">DJ DANNY WEST</text>
-    <text x="920" y="970" text-anchor="end" font-size="20" letter-spacing="5">60:20</text>
-  </g>
+  
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#1A0B05"/>
+        <stop offset="0.55" stop-color="#3A1810"/>
+        <stop offset="1" stop-color="#1A0B05"/>
+      </linearGradient>
+      <radialGradient id="accentGlow" cx="0.8" cy="0.2" r="0.85">
+        <stop offset="0" stop-color="#FF6B35" stop-opacity="0.45"/>
+        <stop offset="0.5" stop-color="#FF6B35" stop-opacity="0.12"/>
+        <stop offset="1" stop-color="#FF6B35" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="grain" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="32" stitchTiles="stitch"/>
+        <feColorMatrix values="0 0 0 0 0.96  0 0 0 0 0.94  0 0 0 0 0.92  0 0 0 0.18 0"/>
+      </filter>
+      <filter id="softblur"><feGaussianBlur stdDeviation="40"/></filter>
+    </defs>
+    <rect width="1000" height="1000" fill="url(#bg)"/>
+    <rect width="1000" height="1000" fill="url(#accentGlow)"/>
+    
+  <circle cx="251" cy="699" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="267" cy="667" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="297" cy="638" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="338" cy="614" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="389" cy="595" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="447" cy="585" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="507" cy="581" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="567" cy="586" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="624" cy="599" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="673" cy="619" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="711" cy="645" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="738" cy="675" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="751" cy="707" r="6" fill="#FF6B35" opacity="0.88"/><circle cx="276" cy="715" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="286" cy="684" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="310" cy="654" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="348" cy="630" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="395" cy="611" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="450" cy="600" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="509" cy="597" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="566" cy="602" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="619" cy="616" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="664" cy="636" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="698" cy="663" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="718" cy="693" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="724" cy="725" r="6" fill="#FF6B35" opacity="0.76"/><circle cx="307" cy="702" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="324" cy="673" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="355" cy="648" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="398" cy="628" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="449" cy="616" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="504" cy="612" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="559" cy="617" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="610" cy="631" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="651" cy="651" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="680" cy="677" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="695" cy="707" r="6" fill="#FF6B35" opacity="0.64"/><circle cx="332" cy="723" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="339" cy="694" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="361" cy="668" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="397" cy="647" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="444" cy="633" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="495" cy="628" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="547" cy="631" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="595" cy="644" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="633" cy="664" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="658" cy="689" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="668" cy="717" r="6" fill="#FF6B35" opacity="0.52"/><circle cx="360" cy="716" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="371" cy="690" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="398" cy="668" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="436" cy="651" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="483" cy="644" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="531" cy="645" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="576" cy="655" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="612" cy="674" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="634" cy="697" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="640" cy="724" r="6" fill="#FF6B35" opacity="0.40"/><circle cx="389" cy="713" r="6" fill="#FF6B35" opacity="0.28"/><circle cx="402" cy="690" r="6" fill="#FF6B35" opacity="0.28"/><circle cx="430" cy="672" r="6" fill="#FF6B35" opacity="0.28"/><circle cx="469" cy="661" r="6" fill="#FF6B35" opacity="0.28"/><circle cx="513" cy="659" r="6" fill="#FF6B35" opacity="0.28"/><circle cx="554" cy="666" r="6" fill="#FF6B35" opacity="0.28"/><circle cx="588" cy="682" r="6" fill="#FF6B35" opacity="0.28"/><circle cx="608" cy="703" r="6" fill="#FF6B35" opacity="0.28"/><circle cx="611" cy="727" r="6" fill="#FF6B35" opacity="0.28"/><circle cx="417" cy="713" r="6" fill="#FF6B35" opacity="0.16"/><circle cx="431" cy="694" r="6" fill="#FF6B35" opacity="0.16"/><circle cx="458" cy="680" r="6" fill="#FF6B35" opacity="0.16"/><circle cx="494" cy="674" r="6" fill="#FF6B35" opacity="0.16"/><circle cx="531" cy="677" r="6" fill="#FF6B35" opacity="0.16"/><circle cx="562" cy="689" r="6" fill="#FF6B35" opacity="0.16"/><circle cx="580" cy="707" r="6" fill="#FF6B35" opacity="0.16"/><circle cx="583" cy="727" r="6" fill="#FF6B35" opacity="0.16"/><circle cx="445" cy="715" r="6" fill="#FF6B35" opacity="0.15"/><circle cx="456" cy="701" r="6" fill="#FF6B35" opacity="0.15"/><circle cx="480" cy="691" r="6" fill="#FF6B35" opacity="0.15"/><circle cx="509" cy="690" r="6" fill="#FF6B35" opacity="0.15"/><circle cx="535" cy="696" r="6" fill="#FF6B35" opacity="0.15"/><circle cx="552" cy="709" r="6" fill="#FF6B35" opacity="0.15"/><circle cx="555" cy="725" r="6" fill="#FF6B35" opacity="0.15"/><rect x="0" y="720" width="1000" height="280" fill="#1A0B05" opacity="0.85"/><line x1="0" y1="720" x2="1000" y2="720" stroke="#FF6B35" stroke-opacity="0.6" stroke-width="1"/>
+  <rect width="1000" height="1000" filter="url(#grain)" opacity="0.55"/>
+  
+    <g font-family="Inter, system-ui, sans-serif" fill="#FFF4E0" fill-opacity="0.92" font-weight="600">
+      <text x="80" y="115" font-size="34" letter-spacing="6">SIRIUSXM</text>
+      <text x="80" y="165" font-size="34" letter-spacing="6">PITBULL GLOBALIZATION</text>
+      <text x="80" y="215" font-size="34" letter-spacing="6">CHANNEL 13</text>
+      <line x1="80" y1="245" x2="220" y2="245" stroke="#FF6B35" stroke-opacity="0.9" stroke-width="3"/>
+    </g>
+    
+  
+        <text x="80" y="540" font-family="Fraunces, Georgia, serif"
+              font-size="300" font-style="italic" font-weight="400" fill="#FFF4E0"
+              letter-spacing="-12">01</text>
+        
+  
+    <g font-family="Inter, system-ui, sans-serif" fill="#FFF4E0" fill-opacity="0.85" font-weight="600">
+      <line x1="80" y1="905" x2="920" y2="905" stroke="#FFF4E0" stroke-opacity="0.32" stroke-width="1.5"/>
+      <text x="80" y="965" font-size="32" letter-spacing="6">DJ DANNY WEST</text>
+      <text x="920" y="965" text-anchor="end" font-size="32" letter-spacing="6">58:30</text>
+    </g>
+    
 </svg>
