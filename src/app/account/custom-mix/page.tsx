@@ -3,9 +3,13 @@ import { redirect } from "next/navigation";
 import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 import { AccountShell } from "@/components/account/AccountShell";
-import { CustomMixOrderForm } from "@/components/custom-mix/CustomMixOrderForm";
+import {
+  CustomMixOrderForm,
+  type SeriesOption,
+} from "@/components/custom-mix/CustomMixOrderForm";
 import { createClient } from "@/lib/supabase/server";
 import { getStripeConfig } from "@/lib/stripe/client";
+import { getAllSeries } from "@/lib/mixes/queries";
 
 export const metadata: Metadata = {
   title: "Custom mix",
@@ -61,6 +65,16 @@ export default async function CustomMixPage() {
   const cfg = getStripeConfig();
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || null;
   const stripeReady = !!cfg && !!publishableKey;
+
+  // Pull all series so the form can offer "inspired by" multi-select cards.
+  const seriesList = await getAllSeries();
+  const seriesOptions: SeriesOption[] = seriesList.map((s) => ({
+    id: s.id,
+    slug: s.slug,
+    title: s.title,
+    subtitle: s.subtitle,
+    cover_url: s.cover_url,
+  }));
 
   // Load member's past orders (newest first)
   const { data: orders } = await supabase
@@ -200,7 +214,10 @@ export default async function CustomMixPage() {
             </div>
             <div className="mt-5 border border-cream/15 bg-cream/[0.04] p-6 md:p-8">
               {stripeReady ? (
-                <CustomMixOrderForm publishableKey={publishableKey} />
+                <CustomMixOrderForm
+                  publishableKey={publishableKey}
+                  seriesOptions={seriesOptions}
+                />
               ) : (
                 <div className="font-sans text-[14px] text-cream/65">
                   Custom mix ordering is currently offline. Send a note via

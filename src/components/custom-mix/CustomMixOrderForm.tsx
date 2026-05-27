@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useId, useMemo, useState } from "react";
-import { Reorder, useDragControls, motion } from "motion/react";
+import { Reorder, useDragControls } from "motion/react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckoutProvider,
@@ -27,8 +27,18 @@ type Song = {
   url: string;
 };
 
+export type SeriesOption = {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  cover_url: string | null;
+};
+
 type Props = {
   publishableKey: string | null;
+  /** Optional — if provided, member can pick which series to vibe their mix after. */
+  seriesOptions?: SeriesOption[];
 };
 
 const MIN_SONGS = 8;
@@ -47,16 +57,26 @@ function blankSong(): Song {
   return { id: newId(), title: "", artist: "", url: "" };
 }
 
+/** Fisher-Yates shuffle, returns a new array. */
+function shuffle<T>(arr: T[]): T[] {
+  const out = arr.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 /**
  * Two-step custom-mix order:
- *   1. Brief — vibe, length, drag-to-reorder song list, notes
+ *   1. Brief — vibe, length, drag-to-reorder song list, randomize, series inspo, notes
  *   2. Stripe Embedded Checkout — pays $100 → webhook flips order to 'paid'
  *
  * Songs use stable IDs so the Reorder.Group can drag-to-reorder them
  * without React losing input state. The order you build IS the order
- * I'll mix them in.
+ * I'll mix them in — unless you hit Randomize, then it's a shuffle.
  */
-export function CustomMixOrderForm({ publishableKey }: Props) {
+export function CustomMixOrderForm({ publishableKey, seriesOptions }: Props) {
   const [songs, setSongs] = useState<Song[]>(() =>
     Array.from({ length: MIN_SONGS }, blankSong),
   );
@@ -66,6 +86,7 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
   const [explicitOk, setExplicitOk] = useState<boolean>(true);
   const [dontDo, setDontDo] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [inspoSeries, setInspoSeries] = useState<Set<string>>(() => new Set());
 
   const [pending, setPending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +112,25 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
   const removeSong = (id: string) => {
     setSongs((prev) => (prev.length <= 1 ? prev : prev.filter((s) => s.id !== id)));
   };
+  const randomizeOrder = () => {
+    setSongs((prev) => {
+      // Only shuffle filled rows — leave blank rows at the bottom so we don't
+      // dilute the user's request with empty slots.
+      const filled = prev.filter((s) => s.title.trim().length > 0);
+      const blanks = prev.filter((s) => !s.title.trim());
+      if (filled.length < 2) return prev;
+      return [...shuffle(filled), ...blanks];
+    });
+  };
+
+  const toggleSeries = (id: string) => {
+    setInspoSeries((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const submit = async () => {
     setPending(true);
@@ -106,6 +146,7 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
           explicit_ok: explicitOk,
           dont_do: dontDo,
           notes_to_danny: notes,
+          inspired_by_series: Array.from(inspoSeries),
           songs: filledSongs.map((s) => ({
             title: s.title.trim(),
             artist: s.artist.trim() || undefined,
@@ -147,6 +188,9 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
     );
   }
 
+  const hasSeriesOptions = !!seriesOptions && seriesOptions.length > 0;
+  const filledCount = filledSongs.length;
+
   // === STEP 1: brief ===
   return (
     <section className="space-y-10">
@@ -170,6 +214,75 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
           ))}
         </div>
       </div>
+
+      {/* Series inspiration — multi-select cards */}
+      {hasSeriesOptions ? (
+        <div>
+          <Label>Vibe inspired by series (optional)</Label>
+          <p className="mt-2 max-w-2xl font-sans text-[12px] leading-snug text-cream/55">
+            Pick one or more existing mix series and I&rsquo;ll lean the
+            energy, tempo, and flow toward that style.
+          </p>
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {seriesOptions!.map((s) => {
+              const active = inspoSeries.has(s.id);
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => toggleSeries(s.id)}
+                  aria-pressed={active}
+                  className={`group relative overflow-hidden border text-left transition ${
+                    active
+                      ? "border-ember bg-ember/10"
+                      : "border-cream/15 bg-cream/[0.02] hover:border-cream/40"
+                  }`}
+                >
+                  <div className="relative aspect-square w-full overflow-hidden bg-night-soft">
+                    {s.cover_url ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={s.cover_url}
+                        alt=""
+                        className={`h-full w-full object-cover transition ${
+                          active ? "scale-105" : "group-hover:scale-105"
+                        }`}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center font-display text-[30px] text-cream/15">
+                        ♫
+                      </div>
+                    )}
+                    {/* Selected indicator */}
+                    <div
+                      className={`absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full border-2 transition ${
+                        active
+                          ? "border-ember bg-ember text-night"
+                          : "border-cream/40 bg-night/40 text-transparent"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      <CheckIcon />
+                    </div>
+                  </div>
+                  <div className="px-3 py-2.5">
+                    <div className="truncate font-display text-[13px] leading-tight text-cream">
+                      {s.title}
+                    </div>
+                    {s.subtitle ? (
+                      <div className="mt-0.5 truncate font-sans text-[10px] uppercase tracking-[0.2em] text-cream/45">
+                        {s.subtitle}
+                      </div>
+                    ) : null}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
@@ -215,18 +328,31 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
         />
       </div>
 
-      {/* Songs — drag-to-reorder */}
+      {/* Songs — drag-to-reorder + randomize */}
       <div>
-        <Label>
-          Tracklist · <span className="text-ember">{filledSongs.length}</span>{" "}
-          / {MIN_SONGS}–{MAX_SONGS}
-        </Label>
-        <p className="mt-2 max-w-2xl font-sans text-[12px] leading-snug text-cream/55">
-          Drop {MIN_SONGS}–{MAX_SONGS} songs in the order you want them. Drag
-          the handle on the left to move a song up or down — the final mix
-          follows this order. Spotify links help me hear the exact version
-          you have in mind; title + artist alone is enough.
-        </p>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <Label>
+              Tracklist · <span className="text-ember">{filledCount}</span>{" "}
+              / {MIN_SONGS}–{MAX_SONGS}
+            </Label>
+            <p className="mt-2 max-w-2xl font-sans text-[12px] leading-snug text-cream/55">
+              Drop {MIN_SONGS}–{MAX_SONGS} songs in the order you want them.
+              Drag the handle on the left to reorder, or hit{" "}
+              <span className="text-cream">Randomize</span> and let me decide.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={randomizeOrder}
+            disabled={filledCount < 2}
+            aria-label="Randomize song order"
+            className="inline-flex items-center gap-2 border border-cream/20 px-3.5 py-2 font-sans text-[11px] uppercase tracking-[0.22em] text-cream/65 transition hover:border-ember hover:text-ember disabled:opacity-40"
+          >
+            <ShuffleIcon />
+            Randomize
+          </button>
+        </div>
 
         <Reorder.Group
           axis="y"
@@ -310,11 +436,6 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
   );
 }
 
-/**
- * Single draggable song row. Handles dragging via a dedicated grip handle
- * (so users can still freely click/select inside text fields without
- * accidentally starting a drag).
- */
 function SongRow({
   song,
   position,
@@ -347,7 +468,6 @@ function SongRow({
       className="grid grid-cols-[36px_28px_1fr_28px] items-center gap-2 border border-cream/10 bg-cream/[0.025] px-2 py-2 backdrop-blur-sm transition-colors hover:border-cream/25 md:grid-cols-[44px_36px_1fr_36px] md:gap-3 md:px-3 md:py-3"
       aria-labelledby={labelId}
     >
-      {/* DRAG HANDLE */}
       <button
         type="button"
         onPointerDown={(e) => dragControls.start(e)}
@@ -358,7 +478,6 @@ function SongRow({
         <GripIcon />
       </button>
 
-      {/* POSITION NUMBER */}
       <div
         id={labelId}
         className="text-center font-display text-[20px] italic leading-none text-ember md:text-[24px]"
@@ -367,7 +486,6 @@ function SongRow({
         {String(position).padStart(2, "0")}
       </div>
 
-      {/* FIELDS */}
       <div className="grid grid-cols-1 gap-1.5 md:grid-cols-12 md:gap-2">
         <input
           type="text"
@@ -392,7 +510,6 @@ function SongRow({
         />
       </div>
 
-      {/* REMOVE */}
       <button
         type="button"
         onClick={onRemove}
@@ -408,13 +525,7 @@ function SongRow({
 
 function GripIcon() {
   return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      aria-hidden="true"
-    >
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
       <circle cx="5" cy="3" r="1.2" />
       <circle cx="11" cy="3" r="1.2" />
       <circle cx="5" cy="8" r="1.2" />
@@ -440,6 +551,46 @@ function CloseIcon() {
     >
       <line x1="6" y1="6" x2="18" y2="18" />
       <line x1="18" y1="6" x2="6" y2="18" />
+    </svg>
+  );
+}
+
+function ShuffleIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="16 3 21 3 21 8" />
+      <line x1="4" y1="20" x2="21" y2="3" />
+      <polyline points="21 16 21 21 16 21" />
+      <line x1="15" y1="15" x2="21" y2="21" />
+      <line x1="4" y1="4" x2="9" y2="9" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="20 6 9 17 4 12" />
     </svg>
   );
 }
