@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
+import { Reorder, useDragControls, motion } from "motion/react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckoutProvider,
@@ -18,7 +19,13 @@ const VIBES = [
   { value: "other", label: "Other (tell me in notes)" },
 ];
 
-type Song = { title: string; artist: string; url: string };
+type Song = {
+  /** Stable ID so React + Reorder can track this row across reorders. */
+  id: string;
+  title: string;
+  artist: string;
+  url: string;
+};
 
 type Props = {
   publishableKey: string | null;
@@ -27,19 +34,31 @@ type Props = {
 const MIN_SONGS = 8;
 const MAX_SONGS = 15;
 
+let seedCounter = 0;
+function newId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  seedCounter += 1;
+  return `song-${Date.now()}-${seedCounter}`;
+}
+
+function blankSong(): Song {
+  return { id: newId(), title: "", artist: "", url: "" };
+}
+
 /**
  * Two-step custom-mix order:
- *   1. Brief — vibe, length, occasion, song list, notes
+ *   1. Brief — vibe, length, drag-to-reorder song list, notes
  *   2. Stripe Embedded Checkout — pays $100 → webhook flips order to 'paid'
  *
- * The brief is POSTed to /api/stripe/custom-mix-session which inserts a
- * pending_payment order row and returns the Stripe client_secret. We then
- * render <EmbeddedCheckout> in place of the form. After payment Stripe
- * redirects to /account/custom-mix/success?session_id=...
+ * Songs use stable IDs so the Reorder.Group can drag-to-reorder them
+ * without React losing input state. The order you build IS the order
+ * I'll mix them in.
  */
 export function CustomMixOrderForm({ publishableKey }: Props) {
   const [songs, setSongs] = useState<Song[]>(() =>
-    Array.from({ length: MIN_SONGS }, () => ({ title: "", artist: "", url: "" })),
+    Array.from({ length: MIN_SONGS }, blankSong),
   );
   const [vibe, setVibe] = useState<string>("wedding");
   const [length, setLength] = useState<number>(75);
@@ -62,15 +81,15 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
   );
   const valid = filledSongs.length >= MIN_SONGS && !!vibe && length > 0;
 
-  const updateSong = (i: number, patch: Partial<Song>) => {
-    setSongs((prev) => prev.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
+  const updateSong = (id: string, patch: Partial<Song>) => {
+    setSongs((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   };
   const addSong = () => {
     if (songs.length >= MAX_SONGS) return;
-    setSongs((prev) => [...prev, { title: "", artist: "", url: "" }]);
+    setSongs((prev) => [...prev, blankSong()]);
   };
-  const removeSong = (i: number) => {
-    setSongs((prev) => prev.filter((_, idx) => idx !== i));
+  const removeSong = (id: string) => {
+    setSongs((prev) => (prev.length <= 1 ? prev : prev.filter((s) => s.id !== id)));
   };
 
   const submit = async () => {
@@ -131,7 +150,7 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
   // === STEP 1: brief ===
   return (
     <section className="space-y-10">
-      {/* Vibe + length */}
+      {/* Vibe */}
       <div>
         <Label>Vibe</Label>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -172,10 +191,7 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
         <div>
           <Label>Explicit lyrics OK?</Label>
           <div className="mt-3 flex gap-2">
-            <PillButton
-              active={explicitOk}
-              onClick={() => setExplicitOk(true)}
-            >
+            <PillButton active={explicitOk} onClick={() => setExplicitOk(true)}>
               Yes — uncut
             </PillButton>
             <PillButton
@@ -199,63 +215,48 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
         />
       </div>
 
-      {/* Songs */}
+      {/* Songs — drag-to-reorder */}
       <div>
         <Label>
-          Songs · <span className="text-ember">{filledSongs.length}</span> /
-          {" "}{MIN_SONGS}–{MAX_SONGS}
+          Tracklist · <span className="text-ember">{filledSongs.length}</span>{" "}
+          / {MIN_SONGS}–{MAX_SONGS}
         </Label>
-        <p className="mt-2 font-sans text-[12px] leading-snug text-cream/55">
-          Drop {MIN_SONGS}–{MAX_SONGS} songs you want in the mix. Spotify
-          links help me hear the exact version you have in mind, but title +
-          artist is enough.
+        <p className="mt-2 max-w-2xl font-sans text-[12px] leading-snug text-cream/55">
+          Drop {MIN_SONGS}–{MAX_SONGS} songs in the order you want them. Drag
+          the handle on the left to move a song up or down — the final mix
+          follows this order. Spotify links help me hear the exact version
+          you have in mind; title + artist alone is enough.
         </p>
-        <div className="mt-4 space-y-2">
+
+        <Reorder.Group
+          axis="y"
+          values={songs}
+          onReorder={setSongs}
+          className="mt-5 space-y-2"
+        >
           {songs.map((song, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-12 gap-2 border border-cream/10 bg-cream/[0.02] p-3"
-            >
-              <input
-                type="text"
-                value={song.title}
-                onChange={(e) => updateSong(i, { title: e.target.value })}
-                placeholder={`Song ${i + 1} title`}
-                className="col-span-12 border-0 border-b border-cream/10 bg-transparent py-1.5 font-sans text-[14px] text-cream placeholder:text-cream/30 focus:border-ember focus:outline-none md:col-span-5"
-              />
-              <input
-                type="text"
-                value={song.artist}
-                onChange={(e) => updateSong(i, { artist: e.target.value })}
-                placeholder="Artist (optional)"
-                className="col-span-12 border-0 border-b border-cream/10 bg-transparent py-1.5 font-sans text-[13px] text-cream placeholder:text-cream/30 focus:border-ember focus:outline-none md:col-span-3"
-              />
-              <input
-                type="url"
-                value={song.url}
-                onChange={(e) => updateSong(i, { url: e.target.value })}
-                placeholder="Spotify URL (optional)"
-                className="col-span-11 border-0 border-b border-cream/10 bg-transparent py-1.5 font-sans text-[12px] text-cream placeholder:text-cream/30 focus:border-ember focus:outline-none md:col-span-3"
-              />
-              <button
-                type="button"
-                onClick={() => removeSong(i)}
-                disabled={songs.length <= 1}
-                aria-label={`Remove song ${i + 1}`}
-                className="col-span-1 grid place-items-center text-cream/45 transition hover:text-ember disabled:opacity-30 md:col-span-1"
-              >
-                ×
-              </button>
-            </div>
+            <SongRow
+              key={song.id}
+              song={song}
+              position={i + 1}
+              total={songs.length}
+              onUpdate={(patch) => updateSong(song.id, patch)}
+              onRemove={() => removeSong(song.id)}
+              canRemove={songs.length > 1}
+            />
           ))}
-        </div>
+        </Reorder.Group>
+
         <button
           type="button"
           onClick={addSong}
           disabled={songs.length >= MAX_SONGS}
-          className="mt-3 inline-flex items-center gap-2 border border-cream/20 px-4 py-2 font-sans text-[11px] uppercase tracking-[0.22em] text-cream/65 transition hover:border-cream hover:text-cream disabled:opacity-40"
+          className="mt-4 inline-flex items-center gap-2 border border-cream/20 px-4 py-2 font-sans text-[11px] uppercase tracking-[0.22em] text-cream/65 transition hover:border-cream hover:text-cream disabled:opacity-40"
         >
-          + Add another song ({MAX_SONGS - songs.length} left)
+          <span className="text-ember">+</span> Add another song
+          <span className="text-cream/40">
+            ({MAX_SONGS - songs.length} left)
+          </span>
         </button>
       </div>
 
@@ -306,6 +307,140 @@ export function CustomMixOrderForm({ publishableKey }: Props) {
         </button>
       </div>
     </section>
+  );
+}
+
+/**
+ * Single draggable song row. Handles dragging via a dedicated grip handle
+ * (so users can still freely click/select inside text fields without
+ * accidentally starting a drag).
+ */
+function SongRow({
+  song,
+  position,
+  total,
+  onUpdate,
+  onRemove,
+  canRemove,
+}: {
+  song: Song;
+  position: number;
+  total: number;
+  onUpdate: (patch: Partial<Song>) => void;
+  onRemove: () => void;
+  canRemove: boolean;
+}) {
+  const dragControls = useDragControls();
+  const labelId = useId();
+
+  return (
+    <Reorder.Item
+      value={song}
+      dragListener={false}
+      dragControls={dragControls}
+      whileDrag={{
+        scale: 1.015,
+        boxShadow: "0 24px 48px -16px rgba(0,0,0,0.6)",
+        zIndex: 30,
+      }}
+      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+      className="grid grid-cols-[36px_28px_1fr_28px] items-center gap-2 border border-cream/10 bg-cream/[0.025] px-2 py-2 backdrop-blur-sm transition-colors hover:border-cream/25 md:grid-cols-[44px_36px_1fr_36px] md:gap-3 md:px-3 md:py-3"
+      aria-labelledby={labelId}
+    >
+      {/* DRAG HANDLE */}
+      <button
+        type="button"
+        onPointerDown={(e) => dragControls.start(e)}
+        aria-label={`Reorder song ${position}`}
+        className="grid h-9 w-9 cursor-grab touch-none place-items-center text-cream/40 transition hover:bg-cream/5 hover:text-ember active:cursor-grabbing md:h-10 md:w-10"
+        style={{ touchAction: "none" }}
+      >
+        <GripIcon />
+      </button>
+
+      {/* POSITION NUMBER */}
+      <div
+        id={labelId}
+        className="text-center font-display text-[20px] italic leading-none text-ember md:text-[24px]"
+        aria-label={`Position ${position} of ${total}`}
+      >
+        {String(position).padStart(2, "0")}
+      </div>
+
+      {/* FIELDS */}
+      <div className="grid grid-cols-1 gap-1.5 md:grid-cols-12 md:gap-2">
+        <input
+          type="text"
+          value={song.title}
+          onChange={(e) => onUpdate({ title: e.target.value })}
+          placeholder={`Song ${position} · title`}
+          className="border-0 border-b border-cream/10 bg-transparent py-1.5 font-sans text-[14px] text-cream placeholder:text-cream/30 focus:border-ember focus:outline-none md:col-span-5"
+        />
+        <input
+          type="text"
+          value={song.artist}
+          onChange={(e) => onUpdate({ artist: e.target.value })}
+          placeholder="Artist"
+          className="border-0 border-b border-cream/10 bg-transparent py-1.5 font-sans text-[13px] text-cream placeholder:text-cream/30 focus:border-ember focus:outline-none md:col-span-3"
+        />
+        <input
+          type="url"
+          value={song.url}
+          onChange={(e) => onUpdate({ url: e.target.value })}
+          placeholder="Spotify / YouTube URL (optional)"
+          className="border-0 border-b border-cream/10 bg-transparent py-1.5 font-sans text-[12px] text-cream placeholder:text-cream/30 focus:border-ember focus:outline-none md:col-span-4"
+        />
+      </div>
+
+      {/* REMOVE */}
+      <button
+        type="button"
+        onClick={onRemove}
+        disabled={!canRemove}
+        aria-label={`Remove song ${position}`}
+        className="grid h-9 w-9 place-items-center text-cream/40 transition hover:text-ember disabled:opacity-25 md:h-10 md:w-10"
+      >
+        <CloseIcon />
+      </button>
+    </Reorder.Item>
+  );
+}
+
+function GripIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <circle cx="5" cy="3" r="1.2" />
+      <circle cx="11" cy="3" r="1.2" />
+      <circle cx="5" cy="8" r="1.2" />
+      <circle cx="11" cy="8" r="1.2" />
+      <circle cx="5" cy="13" r="1.2" />
+      <circle cx="11" cy="13" r="1.2" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="6" y1="6" x2="18" y2="18" />
+      <line x1="18" y1="6" x2="6" y2="18" />
+    </svg>
   );
 }
 
