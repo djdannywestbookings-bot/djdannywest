@@ -57,6 +57,9 @@ function isFresh(iso: string | null): boolean {
  * strip. Click a mix's play button → the bottom-pinned MiniPlayer slides
  * up and starts streaming.
  *
+ * Series header has an ambient backdrop image (blurred copy of the newest
+ * mix's cover art) so the bar reads as designed instead of empty.
+ *
  * Subscribers can play. Non-subscribers see a lock icon + a subscribe CTA
  * when they tap a play button (the playback-token endpoint enforces this
  * server-side too).
@@ -138,6 +141,9 @@ function ShelfRow({
   const { series, mixes } = shelf;
   const newest = mixes[0]; // mixes are returned newest-first from the server
   const hasNew = newest && isFresh(newest.published_at);
+  // Backdrop art for the header bar: prefer an explicit series cover, fall
+  // back to the newest mix's cover. Same image powers the small thumbnail.
+  const headerArt = series.cover_url || newest?.cover_url || null;
 
   return (
     <div
@@ -147,65 +153,83 @@ function ShelfRow({
           : "border-line bg-cream/[0.02] hover:border-cream/20 hover:bg-cream/[0.03]"
       }`}
     >
-      {/* HEADER — clickable row */}
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        className="flex w-full items-center gap-5 px-5 py-4 text-left md:gap-6 md:px-7 md:py-5"
-      >
-        {/* Series cover */}
-        <div className="relative aspect-square h-14 w-14 shrink-0 overflow-hidden bg-night-soft md:h-16 md:w-16">
-          {series.cover_url ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
+      {/* HEADER — backdrop artwork + clickable row */}
+      <div className="relative">
+        {headerArt ? (
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={series.cover_url}
+              src={headerArt}
               alt=""
-              className="h-full w-full object-cover"
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full scale-[1.35] object-cover opacity-50 blur-2xl saturate-150"
               loading="lazy"
               decoding="async"
             />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center font-display text-[24px] text-cream/20">
-              ♫
-            </div>
-          )}
-        </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-night/95 via-night/75 to-night/55" />
+            <div className="absolute inset-0 bg-gradient-to-b from-night/30 via-transparent to-night/40" />
+          </div>
+        ) : null}
 
-        {/* Series text */}
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-3">
-            <h3 className="truncate font-display text-[20px] font-light leading-tight tracking-[-0.005em] text-cream md:text-[26px]">
-              {series.title}
-            </h3>
-            {hasNew ? (
-              <span className="inline-flex items-center gap-1.5 bg-ember px-2 py-0.5 font-sans text-[9px] uppercase tracking-[0.28em] text-night">
-                <span className="inline-block h-1 w-1 rounded-full bg-night" />
-                New
-              </span>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          className="relative flex w-full items-center gap-5 px-5 py-4 text-left md:gap-6 md:px-7 md:py-5"
+        >
+          {/* Series cover */}
+          <div className="relative aspect-square h-14 w-14 shrink-0 overflow-hidden bg-night-soft md:h-16 md:w-16">
+            {headerArt ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={headerArt}
+                alt=""
+                className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center font-display text-[24px] text-cream/20">
+                ♫
+              </div>
+            )}
+          </div>
+
+          {/* Series text */}
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <h3 className="truncate font-display text-[20px] font-light leading-tight tracking-[-0.005em] text-cream md:text-[26px]">
+                {series.title}
+              </h3>
+              {hasNew ? (
+                <span className="inline-flex items-center gap-1.5 bg-ember px-2 py-0.5 font-sans text-[9px] uppercase tracking-[0.28em] text-night">
+                  <span className="inline-block h-1 w-1 rounded-full bg-night" />
+                  New
+                </span>
+              ) : null}
+            </div>
+            {series.subtitle ? (
+              <div className="mt-0.5 hidden truncate font-sans text-[11px] uppercase tracking-[0.22em] text-cream/55 md:block">
+                {series.subtitle}
+              </div>
             ) : null}
           </div>
-          {series.subtitle ? (
-            <div className="mt-0.5 hidden truncate font-sans text-[11px] uppercase tracking-[0.22em] text-cream/45 md:block">
-              {series.subtitle}
-            </div>
-          ) : null}
-        </div>
 
-        {/* Mix count */}
-        <div className="hidden shrink-0 font-sans text-[11px] uppercase tracking-[0.22em] text-cream/55 sm:block">
-          {mixes.length} {mixes.length === 1 ? "mix" : "mixes"}
-        </div>
+          {/* Mix count */}
+          <div className="hidden shrink-0 font-sans text-[11px] uppercase tracking-[0.22em] text-cream/65 sm:block">
+            {mixes.length} {mixes.length === 1 ? "mix" : "mixes"}
+          </div>
 
-        {/* Chevron */}
-        <div
-          className={`shrink-0 transition-transform duration-300 ${
-            open ? "rotate-180" : ""
-          }`}
-        >
-          <Chevron />
-        </div>
-      </button>
+          {/* Chevron */}
+          <div
+            className={`shrink-0 transition-transform duration-300 ${
+              open ? "rotate-180" : ""
+            }`}
+          >
+            <Chevron />
+          </div>
+        </button>
+      </div>
 
       {/* EXPANDED — horizontal strip of mix tiles */}
       <AnimatePresence initial={false}>

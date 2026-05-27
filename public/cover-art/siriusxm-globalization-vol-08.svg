@@ -31,6 +31,10 @@
     </g>
     
   
+        <text x="80" y="600" font-family="Fraunces, Georgia, serif"
+              font-size="320" font-style="italic" font-weight="400" fill="#E0F7FB"
+              letter-spacing="-14">08</text>
+        
   
     <g font-family="Inter, system-ui, sans-serif" fill="#E0F7FB" fill-opacity="0.85" font-weight="600">
       <line x1="80" y1="905" x2="920" y2="905" stroke="#E0F7FB" stroke-opacity="0.32" stroke-width="1.5"/>

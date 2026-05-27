@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
@@ -59,8 +58,6 @@ export default async function LibraryPage() {
     }),
   );
 
-  const totalMixes = shelves.reduce((n, sh) => n + sh.mixes.length, 0);
-
   return (
     <main className="bg-night text-cream">
       <SiteNav active="mixes" />
@@ -76,26 +73,11 @@ export default async function LibraryPage() {
             </div>
           </div>
           <div className="md:col-span-8">
-            <h1 className="opsz-display font-display text-[14vw] font-light italic leading-[0.86] tracking-[-0.04em] text-cream md:text-[clamp(64px,8vw,128px)]">
-              The archive.
+            <h1 className="opsz-display font-display text-[10vw] font-light italic leading-[0.92] tracking-[-0.035em] text-cream md:text-[clamp(48px,6vw,96px)]">
+              DJ Danny West Mixes
             </h1>
             <p className="mt-6 max-w-xl font-sans text-[15px] leading-[1.65] text-cream/65 md:text-[16px]">
-              {totalMixes} mixes across {shelves.length}{" "}
-              {shelves.length === 1 ? "series" : "series"}.{" "}
-              {hasAccess ? (
-                <>Tap a series to expand. Click any cover to start streaming.</>
-              ) : (
-                <>
-                  Streaming unlocks with an active subscription —{" "}
-                  <Link
-                    href="/subscribe"
-                    className="text-ember underline decoration-ember/40 underline-offset-[5px] transition hover:text-cream hover:decoration-cream"
-                  >
-                    Subscribe →
-                  </Link>{" "}
-                  to play any mix.
-                </>
-              )}
+              Tap a series to expand. Click any cover to start streaming.
             </p>
           </div>
         </div>
