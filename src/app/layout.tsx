@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Fraunces, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { StructuredData } from "@/components/StructuredData";
@@ -7,12 +7,33 @@ import { personSchema, localBusinessSchema, websiteSchema } from "@/lib/seo";
 import { PlayerProvider } from "@/components/player/PlayerProvider";
 import { PersistentMiniPlayer } from "@/components/player/PersistentMiniPlayer";
 
-// Single-typeface system. Geist is Vercel's modern sans — crisp at every
-// size, no serif, no decorative character. All headings + body use it.
-const geist = Geist({
-  variable: "--font-geist",
+// Editorial type system:
+//   - Fraunces (variable serif) → display / headlines. Italic + heavy weight
+//     for the hero. Opt into SOFT + opsz axes so headlines breathe at very
+//     large sizes and tighten at body-adjacent sizes.
+//   - Inter Tight → body, nav, buttons, UI labels. Medium / SemiBold for UI.
+//   - JetBrains Mono → marquee + tour-itinerary / broadcast accents.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
+  axes: ["SOFT", "opsz"],
+  display: "swap",
+});
+
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -81,15 +102,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={geist.variable}>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
+    >
       <head>
         <StructuredData schemas={[personSchema(), localBusinessSchema(), websiteSchema()]} />
       </head>
       <body className="min-h-screen bg-night text-cream antialiased">
-        {/* Global player provider — keeps the bottom MiniPlayer alive across
-            page navigations. Subscription is re-validated server-side on
-            every playback-token fetch, so a lapsed subscription will stop
-            new plays the next time a track is selected. */}
         <PlayerProvider>
           {children}
           <PersistentMiniPlayer />

@@ -37,12 +37,12 @@ export function Hero() {
       <div className="relative z-10 mx-auto grid min-h-[calc(100vh-90px)] max-w-[1600px] grid-cols-1 items-end gap-14 px-6 pb-16 pt-8 md:grid-cols-12 md:px-12 md:pb-24 md:pt-4">
         {/* Text column */}
         <div className="md:col-span-8 lg:col-span-7">
-          <h1 className="font-display font-light leading-[0.86] tracking-[-0.04em] text-cream">
+          <h1 className="font-display font-extrabold leading-[0.86] tracking-[-0.035em] text-cream">
             <motion.span
               initial={{ opacity: 0, y: 36 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: easeOut, delay: 0.22 }}
-              className="opsz-display block text-[18vw] italic md:text-[clamp(80px,10.5vw,180px)]"
+              className="opsz-display block text-[18vw] md:text-[clamp(80px,10.5vw,180px)]"
             >
               A DJ That
             </motion.span>
@@ -50,7 +50,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 36 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: easeOut, delay: 0.36 }}
-              className="opsz-display block text-[18vw] italic md:text-[clamp(80px,10.5vw,180px)]"
+              className="opsz-display block italic text-[18vw] md:text-[clamp(80px,10.5vw,180px)]"
             >
               Moves Rooms
             </motion.span>
@@ -74,14 +74,14 @@ export function Hero() {
           >
             <a
               href="/subscribe"
-              className="group relative inline-flex items-center justify-between gap-3 overflow-hidden bg-cream px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-night transition-colors duration-300 hover:bg-cream/90"
+              className="group relative inline-flex items-center justify-between gap-3 overflow-hidden bg-cream px-8 py-4 font-sans text-[11px] font-medium uppercase tracking-[0.24em] text-night transition-colors duration-300 hover:bg-cream/90"
             >
               <span className="relative z-10">Subscribe to DJ Danny West mixes</span>
               <span className="relative z-10 transition-transform duration-300 group-hover:translate-x-1">→</span>
             </a>
             <a
               href="/book"
-              className="group relative inline-flex items-center justify-between gap-3 border border-cream/40 px-8 py-4 font-sans text-[11px] uppercase tracking-[0.24em] text-cream transition-colors duration-300 hover:bg-cream hover:text-night hover:border-cream"
+              className="group relative inline-flex items-center justify-between gap-3 border border-cream/40 px-8 py-4 font-sans text-[11px] font-medium uppercase tracking-[0.24em] text-cream transition-colors duration-300 hover:bg-cream hover:text-night hover:border-cream"
             >
               <span className="relative z-10">Book DJ Danny West</span>
               <span className="relative z-10 transition-transform duration-300 group-hover:translate-x-1">→</span>
