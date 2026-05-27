@@ -12,17 +12,11 @@ import { usePlayer, type NowPlaying } from "./PlayerProvider";
  * Mux's default control bar is hidden — we drive the underlying audio
  * element ourselves so the visual language is editorial / DJ-room: a big
  * play/pause button, an oversized waveform scrubber (procedurally
- * generated per-mix, deterministic from the playback ID), hover-time
- * preview, ember-on-cream progress.
+ * generated per-mix), hover-time preview, ember-on-cream progress.
  *
- * Pulls a signed playback token from /api/mux/playback-token for every
- * track. That endpoint runs the has_active_access() server-side check,
- * so the moment a subscription lapses the next token request fails and
- * the player stops working.
- *
- * Sets navigator.mediaSession metadata so iOS / Android lock screens
- * and Bluetooth headphones show the track title, series, cover art,
- * and respond to play/pause/skip actions.
+ * When a mix ends, the player auto-advances to the next track in the
+ * queue (passed in by whatever surface called play()). At end of queue,
+ * the player closes itself.
  */
 export function PersistentMiniPlayer() {
   const { nowPlaying, close } = usePlayer();
@@ -52,11 +46,12 @@ function PlayerBody({
   nowPlaying: NowPlaying;
   onClose: () => void;
 }) {
+  const { hasNext, hasPrev, playNext, playPrev } = usePlayer();
+
   const [token, setToken] = useState<string | null>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const muxRef = useRef<HTMLElement | null>(null);
 
-  // Custom UI state — driven by the mux-player audio engine
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -98,7 +93,7 @@ function PlayerBody({
     };
   }, [nowPlaying.playbackId]);
 
-  // Bind audio engine events into local state for the custom UI
+  // Bind audio engine events. The `ended` event triggers auto-advance.
   useEffect(() => {
     const el = muxRef.current as
       | (HTMLElement & {
@@ -115,19 +110,25 @@ function PlayerBody({
     const onPause = () => setIsPlaying(false);
     const onTime = () => setCurrentTime(el.currentTime || 0);
     const onDur = () => setDuration(el.duration || 0);
+    const onEnded = () => {
+      // Auto-advance to next track in queue (no-op + close if no next)
+      playNext();
+    };
     el.addEventListener("play", onPlay);
     el.addEventListener("pause", onPause);
     el.addEventListener("timeupdate", onTime);
     el.addEventListener("durationchange", onDur);
     el.addEventListener("loadedmetadata", onDur);
+    el.addEventListener("ended", onEnded);
     return () => {
       el.removeEventListener("play", onPlay);
       el.removeEventListener("pause", onPause);
       el.removeEventListener("timeupdate", onTime);
       el.removeEventListener("durationchange", onDur);
       el.removeEventListener("loadedmetadata", onDur);
+      el.removeEventListener("ended", onEnded);
     };
-  }, [token]);
+  }, [token, playNext]);
 
   const togglePlay = () => {
     const el = muxRef.current as (HTMLElement & {
@@ -150,8 +151,7 @@ function PlayerBody({
     }
   };
 
-  // Wire navigator.mediaSession so the lock-screen / AirPods / Bluetooth
-  // controls show the right track and respond to taps.
+  // Lock-screen / Bluetooth / AirPods metadata + handlers
   useEffect(() => {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator)) {
       return;
@@ -180,6 +180,8 @@ function PlayerBody({
     const handlers: Array<[MediaSessionAction, MediaSessionActionHandler]> = [
       ["play", () => { player?.play().catch(() => {}); }],
       ["pause", () => { player?.pause(); }],
+      ["nexttrack", () => { playNext(); }],
+      ["previoustrack", () => { playPrev(); }],
       [
         "seekbackward",
         (details: { seekOffset?: number }) => {
@@ -226,10 +228,10 @@ function PlayerBody({
         }
       }
     };
-  }, [nowPlaying]);
+  }, [nowPlaying, playNext, playPrev]);
 
   return (
-    <div className="mx-auto flex max-w-[1600px] items-center gap-4 px-4 py-3 md:gap-5 md:px-8 md:py-4">
+    <div className="mx-auto flex max-w-[1600px] items-center gap-3 px-4 py-3 md:gap-5 md:px-8 md:py-4">
       {/* Hidden Mux Player — drives audio decode/HLS playback */}
       <div className="hidden">
         {token ? (
@@ -275,7 +277,7 @@ function PlayerBody({
         ) : null}
       </div>
 
-      {/* Track meta — hides on small screens to make room for waveform */}
+      {/* Track meta — hides on small screens to make room for the waveform */}
       <div className="hidden min-w-0 lg:block lg:w-[200px]">
         <div className="truncate font-display text-[14px] leading-tight text-cream">
           {nowPlaying.title}
@@ -287,7 +289,20 @@ function PlayerBody({
         ) : null}
       </div>
 
-      {/* Play / pause button — ember filled circle, dominant visual cue */}
+      {/* Prev button */}
+      <button
+        type="button"
+        onClick={playPrev}
+        disabled={!hasPrev}
+        aria-label="Previous mix"
+        className="hidden h-9 w-9 shrink-0 items-center justify-center text-cream/55 transition hover:text-cream disabled:opacity-25 md:flex"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M3.5 2.5h1.5v11H3.5zM13 2.5L6 8l7 5.5V2.5z" />
+        </svg>
+      </button>
+
+      {/* Play / pause */}
       <button
         type="button"
         onClick={togglePlay}
@@ -307,12 +322,25 @@ function PlayerBody({
         )}
       </button>
 
+      {/* Next button */}
+      <button
+        type="button"
+        onClick={playNext}
+        disabled={!hasNext}
+        aria-label="Next mix"
+        className="hidden h-9 w-9 shrink-0 items-center justify-center text-cream/55 transition hover:text-cream disabled:opacity-25 md:flex"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M11 2.5h1.5v11H11zM3 2.5L10 8 3 13.5V2.5z" />
+        </svg>
+      </button>
+
       {/* Current time */}
       <div className="hidden shrink-0 font-sans text-[11px] uppercase tracking-[0.2em] tabular-nums text-cream/65 md:block md:w-12 md:text-right">
         {formatTime(currentTime)}
       </div>
 
-      {/* Waveform scrubber — the visual centerpiece */}
+      {/* Waveform scrubber */}
       <div className="min-w-0 flex-1">
         {tokenError ? (
           <div className="font-sans text-[12px] text-ember">{tokenError}</div>
@@ -363,14 +391,8 @@ function PlayerBody({
 }
 
 /**
- * Procedural-but-deterministic waveform display.
- *
- * Real per-track waveforms would require pre-rendering audio peaks server-side
- * or pulling Mux's audio_waveform image (which requires extra signed tokens
- * and adds load latency). For now: seed an RNG from the playback ID and walk
- * a smoothly-varying random function across N bars. Each track gets a unique-
- * looking waveform, identical across reloads, and renders instantly with no
- * extra network calls. Real waveform integration = a later pass.
+ * Procedural-but-deterministic waveform display. Seeded from the playback
+ * ID so each track gets a unique pattern that's stable across reloads.
  */
 function Waveform({
   currentTime,
@@ -462,9 +484,7 @@ function Waveform({
   );
 }
 
-/** Walk a smoothly-varying seeded function across N points so bars feel natural. */
 function generateBars(seed: string, count: number): number[] {
-  // FNV-1a-ish hash for a deterministic 32-bit seed
   let h = 2166136261;
   for (let i = 0; i < seed.length; i++) {
     h ^= seed.charCodeAt(i);
@@ -478,10 +498,8 @@ function generateBars(seed: string, count: number): number[] {
   const out: number[] = [];
   let v = 0.5;
   for (let i = 0; i < count; i++) {
-    // Bounded random walk so consecutive bars stay correlated
     const delta = (rand() - 0.5) * 0.45;
     v = Math.max(0.18, Math.min(0.95, v + delta));
-    // Add a quasi-rhythmic pulse so it doesn't read as pure noise
     const pulse = 0.08 * Math.sin(i * 0.42) + 0.05 * Math.sin(i * 0.13);
     out.push(Math.max(0.12, Math.min(1, v + pulse)));
   }

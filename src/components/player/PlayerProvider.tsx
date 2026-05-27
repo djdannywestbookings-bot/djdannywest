@@ -21,28 +21,93 @@ export type NowPlaying = {
   coverUrl: string | null;
 };
 
+/**
+ * An ordered queue. The currently-playing track sits at queue.tracks[queue.index].
+ * When a track ends naturally, the player advances index by 1 (auto-advance).
+ * When the index reaches the end of the queue, playback stops.
+ */
+type Queue = {
+  tracks: NowPlaying[];
+  index: number;
+};
+
 type PlayerCtx = {
   nowPlaying: NowPlaying | null;
-  play: (track: NowPlaying) => void;
+  /** Has another track waiting after the current one? */
+  hasNext: boolean;
+  /** Has another track before the current one? */
+  hasPrev: boolean;
+  /**
+   * Start playing a track.
+   * - If `queue` is provided, the player auto-advances through it when the
+   *   current track ends. `track` must be present in `queue`; if not, it
+   *   gets prepended.
+   * - If `queue` is omitted, single-track mode (no auto-advance).
+   */
+  play: (track: NowPlaying, queue?: NowPlaying[]) => void;
+  /** Advance to the next track in the queue. Stops if at end. */
+  playNext: () => void;
+  /** Go back to the previous track in the queue. No-op if at start. */
+  playPrev: () => void;
   close: () => void;
 };
 
 const PlayerContext = createContext<PlayerCtx | null>(null);
 
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
-  const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
+  const [queue, setQueue] = useState<Queue | null>(null);
+  const nowPlaying = queue ? queue.tracks[queue.index] ?? null : null;
 
-  const play = useCallback((track: NowPlaying) => {
-    setNowPlaying(track);
+  const play = useCallback((track: NowPlaying, tracks?: NowPlaying[]) => {
+    if (!tracks || tracks.length === 0) {
+      // Single-track mode — no auto-advance
+      setQueue({ tracks: [track], index: 0 });
+      return;
+    }
+    let index = tracks.findIndex((t) => t.playbackId === track.playbackId);
+    let resolved = tracks;
+    if (index === -1) {
+      // Caller passed a queue that doesn't include the clicked track — prepend it
+      resolved = [track, ...tracks];
+      index = 0;
+    }
+    setQueue({ tracks: resolved, index });
+  }, []);
+
+  const playNext = useCallback(() => {
+    setQueue((prev) => {
+      if (!prev) return prev;
+      if (prev.index + 1 >= prev.tracks.length) {
+        // End of queue — close the player
+        return null;
+      }
+      return { ...prev, index: prev.index + 1 };
+    });
+  }, []);
+
+  const playPrev = useCallback(() => {
+    setQueue((prev) => {
+      if (!prev) return prev;
+      if (prev.index <= 0) return prev;
+      return { ...prev, index: prev.index - 1 };
+    });
   }, []);
 
   const close = useCallback(() => {
-    setNowPlaying(null);
+    setQueue(null);
   }, []);
 
   const value = useMemo<PlayerCtx>(
-    () => ({ nowPlaying, play, close }),
-    [nowPlaying, play, close],
+    () => ({
+      nowPlaying,
+      hasNext: !!queue && queue.index + 1 < queue.tracks.length,
+      hasPrev: !!queue && queue.index > 0,
+      play,
+      playNext,
+      playPrev,
+      close,
+    }),
+    [nowPlaying, queue, play, playNext, playPrev, close],
   );
 
   return (

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { usePlayer } from "@/components/player/PlayerProvider";
+import { usePlayer, type NowPlaying } from "@/components/player/PlayerProvider";
 
 export type LibraryMix = {
   id: string;
@@ -52,24 +52,20 @@ function isFresh(iso: string | null): boolean {
 }
 
 /**
- * The library is a stack of collapsible series shelves. Click a series
- * header → it expands to reveal all mixes in a horizontally scrolling
- * strip. Click a mix's play button → the bottom-pinned MiniPlayer slides
- * up and starts streaming.
+ * Stack of collapsible series shelves. Each shelf has an ambient backdrop
+ * image (blurred copy of the newest mix's cover) so the header bar reads
+ * as designed instead of empty.
  *
- * Series header has an ambient backdrop image (blurred copy of the newest
- * mix's cover art) so the bar reads as designed instead of empty.
- *
- * Subscribers can play. Non-subscribers see a lock icon + a subscribe CTA
- * when they tap a play button (the playback-token endpoint enforces this
- * server-side too).
+ * When a user clicks play on any mix, we hand the PlayerProvider the FULL
+ * ordered list of that series' playable mixes so the player auto-advances
+ * to the next one when the current track ends. No clicking required to
+ * keep the music going — it blends straight through to Vol N+1 (or N-1
+ * if browsing newest-first).
  */
 export function LibraryAccordion({ shelves, hasAccess }: Props) {
   const { nowPlaying, play } = usePlayer();
 
-  // Multiple shelves can be open at once — toggling is per-shelf
   const [openSet, setOpenSet] = useState<Set<string>>(() => {
-    // Pre-open the first non-empty shelf so the page never looks empty
     const first = shelves.find((s) => s.mixes.length > 0);
     return new Set(first ? [first.series.id] : []);
   });
@@ -83,14 +79,34 @@ export function LibraryAccordion({ shelves, hasAccess }: Props) {
     });
   };
 
-  const onPlay = (mix: LibraryMix, seriesTitle: string) => {
+  /**
+   * Build a queue from the series and start playback at the clicked mix.
+   * Display order is newest-first, so the "next" mix is the one OLDER
+   * than the clicked one — feels like a curated DJ set rolling backwards
+   * through the catalog.
+   */
+  const onPlay = (mix: LibraryMix, shelf: Shelf) => {
     if (!hasAccess || !mix.mux_playback_id) return;
-    play({
-      playbackId: mix.mux_playback_id,
-      title: mix.title,
-      subtitle: seriesTitle,
-      coverUrl: mix.cover_url,
-    });
+
+    const seriesTitle = shelf.series.title;
+    const queue: NowPlaying[] = shelf.mixes
+      .filter((m) => !!m.mux_playback_id)
+      .map((m) => ({
+        playbackId: m.mux_playback_id!,
+        title: m.title,
+        subtitle: seriesTitle,
+        coverUrl: m.cover_url,
+      }));
+
+    play(
+      {
+        playbackId: mix.mux_playback_id,
+        title: mix.title,
+        subtitle: seriesTitle,
+        coverUrl: mix.cover_url,
+      },
+      queue,
+    );
   };
 
   if (shelves.length === 0) {
@@ -110,14 +126,13 @@ export function LibraryAccordion({ shelves, hasAccess }: Props) {
             shelf={shelf}
             open={openSet.has(shelf.series.id)}
             onToggle={() => toggle(shelf.series.id)}
-            onPlay={(mix) => onPlay(mix, shelf.series.title)}
+            onPlay={(mix) => onPlay(mix, shelf)}
             hasAccess={hasAccess}
             playingId={nowPlaying?.playbackId ?? null}
           />
         ))}
       </div>
 
-      {/* Footer breathing room so the global MiniPlayer never covers the last shelf */}
       <div className="h-32" aria-hidden />
     </>
   );
@@ -139,11 +154,12 @@ function ShelfRow({
   playingId: string | null;
 }) {
   const { series, mixes } = shelf;
-  const newest = mixes[0]; // mixes are returned newest-first from the server
+  const newest = mixes[0];
   const hasNew = newest && isFresh(newest.published_at);
-  // Backdrop art for the header bar: prefer an explicit series cover, fall
-  // back to the newest mix's cover. Same image powers the small thumbnail.
-  const headerArt = series.cover_url || newest?.cover_url || null;
+  const headerArt = useMemo(
+    () => series.cover_url || newest?.cover_url || null,
+    [series.cover_url, newest?.cover_url],
+  );
 
   return (
     <div
@@ -153,7 +169,7 @@ function ShelfRow({
           : "border-line bg-cream/[0.02] hover:border-cream/20 hover:bg-cream/[0.03]"
       }`}
     >
-      {/* HEADER — backdrop artwork + clickable row */}
+      {/* HEADER */}
       <div className="relative">
         {headerArt ? (
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -177,7 +193,6 @@ function ShelfRow({
           aria-expanded={open}
           className="relative flex w-full items-center gap-5 px-5 py-4 text-left md:gap-6 md:px-7 md:py-5"
         >
-          {/* Series cover */}
           <div className="relative aspect-square h-14 w-14 shrink-0 overflow-hidden bg-night-soft md:h-16 md:w-16">
             {headerArt ? (
               /* eslint-disable-next-line @next/next/no-img-element */
@@ -195,7 +210,6 @@ function ShelfRow({
             )}
           </div>
 
-          {/* Series text */}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-3">
               <h3 className="truncate font-display text-[20px] font-light leading-tight tracking-[-0.005em] text-cream md:text-[26px]">
@@ -215,12 +229,10 @@ function ShelfRow({
             ) : null}
           </div>
 
-          {/* Mix count */}
           <div className="hidden shrink-0 font-sans text-[11px] uppercase tracking-[0.22em] text-cream/65 sm:block">
             {mixes.length} {mixes.length === 1 ? "mix" : "mixes"}
           </div>
 
-          {/* Chevron */}
           <div
             className={`shrink-0 transition-transform duration-300 ${
               open ? "rotate-180" : ""
@@ -231,7 +243,6 @@ function ShelfRow({
         </button>
       </div>
 
-      {/* EXPANDED — horizontal strip of mix tiles */}
       <AnimatePresence initial={false}>
         {open ? (
           <motion.div
@@ -297,17 +308,14 @@ function MixTile({
           </div>
         )}
 
-        {/* Darken on hover for legibility of the play button */}
         <div className="absolute inset-0 bg-gradient-to-t from-night/80 via-night/0 to-night/0 opacity-0 transition-opacity duration-300 group-hover/tile:opacity-100" />
 
-        {/* Top-right pills */}
         {fresh ? (
           <span className="absolute right-2 top-2 bg-ember px-1.5 py-0.5 font-sans text-[9px] uppercase tracking-[0.24em] text-night">
             New
           </span>
         ) : null}
 
-        {/* Bottom-left play / now-playing button */}
         <button
           type="button"
           onClick={onPlay}
@@ -383,7 +391,6 @@ function PlayIcon() {
 }
 
 function BarsIcon() {
-  // Animated bars indicating "currently playing"
   return (
     <span className="inline-flex h-3.5 items-end gap-[2px]" aria-hidden="true">
       <span className="inline-block h-2 w-[3px] animate-pulse bg-night" />
