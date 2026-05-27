@@ -1,5 +1,4 @@
 import { signOut } from "@/app/auth/actions";
-import { getInsiderAccess } from "@/lib/supabase/insiderAccess";
 
 /**
  * Active section in the account sidebar. The page passes this so the
@@ -8,7 +7,6 @@ import { getInsiderAccess } from "@/lib/supabase/insiderAccess";
 export type AccountSection =
   | "dashboard"
   | "library"
-  | "insider"
   | "request"
   | "custom"
   | "subscription"
@@ -38,11 +36,6 @@ export async function AccountShell({
   email,
   children,
 }: Props) {
-  // Members who pass the Insider gate get the link. Public users + members
-  // without access never see it (same logic as the global SiteNav).
-  const insider = await getInsiderAccess();
-  const showInsider = insider.ok;
-
   return (
     <div className="relative mx-auto grid max-w-[1600px] grid-cols-1 gap-x-12 px-6 pb-24 pt-12 md:grid-cols-[260px_1fr] md:px-12 md:pt-16">
       {/* Decorative ember glow — desktop only */}
@@ -73,11 +66,6 @@ export async function AccountShell({
             <SidebarLink href="/mixes/library" active={active === "library"}>
               Mix library
             </SidebarLink>
-            {showInsider ? (
-              <SidebarLink href="/insider" active={active === "insider"}>
-                Insider
-              </SidebarLink>
-            ) : null}
           </SidebarSection>
           <SidebarSection title="Get a mix">
             <SidebarLink href="/account/request-mix" active={active === "request"}>

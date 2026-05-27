@@ -1,10 +1,9 @@
 import Image from "next/image";
 import { getCurrentUser } from "@/lib/supabase/getUser";
-import { getInsiderAccess } from "@/lib/supabase/insiderAccess";
 import { signOut } from "@/app/auth/actions";
 
 type Props = {
-  active?: "mixes" | "book" | "merch" | "insider";
+  active?: "mixes" | "book" | "merch";
   /** When the nav sits over a hero with its own video/photography, pass `false` so it floats transparently. */
   solid?: boolean;
 };
@@ -16,10 +15,6 @@ type Props = {
  */
 export async function SiteNav({ active, solid = true }: Props) {
   const user = await getCurrentUser();
-  // The Insider link is only rendered for visitors who actually have access —
-  // keeps public visitors from even knowing the section exists.
-  const insider = user ? await getInsiderAccess() : null;
-  const showInsider = !!insider && insider.ok;
 
   const link = (key: string, label: string, href: string) => (
     <a
@@ -55,7 +50,6 @@ export async function SiteNav({ active, solid = true }: Props) {
       <nav className="hidden items-center gap-10 font-sans text-[10px] uppercase tracking-[0.32em] md:flex">
         {link("mixes", "Mixes", "/mixes")}
         {link("book", "Book", "/book")}
-        {showInsider ? link("insider", "Insider", "/insider") : null}
         {link("merch", "Merch", "/merchandise")}
       </nav>
 
