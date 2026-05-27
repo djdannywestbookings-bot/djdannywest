@@ -8,15 +8,16 @@ import { PlayerProvider } from "@/components/player/PlayerProvider";
 import { PersistentMiniPlayer } from "@/components/player/PersistentMiniPlayer";
 
 // Editorial type system:
-//   - Fraunces (variable serif) → display / headlines. Italic + heavy weight
-//     for the hero. Opt into SOFT + opsz axes so headlines breathe at very
-//     large sizes and tighten at body-adjacent sizes.
-//   - Inter Tight → body, nav, buttons, UI labels. Medium / SemiBold for UI.
+//   - Fraunces (variable serif) → display / headlines. Variable font: we let
+//     CSS font-weight drive weight (Tailwind font-bold / font-extrabold map
+//     straight through), and opt into SOFT + opsz axes for editorial breath.
+//     IMPORTANT: when `axes` is specified, `weight` MUST be omitted (or
+//     `"variable"`) — Next.js's font loader rejects the combo otherwise.
+//   - Inter Tight → body, nav, buttons, UI labels.
 //   - JetBrains Mono → marquee + tour-itinerary / broadcast accents.
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
   style: ["normal", "italic"],
   axes: ["SOFT", "opsz"],
   display: "swap",
