@@ -5,6 +5,18 @@ import { Marquee } from "./Marquee";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
+/**
+ * Headline sizing math (worked out to prevent "Moves Rooms" orphaning):
+ *   Mobile 390px:    14vw  = 54.6px  · "Moves Rooms" ~300px in 342 col → fits
+ *   Mobile 414px:    14vw  = 57.9px  · ~319px in 366 col → fits
+ *   Tablet 768px:    8vw   = 61.4px  · ~338px in ~672 col → fits
+ *   Desktop 1024px:  8vw   = 81.9px  · ~451px in ~928 col → fits
+ *   Desktop 1440px:  8vw   = 115.2px · ~634px in ~1344 col → fits comfortably
+ *   Desktop 1920px:  8vw → clamp ceiling at 140px · ~770px → fits
+ * Combined with full-width column (col-span-12 instead of -7) the headline
+ * always reads as a two-line block ("A DJ That" / "Moves Rooms") with no
+ * orphans at any reasonable viewport.
+ */
 export function Hero() {
   return (
     <section className="relative w-full overflow-hidden bg-night text-cream">
@@ -34,15 +46,14 @@ export function Hero() {
       <div className="grain pointer-events-none absolute inset-0 z-[1] opacity-[0.14] mix-blend-overlay" />
 
       {/* Hero content (nav rendered separately by parent SiteNav) */}
-      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-90px)] max-w-[1600px] grid-cols-1 items-end gap-14 px-6 pb-16 pt-8 md:grid-cols-12 md:px-12 md:pb-24 md:pt-4">
-        {/* Text column */}
-        <div className="md:col-span-8 lg:col-span-7">
-          <h1 className="font-display font-extrabold leading-[0.86] tracking-[-0.035em] text-cream">
+      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-90px)] max-w-[1600px] flex-col justify-end gap-14 px-6 pb-16 pt-8 md:px-12 md:pb-24 md:pt-4">
+        <div className="w-full">
+          <h1 className="font-display font-extrabold leading-[0.88] tracking-[-0.04em] text-cream">
             <motion.span
               initial={{ opacity: 0, y: 36 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: easeOut, delay: 0.22 }}
-              className="opsz-display block text-[18vw] md:text-[clamp(80px,10.5vw,180px)]"
+              className="opsz-display block text-[14vw] md:text-[clamp(56px,8vw,140px)]"
             >
               A DJ That
             </motion.span>
@@ -50,7 +61,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 36 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: easeOut, delay: 0.36 }}
-              className="opsz-display block italic text-[18vw] md:text-[clamp(80px,10.5vw,180px)]"
+              className="opsz-display block italic text-[14vw] md:text-[clamp(56px,8vw,140px)]"
             >
               Moves Rooms
             </motion.span>
@@ -60,7 +71,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.65 }}
-            className="mt-12 max-w-md font-sans text-[15px] leading-[1.65] text-cream/75 md:text-[17px]"
+            className="mt-10 max-w-md font-sans text-[17px] leading-[1.7] text-cream/80 md:text-[18px]"
           >
             <span className="text-cream">New mixes released weekly.</span>{" "}
             Subscribers only.
@@ -70,7 +81,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.85 }}
-            className="mt-12 flex max-w-[440px] flex-col gap-4"
+            className="mt-10 flex max-w-[440px] flex-col gap-4"
           >
             <a
               href="/subscribe"
@@ -88,7 +99,6 @@ export function Hero() {
             </a>
           </motion.div>
         </div>
-
       </div>
 
       {/* Marquee at bottom */}
