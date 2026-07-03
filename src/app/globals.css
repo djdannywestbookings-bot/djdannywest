@@ -1,24 +1,40 @@
 @import "tailwindcss";
 
 @theme {
-  /* Color system — warm, editorial, after-hours */
-  --color-night: #0A0907;
-  --color-night-soft: #14110D;
-  --color-cream: #F5F1EA;
-  --color-cream-soft: #B8B0A4;
-  --color-cream-muted: #6E665D;
-  /* Honey-gold accent — kept available but used sparingly. */
-  --color-ember: #E5B97A;
-  --color-ember-soft: #B0884E;
-  --color-line: rgba(245, 241, 234, 0.08);
+  /* Homepage palette — dark editorial with a warm gold accent.
+     Mapped into Tailwind color utilities so existing pages that still use
+     bg-night / text-cream keep rendering the same. */
+  --color-night: #0a0a0c;
+  --color-night-soft: #101014;
+  --color-cream: #ece8e0;
+  --color-cream-soft: rgba(236, 232, 224, 0.62);
+  --color-cream-muted: rgba(236, 232, 224, 0.38);
+  --color-ember: #d9c9a3;
+  --color-ember-soft: #b39a63;
+  --color-line: rgba(236, 232, 224, 0.14);
 
-  /* Typography — editorial pairing.
-     Fraunces drives display + serif headlines; Inter Tight handles all body /
-     UI / nav; JetBrains Mono carries marquee + tour-itinerary accents. */
-  --font-display: var(--font-fraunces), Georgia, ui-serif, serif;
-  --font-serif: var(--font-fraunces), Georgia, ui-serif, serif;
-  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Type stack — everything routes through Cormorant / Inter now.
+     Legacy `font-display`, `font-serif`, `font-sans`, `font-mono` utilities
+     on non-homepage routes still resolve to a real font. */
+  --font-display: var(--font-cormorant), Georgia, ui-serif, serif;
+  --font-serif: var(--font-cormorant), Georgia, ui-serif, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Homepage-scoped CSS vars, matching the mock verbatim so the class-based
+   selectors below (.hero, .ticker, .feature, etc.) read like the original. */
+:root {
+  --bg: #0a0a0c;
+  --bg-2: #101014;
+  --ink: #ece8e0;
+  --ink-dim: rgba(236, 232, 224, 0.62);
+  --ink-faint: rgba(236, 232, 224, 0.38);
+  --gold: #d9c9a3;
+  --gold-deep: #b39a63;
+  --line: rgba(236, 232, 224, 0.14);
+  --serif: var(--font-cormorant), Georgia, ui-serif, serif;
+  --sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 html, body {
@@ -29,79 +45,217 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
+html { scroll-behavior: smooth; }
 
 ::selection {
-  background: var(--color-cream);
+  background: var(--color-ember);
   color: var(--color-night);
 }
 
-/* Film grain — SVG noise as data URL */
+/* Film grain — SVG noise as data URL. Kept from prior globals.css. */
 .grain {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.94 0 0 0 0 0.92 0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
   background-size: 240px 240px;
 }
 
-/* Fraunces variable-font axes for editorial headlines.
-   .opsz-display = hero / page titles (optical size set for huge sizes, low SOFT
-                                       for crisp serifs).
-   .opsz-section = section headings (mid optical size + softer serifs).
-   .opsz-text    = body-adjacent display moments (small optical size, max SOFT). */
-.opsz-display {
-  font-variation-settings: "opsz" 144, "SOFT" 30;
-}
-.opsz-section {
-  font-variation-settings: "opsz" 72, "SOFT" 60;
-}
+/* Legacy opsz utilities — no-ops now that Fraunces is gone, kept so pre-
+   existing markup on /mixes, /book, /services, /wedding-dj-guide still
+   compiles without visual break. */
+.opsz-display,
+.opsz-section,
 .opsz-text {
-  font-variation-settings: "opsz" 14, "SOFT" 100;
+  font-variation-settings: normal;
 }
+
+/* Legacy hero entrance keyframes — safe to keep even if unused by the new
+   Hero, since the new .rv system supersedes them. */
+@keyframes hero-rise-in {
+  from { opacity: 0; transform: translateY(36px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.hero-rise { animation: hero-rise-in 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero-fade { animation: hero-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 /* ============================================================
-   Hero entry animations — pure CSS, JS-agnostic.
-   The Hero component applies `.hero-rise` / `.hero-fade` classes
-   plus an inline `animationDelay` to stagger the entrance. The
-   default render state of every element is VISIBLE (opacity 1,
-   no transform); the keyframes overlay the entrance starting
-   from a hidden state. `animation-fill-mode: both` keeps the
-   element at the `from` frame during the delay, then at the
-   `to` frame after completion.
-
-   Why this matters: if hydration ever fails or is slow, the hero
-   still renders correctly — no inline `opacity: 0` from motion
-   that would leave the headline invisible without JS.
-   `prefers-reduced-motion: reduce` skips the animation entirely.
+   NEW HOMEPAGE — no-JS-safe reveal system
+   Default state = VISIBLE. Entrance animation overlays it.
+   Every .rv element renders correctly if JS fails, hydration
+   stalls, or the user has prefers-reduced-motion.
    ============================================================ */
-@keyframes hero-rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(36px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+@keyframes rv-in {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
 }
-
-@keyframes hero-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.hero-rise {
-  animation: hero-rise-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.hero-fade {
-  animation: hero-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
+.rv    { animation: rv-in 1.1s cubic-bezier(.16, 1, .3, 1) both; }
+.rv.d1 { animation-delay: .12s; }
+.rv.d2 { animation-delay: .24s; }
+.rv.d3 { animation-delay: .36s; }
 @media (prefers-reduced-motion: reduce) {
-  .hero-rise,
-  .hero-fade {
-    animation: none;
-  }
+  .rv, .rv.d1, .rv.d2, .rv.d3 { animation: none; }
 }
+
+/* Utility classes shared across homepage sections. */
+.hp .wrap { max-width: 1280px; margin: 0 auto; padding: 0 6vw; }
+.hp .label { font-family: var(--sans); font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--ink-faint); font-weight: 400; }
+.hp .em { font-style: italic; color: var(--gold); }
+.hp .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* NAV — fixed, transparent → solid on scroll (JS toggles .scrolled). */
+.hp-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 26px 6vw; transition: background .5s, padding .5s; background: linear-gradient(to bottom, rgba(10,10,12,.75), transparent); }
+.hp-nav.scrolled { background: rgba(10,10,12,.92); backdrop-filter: blur(14px); padding: 16px 6vw; border-bottom: 1px solid var(--line); }
+.hp-brand { font-family: var(--serif); font-size: 19px; letter-spacing: .42em; text-transform: uppercase; font-weight: 500; color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 14px; }
+.hp-brand-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 12px var(--gold); }
+.hp-brand-txt { opacity: 0; transition: opacity .4s; }
+.hp-nav.scrolled .hp-brand-txt { opacity: 1; }
+.hp-nav-links { display: flex; align-items: center; gap: 38px; }
+.hp-nav-links a { font-family: var(--sans); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-dim); text-decoration: none; transition: color .3s; }
+.hp-nav-links a:hover { color: var(--gold); }
+.hp-pill { border: 1px solid var(--gold-deep); color: var(--gold) !important; padding: 11px 26px; border-radius: 100px; transition: all .35s !important; }
+.hp-pill:hover { background: var(--gold); color: #0a0a0c !important; }
+.hp-pill.solid { background: var(--gold); color: #0a0a0c !important; border-color: var(--gold); }
+.hp-pill.solid:hover { background: var(--ink); border-color: var(--ink); }
+@media (max-width: 900px) { .hp-nav-links a:not(.hp-pill) { display: none; } }
+
+/* HERO */
+.hp-hero { position: relative; min-height: 100vh; display: flex; align-items: flex-end; padding-bottom: 9vh; background: #141218; overflow: hidden; }
+.hp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.hp-hero-veil { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(10,10,12,.97) 4%, rgba(10,10,12,.4) 45%, rgba(10,10,12,.6) 100%); }
+.hp-hero .wrap { position: relative; z-index: 2; }
+.hp-hero h1 { font-family: var(--serif); font-size: clamp(52px, 7.4vw, 116px); line-height: 1.02; font-weight: 300; max-width: 12ch; margin-top: 30px; }
+.hp-hero p.hp-lede { margin-top: 28px; max-width: 46ch; font-size: 19px; line-height: 1.65; color: var(--ink-dim); font-weight: 400; font-family: var(--sans); }
+.hp-hero .hp-cta-row { display: flex; align-items: center; gap: 26px; margin-top: 42px; flex-wrap: wrap; }
+.hp-hero .hp-micro { font-family: var(--sans); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-faint); }
+.hp-scroll-hint { position: absolute; right: 6vw; bottom: 9vh; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.hp-scroll-hint .hp-scroll-lbl { writing-mode: vertical-rl; font-family: var(--sans); font-size: 10px; letter-spacing: .32em; text-transform: uppercase; color: var(--ink-faint); }
+.hp-scroll-hint .hp-scroll-bar { width: 1px; height: 64px; background: var(--line); position: relative; overflow: hidden; }
+.hp-scroll-hint .hp-scroll-bar::after { content: ''; position: absolute; left: 0; top: -40%; width: 1px; height: 40%; background: var(--gold); animation: drip 2.4s ease-in-out infinite; }
+@keyframes drip { 0% { top: -40%; } 100% { top: 110%; } }
+@media (max-width: 700px) { .hp-scroll-hint { display: none; } }
+
+/* TICKER */
+.hp-ticker-sec { padding: 110px 0 90px; border-bottom: 1px solid var(--line); }
+.hp-ticker-sec h2 { font-family: var(--serif); text-align: center; font-size: clamp(30px, 3.4vw, 48px); font-weight: 300; margin-bottom: 64px; }
+.hp-ticker { overflow: hidden; white-space: nowrap; -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent); }
+.hp-ticker-track { display: inline-block; animation: hp-scroll 44s linear infinite; }
+.hp-ticker span { display: inline-block; font-family: var(--serif); font-size: clamp(30px, 4vw, 56px); font-weight: 300; color: var(--ink-faint); margin: 0 34px; transition: color .4s; font-style: italic; }
+.hp-ticker span:hover { color: var(--gold); }
+.hp-ticker i { font-style: normal; color: var(--gold-deep); font-size: .5em; vertical-align: middle; margin: 0 4px; }
+@keyframes hp-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* MANIFESTO (kept per Danny's request — cream/gold flip w/ vinyl backdrop) */
+.hp-manifesto { position: relative; padding: 130px 0 120px; overflow: hidden; background: #f6f1e8; color: #0a0a0c; }
+.hp-manifesto .hp-vinyl { position: absolute; right: -18%; top: -8%; width: 100vh; height: 100vh; pointer-events: none; opacity: .55; }
+.hp-manifesto .wrap { position: relative; z-index: 2; }
+.hp-manifesto .hp-lede { font-family: var(--serif); font-size: clamp(36px, 5vw, 72px); font-weight: 300; line-height: 1.06; letter-spacing: -.005em; max-width: 22ch; }
+.hp-manifesto .hp-lede .hp-em { color: #b39a63; font-style: italic; }
+.hp-manifesto .hp-grid { margin-top: 80px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.hp-manifesto .hp-card { background: rgba(255,255,255,.35); border: 1px solid rgba(10,10,12,.10); backdrop-filter: blur(6px); padding: 36px 34px; transition: background .4s; }
+.hp-manifesto .hp-card:hover { background: rgba(255,255,255,.55); }
+.hp-manifesto .hp-card h4 { font-family: var(--serif); font-size: 26px; font-weight: 400; line-height: 1.15; letter-spacing: -.005em; }
+.hp-manifesto .hp-card p { font-family: var(--sans); font-size: 14px; line-height: 1.65; color: rgba(10,10,12,.62); font-weight: 300; margin-top: 12px; }
+@media (max-width: 820px) { .hp-manifesto .hp-grid { grid-template-columns: 1fr; gap: 18px; } }
+
+/* FEATURE editorial blocks */
+.hp-feature { position: relative; min-height: 92vh; display: flex; align-items: center; background-color: #141218; background-size: cover; background-position: center; }
+.hp-feature .hp-shade { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(10,10,12,.92) 8%, rgba(10,10,12,.3) 60%, rgba(10,10,12,.5)); }
+.hp-feature.right .hp-shade { background: linear-gradient(260deg, rgba(10,10,12,.92) 8%, rgba(10,10,12,.3) 60%, rgba(10,10,12,.5)); }
+.hp-feature .hp-inner { position: relative; z-index: 2; max-width: 540px; }
+.hp-feature.right .hp-inner { margin-left: auto; text-align: right; }
+.hp-feature h3 { font-family: var(--serif); font-size: clamp(36px, 4.2vw, 60px); line-height: 1.12; font-weight: 300; margin: 20px 0 22px; }
+.hp-feature p { font-size: 17px; line-height: 1.7; color: var(--ink-dim); font-family: var(--sans); font-weight: 300; }
+.hp-feature .hp-cta { display: inline-block; margin-top: 30px; font-family: var(--sans); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold-deep); padding-bottom: 8px; transition: opacity .3s; }
+.hp-feature .hp-cta:hover { opacity: .7; }
+.hp-feature-mixes-bg { background: radial-gradient(1200px 800px at 80% 40%, rgba(217,201,163,.15), transparent 60%), radial-gradient(900px 600px at 15% 90%, rgba(179,154,99,.18), transparent 60%), linear-gradient(135deg, #1a1522 0%, #0f0d15 100%); }
+.hp-feature-craft-bg { background: radial-gradient(1000px 700px at 20% 30%, rgba(217,201,163,.13), transparent 60%), radial-gradient(1100px 700px at 85% 80%, rgba(179,154,99,.14), transparent 60%), linear-gradient(225deg, #181321 0%, #0e0c13 100%); }
+
+/* STATS */
+.hp-stats { padding: 130px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg-2); }
+.hp-stats .hp-stats-label { display: block; text-align: center; margin-bottom: 70px; }
+.hp-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; text-align: center; }
+.hp-stat b { display: block; font-family: var(--serif); font-size: clamp(44px, 4.6vw, 68px); font-weight: 300; color: var(--ink); }
+.hp-stat i { font-style: italic; color: var(--gold); }
+.hp-stat span { display: block; margin-top: 14px; font-family: var(--sans); font-size: 10.5px; letter-spacing: .26em; text-transform: uppercase; color: var(--ink-faint); }
+@media (max-width: 820px) { .hp-stat-grid { grid-template-columns: repeat(2, 1fr); gap: 56px 20px; } }
+
+/* SERVICES GRID */
+.hp-standard { padding: 140px 0; }
+.hp-standard .hp-std-label { display: block; margin-bottom: 22px; }
+.hp-standard h2 { font-family: var(--serif); font-size: clamp(36px, 4.2vw, 58px); font-weight: 300; max-width: 20ch; margin-bottom: 80px; }
+.hp-std-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.hp-std { background: var(--bg); padding: 46px 38px 52px; transition: background .5s; }
+.hp-std:hover { background: var(--bg-2); }
+.hp-std .hp-std-num { font-family: var(--sans); font-size: 10px; letter-spacing: .3em; color: var(--gold-deep); }
+.hp-std h4 { font-family: var(--serif); font-size: 26px; font-weight: 400; margin: 18px 0 14px; }
+.hp-std p { font-family: var(--sans); font-size: 14px; line-height: 1.7; color: var(--ink-dim); font-weight: 300; }
+@media (max-width: 960px) { .hp-std-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 620px) { .hp-std-grid { grid-template-columns: 1fr; } }
+
+/* PROCESS */
+.hp-process { padding: 140px 0; background: var(--bg-2); border-top: 1px solid var(--line); }
+.hp-process h2 { font-family: var(--serif); font-size: clamp(36px, 4.2vw, 58px); font-weight: 300; margin: 22px 0 90px; }
+.hp-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; }
+.hp-step .hp-big { font-family: var(--serif); font-size: 96px; font-weight: 300; color: transparent; -webkit-text-stroke: 1px var(--gold-deep); line-height: 1; }
+.hp-step h4 { font-family: var(--serif); font-size: 26px; font-weight: 400; margin: 26px 0 14px; }
+.hp-step h4 i { color: var(--gold); }
+.hp-step p { font-family: var(--sans); font-size: 14px; line-height: 1.7; color: var(--ink-dim); font-weight: 300; }
+@media (max-width: 820px) { .hp-steps { grid-template-columns: 1fr; gap: 52px; } }
+
+/* CITIES */
+.hp-cities { padding: 120px 0; border-top: 1px solid var(--line); text-align: center; }
+.hp-cities h2 { font-family: var(--serif); font-size: clamp(28px, 3.2vw, 44px); font-weight: 300; margin-bottom: 56px; }
+.hp-city-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 36px; max-width: 900px; margin: 0 auto; }
+.hp-city-row span { font-family: var(--serif); font-size: 24px; font-weight: 300; color: var(--ink-dim); transition: color .3s; cursor: default; }
+.hp-city-row span:hover { color: var(--gold); }
+.hp-city-row i { font-style: normal; color: var(--gold-deep); align-self: center; font-size: 12px; }
+
+/* CONTACT / BOOK */
+.hp-contact { padding: 140px 0; border-top: 1px solid var(--line); background: radial-gradient(1200px 800px at 80% 20%, rgba(217,201,163,.10), transparent 60%), radial-gradient(900px 600px at 10% 80%, rgba(179,154,99,.12), transparent 60%), linear-gradient(135deg, #141018 0%, #0a0a0c 100%); }
+.hp-contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 90px; }
+.hp-contact h2 { font-family: var(--serif); font-size: clamp(38px, 4.4vw, 62px); font-weight: 300; line-height: 1.1; margin: 22px 0 26px; }
+.hp-contact .hp-contact-sub { font-family: var(--sans); font-size: 15px; line-height: 1.75; color: var(--ink-dim); max-width: 40ch; font-weight: 300; }
+.hp-contact .hp-direct { margin-top: 44px; display: flex; flex-direction: column; gap: 16px; }
+.hp-contact .hp-direct a { color: var(--ink); text-decoration: none; font-family: var(--serif); font-size: 24px; transition: color .3s; }
+.hp-contact .hp-direct a:hover { color: var(--gold); }
+.hp-contact .hp-direct small { display: block; font-family: var(--sans); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px; }
+.hp-form { display: flex; flex-direction: column; gap: 26px; }
+.hp-field label { display: block; font-family: var(--sans); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; }
+.hp-field input, .hp-field select, .hp-field textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); color: var(--ink); font-family: var(--serif); font-size: 20px; padding: 8px 0 14px; outline: none; transition: border-color .3s; border-radius: 0; -webkit-appearance: none; }
+.hp-field input:focus, .hp-field select:focus, .hp-field textarea:focus { border-color: var(--gold); }
+.hp-field select { cursor: pointer; }
+.hp-field select option { background: #121016; color: var(--ink); }
+.hp-field textarea { resize: vertical; min-height: 70px; }
+.hp-form button { align-self: flex-start; margin-top: 10px; background: var(--gold); color: #0a0a0c; border: none; font-family: var(--sans); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; padding: 18px 44px; border-radius: 100px; cursor: pointer; transition: background .35s; }
+.hp-form button:hover:not(:disabled) { background: var(--ink); }
+.hp-form button:disabled { opacity: .5; cursor: not-allowed; }
+.hp-form-success { font-family: var(--serif); font-size: 26px; font-weight: 300; color: var(--ink); }
+.hp-form-error { font-family: var(--sans); font-size: 13px; color: #ff7a7a; margin-top: -14px; }
+@media (max-width: 900px) { .hp-contact-grid { grid-template-columns: 1fr; } }
+
+/* FOOTER */
+.hp-footer { padding: 90px 6vw 50px; border-top: 1px solid var(--line); }
+.hp-foot-top { display: flex; justify-content: space-between; align-items: center; gap: 30px; flex-wrap: wrap; margin-bottom: 70px; }
+.hp-foot-tag { font-family: var(--serif); font-size: clamp(26px, 3vw, 40px); font-weight: 300; }
+.hp-foot-tag i { color: var(--gold); }
+.hp-foot-bottom { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-family: var(--sans); font-size: 11px; letter-spacing: .14em; color: var(--ink-faint); }
+.hp-foot-bottom a { color: var(--ink-faint); text-decoration: none; }
+.hp-foot-bottom a:hover { color: var(--gold); }
+
+/* ============================================================
+   Insider posts — long-form prose styling. KEPT from previous
+   globals.css in case any old links to /insider/[slug] still work.
+   ============================================================ */
+.insider-prose { color: rgba(236, 232, 224, 0.82); font-size: 17px; line-height: 1.75; font-family: var(--font-serif); }
+.insider-prose > * + * { margin-top: 1.2em; }
+.insider-prose h1, .insider-prose h2, .insider-prose h3 { color: var(--color-cream); font-weight: 300; letter-spacing: -0.015em; line-height: 1.15; margin-top: 1.8em; }
+.insider-prose h1 { font-size: 2.2rem; }
+.insider-prose h2 { font-size: 1.7rem; }
+.insider-prose h3 { font-size: 1.3rem; letter-spacing: 0.02em; text-transform: uppercase; }
+.insider-prose p { margin: 0; }
+.insider-prose strong { color: var(--color-cream); font-weight: 600; }
+.insider-prose em { font-style: italic; color: var(--color-cream); }
+.insider-prose a { color: var(--color-ember); text-decoration: underline; text-decoration-color: rgba(217, 201, 163, 0.35); text-underline-offset: 4px; transition: color 0.2s, text-decoration-color 0.2s; }
+.insider-prose a:hover { color: var(--color-cream); text-decoration-color: var(--color-cream); }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter_Tight, JetBrains_Mono } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { StructuredData } from "@/components/StructuredData";
@@ -7,34 +7,29 @@ import { personSchema, localBusinessSchema, websiteSchema } from "@/lib/seo";
 import { PlayerProvider } from "@/components/player/PlayerProvider";
 import { PersistentMiniPlayer } from "@/components/player/PersistentMiniPlayer";
 
-// Editorial type system:
-//   - Fraunces (variable serif) → display / headlines. Variable font: we let
-//     CSS font-weight drive weight (Tailwind font-bold / font-extrabold map
-//     straight through), and opt into SOFT + opsz axes for editorial breath.
-//     IMPORTANT: when `axes` is specified, `weight` MUST be omitted (or
-//     `"variable"`) — Next.js's font loader rejects the combo otherwise.
-//   - Inter Tight → body, nav, buttons, UI labels.
-//   - JetBrains Mono → marquee + tour-itinerary / broadcast accents.
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Editorial type system, v3:
+//   - Cormorant Garamond → display / prose / italic accents. Classical serif
+//     with a real italic that carries character; used for headlines, sub-
+//     heads, manifesto quotes, form fields.
+//   - Inter → labels, nav, buttons, form labels, tickers, micro-copy — 10-14px
+//     UI text where a serif would get muddy.
+//
+// The old CSS variables `--font-display`, `--font-serif`, `--font-sans` and
+// `--font-mono` are re-pointed at Cormorant / Inter / system-mono in
+// globals.css, so any legacy `font-*` utility on non-homepage routes still
+// resolves without loading Fraunces / Inter Tight / JetBrains Mono.
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
   style: ["normal", "italic"],
-  axes: ["SOFT", "opsz"],
+  weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
-const interTight = Inter_Tight({
-  variable: "--font-inter-tight",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
+  weight: ["300", "400", "500"],
   display: "swap",
 });
 
@@ -105,12 +100,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
+      className={`${cormorant.variable} ${inter.variable}`}
     >
       <head>
         <StructuredData schemas={[personSchema(), localBusinessSchema(), websiteSchema()]} />
       </head>
-      <body className="min-h-screen bg-night text-cream antialiased">
+      <body className="min-h-screen antialiased">
         <PlayerProvider>
           {children}
           <PersistentMiniPlayer />
