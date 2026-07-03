@@ -86,8 +86,22 @@ function Hero() {
       <div className="hp-hero-veil" />
       <div className="wrap">
         <p className="label rv">Dallas · Worldwide — Bookings by inquiry</p>
+        {/*
+          Hero headline = wordmark logo.
+          The <span className="sr"> preserves the semantic h1 text for search
+          engines and screen readers ("A DJ that moves rooms.") while the
+          <img> is the visible brand mark. `/brand/wordmark-white.png` is the
+          same asset used in SiteNav so the file is guaranteed to exist.
+        */}
         <h1 className="rv d1">
-          A DJ that <span className="em">moves</span> rooms.
+          <span className="sr">A DJ that moves rooms.</span>
+          <img
+            className="hp-hero-logo"
+            src="/brand/wordmark-white.png"
+            alt="DJ Danny West"
+            width={1053}
+            height={652}
+          />
         </h1>
         <p className="hp-lede rv d2">
           Official DJ for the Dallas Cowboys Stadium Club and SiriusXM Channel 13, Pitbull&apos;s

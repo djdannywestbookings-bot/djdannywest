@@ -126,6 +126,10 @@ html { scroll-behavior: smooth; }
 .hp-hero-veil { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(10,10,12,.97) 4%, rgba(10,10,12,.4) 45%, rgba(10,10,12,.6) 100%); }
 .hp-hero .wrap { position: relative; z-index: 2; }
 .hp-hero h1 { font-family: var(--serif); font-size: clamp(52px, 7.4vw, 116px); line-height: 1.02; font-weight: 300; max-width: 12ch; margin-top: 30px; }
+/* Wordmark logo used as the hero headline. Capped at 620px so it doesn't
+   dominate the composition on desktop; 80vw floor keeps it readable on
+   mobile. Drop-shadow lifts it off the hero video. */
+.hp-hero-logo { width: min(620px, 80vw); height: auto; display: block; filter: drop-shadow(0 8px 40px rgba(0, 0, 0, 0.55)); }
 .hp-hero p.hp-lede { margin-top: 28px; max-width: 46ch; font-size: 19px; line-height: 1.65; color: var(--ink-dim); font-weight: 400; font-family: var(--sans); }
 .hp-hero .hp-cta-row { display: flex; align-items: center; gap: 26px; margin-top: 42px; flex-wrap: wrap; }
 .hp-hero .hp-micro { font-family: var(--sans); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-faint); }
