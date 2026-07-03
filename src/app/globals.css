@@ -212,8 +212,10 @@ html { scroll-behavior: smooth; }
 .hp-cities { padding: 120px 0; border-top: 1px solid var(--line); text-align: center; }
 .hp-cities h2 { font-family: var(--serif); font-size: clamp(28px, 3.2vw, 44px); font-weight: 300; margin-bottom: 56px; }
 .hp-city-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 36px; max-width: 900px; margin: 0 auto; }
-.hp-city-row span { font-family: var(--serif); font-size: 24px; font-weight: 300; color: var(--ink-dim); transition: color .3s; cursor: default; }
+.hp-city-row span { font-family: var(--serif); font-size: 24px; font-weight: 300; color: var(--ink-dim); transition: color .3s; }
 .hp-city-row span:hover { color: var(--gold); }
+.hp-city-row a { color: inherit; text-decoration: none; transition: color .3s; }
+.hp-city-row a:hover { color: var(--gold); }
 .hp-city-row i { font-style: normal; color: var(--gold-deep); align-self: center; font-size: 12px; }
 
 /* CONTACT / BOOK */

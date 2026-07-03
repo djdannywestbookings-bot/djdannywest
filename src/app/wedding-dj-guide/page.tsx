@@ -10,8 +10,10 @@ const PAGE_URL = `${site.url}/wedding-dj-guide`;
 const PDF_URL = `${site.url}/guides/dfw-wedding-dj-guide.pdf`;
 
 export const metadata: Metadata = {
-  title:
-    "DFW Wedding DJ Pricing Guide — What It Actually Costs in 2026 | DJ Danny West",
+  title: {
+    absolute:
+      "DFW Wedding DJ Pricing Guide — What It Actually Costs in 2026 | DJ Danny West",
+  },
   description:
     "Free 10-page guide: the four DFW wedding DJ pricing tiers, 7 red flags to walk away from, venue-by-venue cheat sheet (Adolphus, Marquee on Magnolia, Four Seasons), 12-month music timeline, and the 10-question DJ interview that filters fast. By DJ Danny West — Cowboys' Stadium Club DJ, SiriusXM Latin mix coordinator.",
   keywords: [
@@ -154,7 +156,7 @@ export default function WeddingDjGuidePage() {
               </span>
             </h1>
             <p className="mt-10 max-w-2xl font-sans text-[16px] leading-[1.65] text-cream/75 md:text-[18px]">
-              Quotes from $800 to $8,000 for what looks like the same service.
+              Quotes from $800 to $8,000 for what looks like the same service — whether you&apos;re comparing Dallas wedding DJs, Fort Worth wedding DJs, or anywhere across DFW.
               Here&apos;s the honest breakdown — the four real DFW pricing
               tiers, seven red flags that mean walk away, a venue-by-venue
               cheat sheet, and the 10-question DJ interview I&apos;d give if I

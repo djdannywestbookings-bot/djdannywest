@@ -94,11 +94,22 @@ function Hero() {
           same asset used in SiteNav so the file is guaranteed to exist.
         */}
         <h1 className="rv d1">
-          <span className="sr">A DJ that moves rooms.</span>
+          {/*
+            sr-only text carries the searchable/screen-reader heading. This is
+            the ONLY h1 on the homepage, so it holds every ranking keyword we
+            care about: brand name + primary intent ("Best DJ in Dallas &
+            Fort Worth") + brand tagline. Google gives h1 content real weight,
+            and swapping the visible text for a logo would otherwise waste
+            that slot.
+          */}
+          <span className="sr">
+            DJ Danny West — Best DJ in Dallas &amp; Fort Worth. A DJ that moves
+            rooms.
+          </span>
           <img
             className="hp-hero-logo"
             src="/brand/wordmark-white.png"
-            alt="DJ Danny West"
+            alt="DJ Danny West — Best DJ in Dallas &amp; Fort Worth"
             width={1053}
             height={652}
           />
@@ -137,6 +148,9 @@ function Hero() {
 /* ─────────── TICKER ─────────── */
 function Ticker() {
   // Duplicated inline so the CSS `translateX(-50%)` keyframe loops seamlessly.
+  // Expanded from 11 → 19 items to restore the venue-density we had before
+  // the redesign — every venue here is indexable text on the homepage, which
+  // helps ranking for "Dallas DJ / Fort Worth DJ" long-tail queries.
   const items = [
     "SiriusXM · Ch. 13",
     "Dallas Cowboys",
@@ -145,9 +159,17 @@ function Ticker() {
     "ESPN · Super Bowl",
     "Red Bull 3Style",
     "HBO Boxing",
+    "American Airlines Center",
+    "W Hotel Dallas",
     "House of Blues Vegas",
     "WARP Tokyo",
     "Club LIV Manchester",
+    "Tup Tup Palace Newcastle",
+    "UP & Down NYC",
+    "Piccadilly Osaka",
+    "Terraza Catedral Mexico City",
+    "Saddle Ranch Universal City",
+    "Resort World Bimini",
     "SXSW",
   ];
   const rendered = [...items, ...items];
@@ -377,7 +399,20 @@ function Process() {
 
 /* ─────────── CITIES ─────────── */
 function Cities() {
-  const cities = ["Dallas", "Fort Worth", "Arlington", "Plano", "Frisco", "Irving", "McKinney", "Southlake"];
+  // Each city links to its dedicated /dj-{slug} page. This turns the Cities
+  // section into an internal-linking crosslink hub, which passes homepage
+  // authority to the city landing pages and gives Google clear anchor-text
+  // signals for "Dallas DJ", "Fort Worth DJ", etc.
+  const cities = [
+    { name: "Dallas", slug: "dallas" },
+    { name: "Fort Worth", slug: "fort-worth" },
+    { name: "Arlington", slug: "arlington" },
+    { name: "Plano", slug: "plano" },
+    { name: "Frisco", slug: "frisco" },
+    { name: "Irving", slug: "irving" },
+    { name: "McKinney", slug: "mckinney" },
+    { name: "Southlake", slug: "southlake" },
+  ];
   return (
     <section className="hp-cities">
       <div className="wrap">
@@ -387,8 +422,10 @@ function Cities() {
         </h2>
         <div className="hp-city-row rv d2">
           {cities.map((c, i) => (
-            <span key={c}>
-              {c}
+            <span key={c.slug}>
+              <a href={`/dj-${c.slug}`} aria-label={`DJ Danny West in ${c.name}`}>
+                {c.name}
+              </a>
               {i < cities.length - 1 && <i>●</i>}
             </span>
           ))}
