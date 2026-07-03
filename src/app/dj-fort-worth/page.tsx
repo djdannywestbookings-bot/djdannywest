@@ -61,6 +61,41 @@ const faq = [
     answer:
       "Earlier is better. Most Friday and Saturday clients book me a year out — I'm already booked into next March. If I'm free, I'm yours; but dates lock in fast. Send your inquiry and once we're aligned a deposit holds the date. There's no such thing as too early.",
   },
+  {
+    question: "Who's the best DJ in Fort Worth?",
+    answer:
+      "The honest answer: the one with the strongest résumé who's actually worked the rooms you care about. My credential is real — official DJ for the Dallas Cowboys Stadium Club (AT&T Stadium is Tarrant County — my home turf), mix-show coordinator on SiriusXM Channel 13, tours with 50 Cent and Pitbull. Twenty years working DFW rooms. Read the reviews, check who your venue and planner actually recommend, then inquire and we'll see if the date lines up.",
+  },
+  {
+    question: "What's the average cost of a wedding DJ in Fort Worth?",
+    answer:
+      "Fort Worth wedding DJ pricing runs the same four tiers as the broader DFW market — roughly $800–$1,500 (starter), $1,500–$3,000 (experienced), $3,000–$6,000 (premium/full production), $6,000+ (celebrity/high profile). I sit in the top two tiers depending on scope. The free 10-page DFW Wedding DJ Pricing Guide at /wedding-dj-guide breaks down what's actually included at each price point.",
+  },
+  {
+    question: "What Fort Worth venues have you played?",
+    answer:
+      "AT&T Stadium (Cowboys home games — every one since 2016), Sundance Square events, Westlake estate weddings, Aledo and Granbury private parties, Gaylord Texan in Grapevine (DFW corridor), Professional Fight League DFW events, and dozens of Fort Worth country clubs, hotel ballrooms, and private residences. If your venue isn't on the list, I do a site visit — no charge.",
+  },
+  {
+    question: "Can you DJ a bilingual English + Spanish Fort Worth event?",
+    answer:
+      "Yes — bicultural DFW weddings and quinceañeras are a sweet spot. I'm the mix-show coordinator on SiriusXM Channel 13 (Pitbull's Globalization), toured with Pitbull and Enrique Iglesias × Ricky Martin, and I mix cumbia, reggaetón, hip-hop, and open format natively. English and Spanish MC available as needed.",
+  },
+  {
+    question: "Do you DJ Fort Worth corporate events and galas?",
+    answer:
+      "Yes. Corporate galas, product launches, awards nights, brand activations — I've worked ESPN Super Bowl broadcasts, HBO Boxing, Red Bull 3Style, and dozens of DFW corporate rooms. Professional, on-brand, on-time. Send the brief and I'll send a quote.",
+  },
+  {
+    question: "Are you insured for Fort Worth venues?",
+    answer:
+      "Yes. I carry professional liability and equipment insurance and can send a COI naming your Fort Worth venue as additional insured. Most major Fort Worth and Tarrant County venues require this — I've submitted to all of them before.",
+  },
+  {
+    question: "What makes you different from other Fort Worth DJs?",
+    answer:
+      "Three things. The credential is real — Cowboys Stadium Club official DJ (AT&T Stadium sits in Tarrant County, so this IS my home venue), SiriusXM Channel 13, world tours. That's a résumé most Fort Worth DJs can't match. You're not being handed off — you inquire, I answer, I plan your night, I show up. And the mix is native open-format across Latin, hip-hop, house, and top 40 — what a bicultural Fort Worth crowd actually needs.",
+  },
 ];
 
 export const metadata: Metadata = {
