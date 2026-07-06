@@ -31,9 +31,11 @@ export default function HomepageV2() {
       <SiteNav />
       <Hero />
       <Ticker />
+      <LiveReel />
       <Manifesto />
       <FeatureMixes />
       <FeatureCraft />
+      <Stages />
       <Stats />
       <Standard />
       <Process />
@@ -192,6 +194,53 @@ function Ticker() {
   );
 }
 
+/* ─────────── LIVE REEL ───────────
+ * Three real clips from Danny in the booth. Autoplay muted + loop is the
+ * modern-web equivalent of a demo reel — visitors see him actually working
+ * rooms, not just reading claims. Poster frames extracted with ffmpeg so
+ * mobile users on slow connections still see the still frame before the
+ * video downloads. `preload="metadata"` keeps initial page weight down.
+ */
+function LiveReel() {
+  const clips = [
+    { src: "/media/canada.mp4", poster: "/media/canada-poster.jpg", venue: "Toronto Club Promo", note: "Canada · 2023" },
+    { src: "/media/tokyo.mp4", poster: "/media/tokyo-poster.jpg", venue: "WARP Tokyo — Genre Bender", note: "Japan · Guest set" },
+    { src: "/media/uta.mp4", poster: "/media/uta-poster.jpg", venue: "UTA Homecoming", note: "Arlington, TX" },
+  ];
+  return (
+    <section className="hp-reel">
+      <div className="wrap">
+        <span className="label rv">Live from the booth</span>
+        <h2 className="rv d1">
+          Real rooms. <span className="em">Real crowds.</span>
+        </h2>
+        <div className="hp-reel-grid">
+          {clips.map((c, i) => (
+            <figure
+              key={c.src}
+              className={`hp-reel-tile rv${i === 1 ? " d1" : i === 2 ? " d2" : ""}`}
+            >
+              <video
+                src={c.src}
+                poster={c.poster}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
+              <figcaption>
+                <span className="hp-reel-venue">{c.venue}</span>
+                <span className="hp-reel-note">{c.note}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ─────────── MANIFESTO ─────────── */
 function Manifesto() {
   return (
@@ -277,6 +326,47 @@ function FeatureCraft() {
           <a className="hp-cta rv d3" href="#book">
             Book the room-reader
           </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────── STAGES ───────────
+ * Pitbull's Can't Stop Us Now Tour (2022) — three real tour photos. This is
+ * the strongest "famous DJ" signal on the page: verifiable major-artist
+ * association, real photos, no stock imagery. Hover scales the image
+ * subtly to keep it feeling alive without distracting.
+ */
+function Stages() {
+  const shots = [
+    { src: "/media/pitbull-1.jpg", alt: "DJ Danny West on tour with Pitbull, Can't Stop Us Now Tour 2022 — image 1" },
+    { src: "/media/pitbull-2.jpg", alt: "DJ Danny West on tour with Pitbull, Can't Stop Us Now Tour 2022 — image 2" },
+    { src: "/media/pitbull-3.jpg", alt: "DJ Danny West on tour with Pitbull, Can't Stop Us Now Tour 2022 — image 3" },
+  ];
+  return (
+    <section className="hp-stages">
+      <div className="wrap">
+        <div className="hp-stages-head">
+          <div>
+            <span className="label rv">Toured · 2022</span>
+            <h2 className="rv d1">
+              Pitbull — <span className="em">Can&apos;t Stop Us Now Tour</span>.
+            </h2>
+          </div>
+          <p className="label rv d2" style={{ letterSpacing: ".2em" }}>
+            Stadiums · North America
+          </p>
+        </div>
+        <div className="hp-stages-grid">
+          {shots.map((s, i) => (
+            <figure
+              key={s.src}
+              className={`hp-stages-tile rv${i === 1 ? " d1" : i === 2 ? " d2" : ""}`}
+            >
+              <img src={s.src} alt={s.alt} loading="lazy" />
+            </figure>
+          ))}
         </div>
       </div>
     </section>
